@@ -1,42 +1,71 @@
 # Development State
 
 ## Current Phase
-Day 0 — Architecture / Setup (COMPLETE)
+Day 1 — Overworld Movement + Map Transitions (COMPLETE)
 
 ## Completed
-- Read plan.md completely (891 lines + addendum)
-- Read visual direction addendum (supersedes Phaser with Three.js/R3F)
-- Audited existing project state
-- Determined Node/npm environment (Node.js on Windows)
-- Uninstalled Phaser 3.85.2
-- Installed Three.js + react-three-fiber + @react-three/drei + @react-three/postprocessing
-- Installed @types/three for TypeScript support
-- Configured TypeScript (strict mode, path aliases)
-- Configured Vite (dev server, build, sourcemaps)
-- Created project structure per plan.md §14 + addendum §A.3
-- Created GameCanvas.tsx (R3F Canvas wrapper)
-- Created eventBus.ts (renderer-agnostic typed event emitter)
-- Created OverworldScene.tsx (smoke test: toon-shaded ground, trees, rocks, player, creature, camera, lighting, fog)
-- Created Postprocessing.tsx (DepthOfField + Bloom + Vignette)
-- Created ARCHITECTURE.md
-- Verified TypeScript compilation passes (zero errors)
-- Verified production build succeeds (npm run build)
-- Press Start 2P font loaded via Google Fonts in index.html
+- **Day 0**: Full architecture pivot from Phaser to Three.js/R3F
+- **Day 1**: Playable town with player movement, collision, two maps, map transitions
+
+## Day 1 Details
+### Core Systems
+- Grid-based movement with WASD/arrows + smooth interpolation
+- Collision detection against blocked tiles
+- Map transition system (fade out → switch map → fade in)
+- Follow camera (no OrbitControls)
+- Event bus for map transition signals
+
+### Map Data
+- **Town** (15×15): Buildings, trees, fences, flowers, signs, path network
+- **Route 1** (20×20): Grass, water, rocks, trees, flowers
+- Both maps have spawn points, exits, and NPC placeholders
+
+### Environment Components
+- Tree (procedural sway animation)
+- SmallTree (scaled variant)
+- Rock / SmallRock
+- Building (red/blue variants, toon-shaded)
+- Flower (animated sway)
+- GrassTuft (animated sway)
+- Fence / FenceRow
+- Sign
+- Water (animated waves)
+
+### Entities
+- Player (capsule body, sphere head, walk bob animation)
+- NPC (capsule body, sphere head, hat, idle bob)
+- FollowCamera (lerp smooth follow)
+
+### Effects
+- TransitionOverlay (black fade for map transitions)
+- Postprocessing (DepthOfField + Bloom + Vignette)
+- Fog for atmosphere
 
 ## Files Created / Modified
-- `src/game/GameCanvas.tsx` — R3F Canvas wrapper (replaced Phaser)
-- `src/game/eventBus.ts` — Typed event emitter (removed Phaser dependency)
-- `src/game/scenes/OverworldScene.tsx` — 3D smoke test scene
-- `src/game/fx/Postprocessing.tsx` — Postprocessing stack
-- `ARCHITECTURE.md` — Architecture documentation
+### Day 1 New Files
+- `src/utils/constants.ts` — Tile size, speed, camera offsets, fog distances
+- `src/utils/toonMaterials.ts` — Gradient textures + MeshToonMaterial helpers
+- `src/utils/gridUtils.ts` — Grid/world coordinate conversion, walkability check
+- `src/data/mapTypes.ts` — MapDef, TileType, MapExit types
+- `src/data/townMap.ts` — Town map data (15×15)
+- `src/data/route1Map.ts` — Route 1 map data (20×20)
+- `src/data/maps.ts` — Map registry + lookup
+- `src/game/entities/Player.tsx` — Grid movement + smooth interpolation
+- `src/game/entities/Tree.tsx` — Animated tree props
+- `src/game/entities/Rock.tsx` — Rock props
+- `src/game/entities/Building.tsx` — Toon-shaded buildings
+- `src/game/entities/Flower.tsx` — Animated flowers + grass tufts
+- `src/game/entities/Fence.tsx` — Fence props
+- `src/game/entities/Sign.tsx` — Sign props
+- `src/game/entities/Water.tsx` — Animated water plane
+- `src/game/entities/NPC.tsx` — NPC placeholder
+- `src/game/entities/FollowCamera.tsx` — Smooth follow camera
+- `src/game/scenes/MapRenderer.tsx` — Renders tile grid + objects from map data
+- `src/game/fx/TransitionOverlay.tsx` — Black fade overlay for transitions
 
-## Files Deleted
-- `src/game/config.ts` — Phaser config (no longer needed)
-- `src/game/scenes/BootScene.ts` — Phaser boot scene (replaced by R3F)
-- `src/game/animation/` — Phaser animation directory (empty)
-- `src/game/maps/` — Phaser maps directory (empty)
-- `src/game/entities/` — Old entities directory (rebuilt for R3F)
-- `src/game/systems/` — Old systems directory (rebuilt for R3F)
+### Day 1 Modified Files
+- `src/game/scenes/OverworldScene.tsx` — Full rewrite: map loading + player + camera + transitions
+- `src/game/GameCanvas.tsx` — Added TransitionOverlay
 
 ## Installed Dependencies
 ### Core
@@ -59,51 +88,12 @@ Day 0 — Architecture / Setup (COMPLETE)
 ## Architecture
 React + TypeScript + Vite + Three.js/R3F + Zustand + localStorage
 
-- **React**: Application shell, menus, UI (Pokédex, trainer card, dialogue, HUD, inventory, party, settings, save UI)
-- **R3F/Three.js**: Game renderer (3D world, toon-shaded geometry, creatures, camera, animation, postprocessing)
-- **Zustand**: Shared game state bridge between React UI and R3F 3D scenes
-- **localStorage**: Save persistence
-- **Capacitor**: Android packaging (Day 5, deferred)
-
-## Rendering Pipeline
-- React renders DOM/CSS UI over the 3D canvas
-- R3F `<Canvas>` renders the 3D world
-- Toon-shaded materials via `MeshToonMaterial` + gradient maps
-- Postprocessing: DepthOfField (diorama effect) + Bloom (candy highlights) + Vignette (focus)
-- Procedural animation via `useFrame` (bob, lunge, flash, shake)
-- Angled camera (~45-60° down) for diorama perspective
-
-## Smoke Test Scene
-The OverworldScene.tsx contains a working smoke test with:
-- Green toon-shaded ground plane
-- 6 toon-shaded trees (cone + cylinder, procedural sway)
-- 3 toon-shaded rocks (dodecahedron)
-- Blue player character (capsule + sphere, idle bob)
-- Red creature placeholder (sphere composition, idle bob)
-- Hemisphere + directional + ambient lighting
-- OrbitControls for camera
-- Fog for atmosphere
-
 ## Build Status
 - TypeScript: PASS (zero errors)
-- Vite build: PASS (1,119 KB bundle — Three.js is ~1MB, expected)
-- Chunk size warning: expected (can optimize with code splitting later)
+- Vite build: PASS (1,119 KB bundle)
 
 ## Known Issues
-- Chunk size warning (Three.js is ~1MB) — normal, can optimize later
-- esbuild install script blocked by npm allowScripts — not functional
-- 2 npm audit vulnerabilities (non-critical)
-
-## Resources
-### Verified CC0 Assets (for future use)
-- Kenney Character Assets — Player + NPC models (CC0)
-- Kenney Nature Kit — Trees, rocks, fences (CC0)
-- Press Start 2P — Display font (OFL 1.1)
-- Kenney RPG Audio — SFX (CC0)
-
-### Private Prototype Only
-- PokéAPI data — Species/move/type data
-- Creature models — Original primitive-based compositions
+- Chunk size warning (Three.js is ~1MB) — expected, optimize later
 
 ## Next Task
-Day 1: Download Kenney CC0 3D assets (Character Assets, Nature Kit), create first playable overworld with player movement on a small 3D grid
+Day 2: Battle system, creature encounters, catching mechanics, UI overlays

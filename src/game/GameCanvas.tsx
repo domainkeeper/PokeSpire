@@ -1,39 +1,21 @@
-import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OverworldScene } from './scenes/OverworldScene';
 import { Postprocessing } from './fx/Postprocessing';
+import { TransitionOverlay } from './fx/TransitionOverlay';
 
 export function GameCanvas() {
   return (
-    <div
-      id="game-container"
-      style={{
-        width: '100%',
-        height: '100%',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-      }}
-    >
+    <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
       <Canvas
         shadows
-        gl={{
-          antialias: true,
-          toneMapping: 3,
-          toneMappingExposure: 1.2,
-        }}
-        camera={{
-          position: [0, 12, 12],
-          fov: 40,
-          near: 0.1,
-          far: 100,
-        }}
+        camera={{ position: [0, 10, 10], fov: 50 }}
+        gl={{ antialias: true, toneMapping: 3 }}
+        style={{ background: '#87ceeb' }}
       >
-        <Suspense fallback={null}>
-          <OverworldScene />
-          <Postprocessing />
-        </Suspense>
+        <OverworldScene />
+        <Postprocessing />
       </Canvas>
+      <TransitionOverlay />
     </div>
   );
 }
