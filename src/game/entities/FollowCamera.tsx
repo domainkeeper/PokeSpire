@@ -15,14 +15,19 @@ export function FollowCamera() {
     const player = useGameStore.getState().player;
     const wp = gridToWorld(player.x, player.y);
 
-    // perspective camera: position behind and above player
-    const targetPos = new THREE.Vector3(wp[0] * 0.7, 10, wp[2] * 0.7 + 8);
-    const targetLook = new THREE.Vector3(wp[0] * 0.8, 0, wp[2] * 0.8);
+    // Camera: behind and above player, looking down at ~45 degrees
+    // wp[0] = world X of player, wp[2] = world Z of player
+    const targetPos = new THREE.Vector3(wp[0], 10, wp[2] + 8);
+    const targetLook = new THREE.Vector3(wp[0], 0, wp[2]);
 
     if (!initialized.current) {
       currentPos.current.copy(targetPos);
       lookTarget.current.copy(targetLook);
       initialized.current = true;
+      // Snap camera immediately on first frame
+      camera.position.copy(currentPos.current);
+      camera.lookAt(lookTarget.current);
+      return;
     }
 
     const lerp = Math.min(1, CAMERA_LERP * delta);

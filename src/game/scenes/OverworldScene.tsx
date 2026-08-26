@@ -6,7 +6,6 @@ import { Player } from '../entities/Player';
 import { FollowCamera } from '../entities/FollowCamera';
 import { SkyBackground } from '../pixel/SkyBackground';
 import { eventBus, GameEvents } from '../eventBus';
-import { FOG_NEAR, FOG_FAR } from '../../utils/constants';
 
 export function OverworldScene() {
   const currentMapId = useGameStore((s) => s.player.mapId);
@@ -45,7 +44,6 @@ export function OverworldScene() {
     <>
       <color attach="background" args={['#87ceeb']} />
       <ambientLight intensity={1} />
-      <fog attach="fog" args={['#c8e6ff', FOG_NEAR, FOG_FAR]} />
 
       <SkyBackground type={mapData.backgroundType} />
       <MapRenderer mapData={mapData} />

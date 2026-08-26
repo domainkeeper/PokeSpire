@@ -1,10 +1,11 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { gridToWorld } from '../../utils/gridUtils';
 import { TILE_SIZE } from '../../utils/constants';
-import type { GameMap, TileType } from '../../data/mapTypes';
+import type { GameMap } from '../../data/mapTypes';
 import { getPokemonSprite } from '../../data/pokemon/pokemonSprites';
 import type { PokemonSpeciesKey } from '../../data/pokemon/pokemonSprites';
+import type { TileType } from '../../assets/tileRegistry';
 
 import { makeTreeSprite, makeSmallTreeSprite, makeBushSprite, makeRockSprite, makeFlowerSprite, makeFenceSprite, makeSignSprite, makeWaterSprite, makeBuildingSprite } from '../pixel/sprites/envSprites';
 import { makeNpcSprite } from '../pixel/sprites/characterSprites';
@@ -48,7 +49,6 @@ function usePokemonTexture(species: PokemonSpeciesKey): THREE.Texture | null {
       },
       undefined,
       () => {
-        // Fallback to front sprite
         loader.load(
           sprite.front,
           (texture) => {
@@ -65,17 +65,10 @@ function usePokemonTexture(species: PokemonSpeciesKey): THREE.Texture | null {
   return tex;
 }
 
-interface PokemonSpriteProps {
-  species: PokemonSpeciesKey;
-  position: [number, number, number];
-}
-
-function PokemonSprite({ species, position }: PokemonSpriteProps) {
+function PokemonSprite({ species, position }: { species: PokemonSpeciesKey; position: [number, number, number] }) {
   const sprite = getPokemonSprite(species);
   const tex = usePokemonTexture(species);
-
   if (!tex) return null;
-
   return (
     <PixelSprite
       texture={tex}
@@ -88,67 +81,165 @@ function PokemonSprite({ species, position }: PokemonSpriteProps) {
   );
 }
 
+// Tile type to color mapping
+const TILE_COLORS: Record<TileType, THREE.Color[]> = {
+  grass: [
+    new THREE.Color('#4caf50'),
+    new THREE.Color('#66bb6a'),
+    new THREE.Color('#81c784'),
+    new THREE.Color('#43a047'),
+  ],
+  path: [
+    new THREE.Color('#d7ccc8'),
+    new THREE.Color('#bcaaa4'),
+    new THREE.Color('#c8b8ac'),
+  ],
+  water: [
+    new THREE.Color('#29b6f6'),
+    new THREE.Color('#039be5'),
+    new THREE.Color('#4fc3f7'),
+  ],
+  dirt: [
+    new THREE.Color('#bcaaa4'),
+    new THREE.Color('#a1887f'),
+  ],
+  sand: [
+    new THREE.Color('#f0e68c'),
+    new THREE.Color('#e6d66a'),
+  ],
+};
+
+function getColorForTile(type: TileType, x: number, y: number): THREE.Color {
+  const palette = TILE_COLORS[type] || TILE_COLORS.grass;
+  const idx = ((x * 7 + y * 13 + x * y * 3) % palette.length + palette.length) % palette.length;
+  return palette[idx];
+}
+
 interface MapRendererProps {
   mapData: GameMap;
 }
 
-export function MapRenderer({ mapData }: MapRendererProps) {
-  const groundMesh = useMemo(() => {
-    const geo = new THREE.BufferGeometry();
-    const positions: number[] = [];
-    const normals: number[] = [];
-    const colors: number[] = [];
-    const uvs: number[] = [];
-
-    const grassColor = new THREE.Color('#4caf50');
-    const grassColor2 = new THREE.Color('#66bb6a');
-    const pathColor = new THREE.Color('#d7ccc8');
-    const waterColor = new THREE.Color('#039be5');
-    const dirtColor = new THREE.Color('#bcaaa4');
+// Ground rendered as separate colored quads per terrain type using InstancedMesh
+function GroundLayer({ mapData }: { mapData: GameMap }) {
+  // Build instance data: for each tile type, collect positions and colors
+  const instanceData = useMemo(() => {
+    const s = TILE_SIZE;
+    const halfS = s / 2;
+    const byType: Record<string, { positions: number[]; colors: number[]; count: number }> = {};
 
     for (let y = 0; y < mapData.height; y++) {
       for (let x = 0; x < mapData.width; x++) {
         const t: TileType = mapData.ground[y]?.[x] || 'grass';
+        if (!byType[t]) byType[t] = { positions: [], colors: [], count: 0 };
+
         const [wx, , wz] = gridToWorld(x, y);
-        const s = TILE_SIZE;
+        const color = getColorForTile(t, x, y);
 
-        let color: THREE.Color;
-        switch (t) {
-          case 'path': color = pathColor; break;
-          case 'water': color = waterColor; break;
-          case 'dirt': color = dirtColor; break;
-          default: {
-            // Subtle grass variation
-            const noise = ((x * 7 + y * 13) % 5) / 5;
-            color = noise > 0.5 ? grassColor : grassColor2;
-            break;
-          }
-        }
-
-        positions.push(wx, -0.05, wz, wx+s, -0.05, wz, wx+s, -0.05, wz+s, wx, -0.05, wz, wx+s, -0.05, wz+s, wx, -0.05, wz+s);
-        normals.push(0,1,0, 0,1,0, 0,1,0, 0,1,0, 0,1,0, 0,1,0);
-        colors.push(color.r, color.g, color.b, color.r, color.g, color.b, color.r, color.g, color.b, color.r, color.g, color.b, color.r, color.g, color.b, color.r, color.g, color.b);
-        uvs.push(0,0, 1,0, 1,1, 0,0, 1,1, 0,1);
+        // Center of tile
+        byType[t].positions.push(wx + halfS, -0.04, wz + halfS);
+        byType[t].colors.push(color.r, color.g, color.b);
+        byType[t].count++;
       }
     }
 
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    geo.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
-    geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-    geo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-
-    const mat = new THREE.MeshBasicMaterial({ vertexColors: true });
-    return new THREE.Mesh(geo, mat);
+    return byType;
   }, [mapData]);
 
+  return (
+    <group>
+      {Object.entries(instanceData).map(([type, data]) => {
+        if (data.count === 0) return null;
+        return (
+          <GroundInstancedMesh
+            key={type}
+            count={data.count}
+            positions={data.positions}
+            colors={data.colors}
+            tileSize={TILE_SIZE}
+          />
+        );
+      })}
+    </group>
+  );
+}
+
+function GroundInstancedMesh({
+  count,
+  positions,
+  colors,
+  tileSize,
+}: {
+  count: number;
+  positions: number[];
+  colors: number[];
+  tileSize: number;
+}) {
+  const meshRef = useRef<THREE.InstancedMesh>(null);
+  const geo = useMemo(() => new THREE.PlaneGeometry(tileSize, tileSize).rotateX(-Math.PI / 2), [tileSize]);
+
+  useEffect(() => {
+    if (!meshRef.current) return;
+    const mesh = meshRef.current;
+    const dummy = new THREE.Object3D();
+    const col = new THREE.Color();
+
+    for (let i = 0; i < count; i++) {
+      dummy.position.set(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]);
+      dummy.updateMatrix();
+      mesh.setMatrixAt(i, dummy.matrix);
+
+      col.setRGB(colors[i * 3], colors[i * 3 + 1], colors[i * 3 + 2]);
+      mesh.setColorAt(i, col);
+    }
+
+    mesh.instanceMatrix.needsUpdate = true;
+    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+  }, [count, positions, colors]);
+
+  return (
+    <instancedMesh
+      ref={meshRef}
+      args={[geo, undefined, count]}
+      frustumCulled={false}
+    >
+      <meshBasicMaterial vertexColors toneMapped={false} />
+    </instancedMesh>
+  );
+}
+
+// Simple base ground plane as fallback / absolute minimum guarantee
+function BaseGround({ mapData }: { mapData: GameMap }) {
+  const width = mapData.width * TILE_SIZE;
+  const height = mapData.height * TILE_SIZE;
+  const centerX = width / 2;
+  const centerZ = height / 2;
+
+  return (
+    <mesh
+      position={[centerX, -0.06, centerZ]}
+      rotation={[-Math.PI / 2, 0, 0]}
+      receiveShadow={false}
+    >
+      <planeGeometry args={[width, height]} />
+      <meshBasicMaterial color="#4caf50" side={THREE.DoubleSide} />
+    </mesh>
+  );
+}
+
+export function MapRenderer({ mapData }: MapRendererProps) {
   const sortedObjects = useMemo(() => {
     return [...mapData.objects].sort((a, b) => a.gy - b.gy);
   }, [mapData]);
 
   return (
     <group>
-      <primitive object={groundMesh} />
+      {/* Absolute base ground - ensures something always renders */}
+      <BaseGround mapData={mapData} />
 
+      {/* Detailed tile ground layer */}
+      <GroundLayer mapData={mapData} />
+
+      {/* Environment objects */}
       {sortedObjects.map((obj, i) => {
         const [wx, , wz] = gridToWorld(obj.gx, obj.gy);
         const tex = getSprite(obj.type);
@@ -172,6 +263,7 @@ export function MapRenderer({ mapData }: MapRendererProps) {
         );
       })}
 
+      {/* NPCs */}
       {mapData.npcPositions.map((npc, i) => {
         const [wx, , wz] = gridToWorld(npc.x, npc.y);
         const npcTex = makeNpcSprite(npc.color || '#7b1fa2');
@@ -187,6 +279,7 @@ export function MapRenderer({ mapData }: MapRendererProps) {
         );
       })}
 
+      {/* Pokémon */}
       {mapData.pokemon?.map((p, i) => {
         const [wx, , wz] = gridToWorld(p.gx, p.gy);
         return (

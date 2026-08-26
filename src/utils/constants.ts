@@ -1,8 +1,8 @@
 export const TILE_SIZE = 0.125;
 
-export const PLAYER_SPEED = 2;
-export const PLAYER_ACCELERATION = 12;
-export const PLAYER_DECELERATION = 18;
+export const PLAYER_SPEED = 1.2;
+export const PLAYER_ACCELERATION = 8;
+export const PLAYER_DECELERATION = 14;
 
 export const MAP_TOWN = 'town';
 export const MAP_ROUTE1 = 'route1';
