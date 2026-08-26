@@ -43,7 +43,15 @@ export function OverworldScene() {
   return (
     <>
       <color attach="background" args={['#87ceeb']} />
-      <ambientLight intensity={1.2} />
+      <ambientLight intensity={0.6} />
+      <directionalLight
+        position={[5, 10, 5]}
+        intensity={1.2}
+        color="#fff5e1"
+        castShadow
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+      />
 
       <SkyBackground type={mapData.backgroundType} />
       <MapRenderer mapData={mapData} />

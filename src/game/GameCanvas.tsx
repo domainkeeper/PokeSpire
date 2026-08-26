@@ -13,6 +13,7 @@ export function GameCanvas() {
           far: 100,
         }}
         gl={{ antialias: false, alpha: false }}
+        shadows
         style={{ background: '#87ceeb', imageRendering: 'pixelated' }}
       >
         <OverworldScene />

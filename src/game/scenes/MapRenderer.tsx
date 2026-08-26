@@ -6,30 +6,13 @@ import type { GameMap } from '../../data/mapTypes';
 import { getPokemonSprite } from '../../data/pokemon/pokemonSprites';
 import type { PokemonSpeciesKey } from '../../data/pokemon/pokemonSprites';
 
-import { makeBushSprite, makeRockSprite, makeFlowerSprite, makeFenceSprite, makeSignSprite } from '../pixel/sprites/envSprites';
-import { makeNpcSprite } from '../pixel/sprites/characterSprites';
-import type { Dir8 } from '../pixel/sprites/characterSprites';
-import { PixelSprite } from '../pixel/PixelSprite';
-import { makeGroundTexture, getShadowTexture } from '../pixel/groundTexture';
-import { Tree, SmallTree, Building } from '../entities/Mesh3D';
+import { Bush3D, Rock3D, Flower3D, Fence3D, Sign3D } from '../entities/EnvProps3D';
+import { Tree, SmallTree } from '../entities/Tree3D';
+import { House } from '../entities/House3D';
 import { WaterSurface } from '../entities/WaterSurface';
-
-const SPRITE_MAP: Record<string, THREE.Texture> = {};
-
-function getSprite(type: string): THREE.Texture {
-  if (SPRITE_MAP[type]) return SPRITE_MAP[type];
-  let tex: THREE.Texture;
-  switch (type) {
-    case 'bush': tex = makeBushSprite(); break;
-    case 'rock': tex = makeRockSprite(); break;
-    case 'flower': tex = makeFlowerSprite(); break;
-    case 'fence': tex = makeFenceSprite(); break;
-    case 'sign': tex = makeSignSprite(); break;
-    default: tex = makeBushSprite(); break;
-  }
-  SPRITE_MAP[type] = tex;
-  return tex;
-}
+import { Character3D } from '../entities/Character3D';
+import { makeGroundTexture } from '../pixel/groundTexture';
+import { PixelSprite } from '../pixel/PixelSprite';
 
 function usePokemonTexture(species: PokemonSpeciesKey): THREE.Texture | null {
   const [tex, setTex] = useState<THREE.Texture | null>(null);
@@ -97,26 +80,10 @@ function CanvasGround({ mapData }: { mapData: GameMap }) {
   );
 }
 
-function GroundShadow({ position, size }: { position: [number, number, number]; size: number }) {
-  const tex = useMemo(() => getShadowTexture(), []);
-  return (
-    <mesh
-      position={[position[0], 0.01, position[2]]}
-      rotation={[-Math.PI / 2, 0, 0]}
-      renderOrder={position[2] - 0.01}
-    >
-      <planeGeometry args={[size * 1.2, size * 0.6]} />
-      <meshBasicMaterial map={tex} transparent depthWrite={false} />
-    </mesh>
-  );
-}
-
-const SHADOW_SIZES: Record<string, number> = {
-  bush: 1.0,
-  rock: 1.2,
-  fence: 2.0,
-  sign: 0.6,
-  flower: 0.3,
+const NPC_VARIANT_COLORS: Record<string, { jacket: string; hair: string; shorts: string }> = {
+  professor: { jacket: '#1565c0', hair: '#e65100', shorts: '#212121' },
+  gardener: { jacket: '#2e7d32', hair: '#4e342e', shorts: '#33691e' },
+  resident: { jacket: '#c62828', hair: '#1b5e20', shorts: '#3e2723' },
 };
 
 export function MapRenderer({ mapData }: MapRendererProps) {
@@ -156,7 +123,6 @@ export function MapRenderer({ mapData }: MapRendererProps) {
         if (obj.type === 'tree') {
           return (
             <group key={`obj-${i}`}>
-              <GroundShadow position={[centerX, 0, centerZ]} size={2.5} />
               <Tree position={[centerX, 0, centerZ]} scale={1} />
             </group>
           );
@@ -165,7 +131,6 @@ export function MapRenderer({ mapData }: MapRendererProps) {
         if (obj.type === 'small_tree') {
           return (
             <group key={`obj-${i}`}>
-              <GroundShadow position={[centerX, 0, centerZ]} size={1.5} />
               <SmallTree position={[centerX, 0, centerZ]} scale={1} />
             </group>
           );
@@ -174,8 +139,7 @@ export function MapRenderer({ mapData }: MapRendererProps) {
         if (obj.type === 'building') {
           return (
             <group key={`obj-${i}`}>
-              <GroundShadow position={[centerX, 0, centerZ]} size={5} />
-              <Building position={[centerX, 0, centerZ]} variant="red" scale={1} />
+              <House position={[centerX, 0, centerZ]} variant="red" scale={1} />
             </group>
           );
         }
@@ -183,45 +147,66 @@ export function MapRenderer({ mapData }: MapRendererProps) {
         if (obj.type === 'building2') {
           return (
             <group key={`obj-${i}`}>
-              <GroundShadow position={[centerX, 0, centerZ]} size={5.5} />
-              <Building position={[centerX, 0, centerZ]} variant="blue" scale={1} />
+              <House position={[centerX, 0, centerZ]} variant="blue" scale={1} />
             </group>
           );
         }
 
-        const shadowSize = SHADOW_SIZES[obj.type] || 1.0;
-        return (
-          <group key={`obj-${i}`}>
-            {shadowSize > 0 && (
-              <GroundShadow position={[centerX, 0, centerZ]} size={shadowSize} />
-            )}
-            <PixelSprite
-              texture={getSprite(obj.type)}
-              position={[wx, 0, wz]}
-              width={obj.spriteW}
-              height={obj.spriteH}
-              anchorY={0.15}
-              animScale={obj.type === 'flower'}
-              animSway={obj.animSway}
-            />
-          </group>
-        );
+        if (obj.type === 'bush') {
+          return (
+            <group key={`obj-${i}`}>
+              <Bush3D position={[wx + 0.4, 0, wz + 0.4]} scale={1} />
+            </group>
+          );
+        }
+
+        if (obj.type === 'rock') {
+          return (
+            <group key={`obj-${i}`}>
+              <Rock3D position={[wx + 0.4, 0, wz + 0.4]} scale={1} />
+            </group>
+          );
+        }
+
+        if (obj.type === 'flower') {
+          return (
+            <group key={`obj-${i}`}>
+              <Flower3D position={[wx + 0.4, 0, wz + 0.4]} scale={1} />
+            </group>
+          );
+        }
+
+        if (obj.type === 'fence') {
+          return (
+            <group key={`obj-${i}`}>
+              <Fence3D position={[wx + 0.4, 0, wz + 0.4]} scale={1} />
+            </group>
+          );
+        }
+
+        if (obj.type === 'sign') {
+          return (
+            <group key={`obj-${i}`}>
+              <Sign3D position={[wx + 0.4, 0, wz + 0.4]} scale={1} />
+            </group>
+          );
+        }
+
+        return null;
       })}
 
       {mapData.npcPositions.map((npc, i) => {
         const [wx, , wz] = gridToWorld(npc.x, npc.y);
-        const variant = npc.name?.toLowerCase().includes('professor') ? 'professor'
+        const variantKey = npc.name?.toLowerCase().includes('professor') ? 'professor'
           : npc.name?.toLowerCase().includes('garden') ? 'gardener'
           : 'resident';
+        const variantColors = NPC_VARIANT_COLORS[variantKey] || NPC_VARIANT_COLORS.resident;
         return (
-          <group key={`npc-${i}`}>
-            <GroundShadow position={[wx + 0.4, 0, wz + 0.4]} size={0.9} />
-            <PixelSprite
-              texture={makeNpcSprite('down' as Dir8, 'idle', 0, variant)}
-              position={[wx, 0, wz]}
-              width={1.8}
-              height={2.8}
-              anchorY={0.15}
+          <group key={`npc-${i}`} position={[wx, 0, wz]}>
+            <Character3D
+              isWalking={false}
+              walkPhase={0}
+              colors={variantColors}
             />
           </group>
         );

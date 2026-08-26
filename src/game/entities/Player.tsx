@@ -7,12 +7,9 @@ import {
   PLAYER_SPEED,
   PLAYER_ACCELERATION,
   PLAYER_DECELERATION,
-  PLAYER_SPRITE_W,
-  PLAYER_SPRITE_H,
   TILE_SIZE,
 } from '../../utils/constants';
-import { makePlayerSprite } from '../pixel/sprites/characterSprites';
-import type { Dir8, WalkFrame } from '../pixel/sprites/characterSprites';
+import { Character3D } from './Character3D';
 import type { GameMap } from '../../data/mapTypes';
 
 interface PlayerProps {
@@ -20,7 +17,7 @@ interface PlayerProps {
   onExitCheck?: (gx: number, gy: number) => void;
 }
 
-function computeDir8(dx: number, dz: number): Dir8 {
+function computeDir8(dx: number, dz: number): string {
   if (dx === 0 && dz === 0) return 'down';
   const angle = Math.atan2(dx, -dz) * (180 / Math.PI);
   if (angle >= -22.5 && angle < 22.5) return 'down';
@@ -34,13 +31,35 @@ function computeDir8(dx: number, dz: number): Dir8 {
   return 'down';
 }
 
+function dirToRotationY(dir: string): number {
+  const map: Record<string, number> = {
+    down: 0,
+    down_right: -Math.PI / 4,
+    right: -Math.PI / 2,
+    up_right: -Math.PI * 3 / 4,
+    up: Math.PI,
+    up_left: Math.PI * 3 / 4,
+    left: Math.PI / 2,
+    down_left: Math.PI / 4,
+  };
+  return map[dir] ?? 0;
+}
+
+function dirToFacing4(dir: string): 'up' | 'down' | 'left' | 'right' {
+  if (dir.includes('up')) return 'up';
+  if (dir.includes('down')) return 'down';
+  if (dir.includes('left')) return 'left';
+  return 'right';
+}
+
 export function Player({ mapData, onExitCheck }: PlayerProps) {
-  const meshRef = useRef<THREE.Mesh>(null);
+  const groupRef = useRef<THREE.Group>(null);
   const velocity = useRef(new THREE.Vector3());
   const walkPhase = useRef(0);
   const keysDown = useRef(new Set<string>());
-  const currentDir = useRef<Dir8>('down');
-  const currentFrame = useRef<WalkFrame>(0);
+  const currentDir = useRef('down');
+  const rotYRef = useRef(0);
+  const isMovingRef = useRef(false);
 
   const player = useGameStore((s) => s.player);
   const setPlayerPosition = useGameStore((s) => s.setPlayerPosition);
@@ -48,18 +67,6 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
   const blocked = useMemo(
     () => buildBlockedGrid(mapData.width, mapData.height, mapData.objects),
     [mapData],
-  );
-
-  const wp = gridToWorld(player.x, player.y);
-
-  const mat = useRef<THREE.MeshBasicMaterial>(
-    new THREE.MeshBasicMaterial({
-      map: makePlayerSprite('down', 'idle', 0),
-      transparent: true,
-      alphaTest: 0.1,
-      side: THREE.DoubleSide,
-      depthWrite: true,
-    }),
   );
 
   const checkCollision = useCallback(
@@ -73,12 +80,12 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
   );
 
   const checkExit = useCallback(
-    (wx: number, wz: number, dir: Dir8) => {
+    (wx: number, wz: number, dir: string) => {
       const gx = Math.round(wx / TILE_SIZE);
       const gz = Math.round(wz / TILE_SIZE);
       if (gx < 0 || gx >= mapData.width || gz < 0 || gz >= mapData.height) return;
-      const facing4 = dir.includes('up') ? 'up' : dir.includes('down') ? 'down' : dir.includes('left') ? 'left' : 'right';
-      setPlayerPosition(gx, gz, facing4 as 'up' | 'down' | 'left' | 'right', mapData.name);
+      const facing4 = dirToFacing4(dir);
+      setPlayerPosition(gx, gz, facing4, mapData.name);
       if (onExitCheck) {
         const exit = mapData.exits.find(
           (e) => gx >= e.x && gx < e.x + e.w && gz >= e.y && gz < e.y + e.h,
@@ -110,7 +117,7 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
   }, []);
 
   useFrame((_, delta) => {
-    if (!meshRef.current) return;
+    if (!groupRef.current) return;
 
     const keys = keysDown.current;
     let dx = 0;
@@ -122,6 +129,7 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
     if (keys.has('d') || keys.has('arrowright')) dx = 1;
 
     const isMoving = dx !== 0 || dz !== 0;
+    isMovingRef.current = isMoving;
     const len = Math.sqrt(dx * dx + dz * dz);
     if (len > 0) {
       dx /= len;
@@ -130,6 +138,7 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
 
     if (isMoving) {
       currentDir.current = computeDir8(dx, dz);
+      rotYRef.current = dirToRotationY(currentDir.current);
     }
 
     const vel = velocity.current;
@@ -139,64 +148,52 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
     vel.x += (dx * targetSpeed - vel.x) * Math.min(accel * delta, 1);
     vel.z += (dz * targetSpeed - vel.z) * Math.min(accel * delta, 1);
 
-    const pos = meshRef.current.position;
-    const newX = pos.x + vel.x * delta;
-    const newZ = pos.z + vel.z * delta;
+    const g = groupRef.current;
+    const newX = g.position.x + vel.x * delta;
+    const newZ = g.position.z + vel.z * delta;
 
-    const canMoveX = !checkCollision(newX, pos.z);
-    const canMoveZ = !checkCollision(pos.x, newZ);
+    const canMoveX = !checkCollision(newX, g.position.z);
+    const canMoveZ = !checkCollision(g.position.x, newZ);
 
-    if (canMoveX) {
-      pos.x = newX;
-    } else {
-      vel.x = 0;
-    }
-    if (canMoveZ) {
-      pos.z = newZ;
-    } else {
-      vel.z = 0;
-    }
+    if (canMoveX) g.position.x = newX;
+    else vel.x = 0;
+    if (canMoveZ) g.position.z = newZ;
+    else vel.z = 0;
 
-    const gx = Math.round(pos.x / TILE_SIZE);
-    const gz = Math.round(pos.z / TILE_SIZE);
-    const facing4 = currentDir.current.includes('up') ? 'up' : currentDir.current.includes('down') ? 'down' : currentDir.current.includes('left') ? 'left' : 'right';
-    if (gx !== player.x || gz !== player.y || facing4 !== player.facing) {
-      setPlayerPosition(gx, gz, facing4 as 'up' | 'down' | 'left' | 'right', mapData.name);
-    }
-
-    checkExit(pos.x, pos.z, currentDir.current);
-
-    const speed = Math.sqrt(vel.x * vel.x + vel.z * vel.z);
-    const animState: 'idle' | 'walk' = speed > 0.05 ? 'walk' : 'idle';
-
-    if (animState === 'walk') {
+    if (isMoving) {
       walkPhase.current += delta * 8;
-      currentFrame.current = Math.floor(walkPhase.current) % 4 as WalkFrame;
+      g.position.y = Math.abs(Math.sin(walkPhase.current * 2)) * 0.03;
     } else {
-      walkPhase.current = 0;
-      currentFrame.current = 0;
+      walkPhase.current *= 0.85;
+      g.position.y = Math.sin(Date.now() * 0.002) * 0.008;
     }
 
-    const bobAmount = animState === 'walk'
-      ? Math.sin(walkPhase.current * 2) * 0.02
-      : Math.sin(Date.now() * 0.0015) * 0.01;
-    pos.y = PLAYER_SPRITE_H * 0.15 + bobAmount;
+    // Smooth rotation lerp
+    let target = rotYRef.current;
+    let current = g.rotation.y;
+    let diff = target - current;
+    while (diff > Math.PI) diff -= Math.PI * 2;
+    while (diff < -Math.PI) diff += Math.PI * 2;
+    g.rotation.y += diff * Math.min(1, 12 * delta);
 
-    const newTex = makePlayerSprite(currentDir.current, animState, currentFrame.current);
-    mat.current.map = newTex;
-    mat.current.needsUpdate = true;
+    const gx = Math.round(g.position.x / TILE_SIZE);
+    const gz = Math.round(g.position.z / TILE_SIZE);
+    const facing4 = dirToFacing4(currentDir.current);
+    if (gx !== player.x || gz !== player.y || facing4 !== player.facing) {
+      setPlayerPosition(gx, gz, facing4, mapData.name);
+    }
 
-    meshRef.current.scale.x = 1;
+    checkExit(g.position.x, g.position.z, currentDir.current);
   });
 
+  const wp = gridToWorld(player.x, player.y);
+
   return (
-    <mesh
-      ref={meshRef}
-      position={[wp[0], PLAYER_SPRITE_H * 0.15, wp[2]]}
-      material={mat.current}
-      renderOrder={9999}
-    >
-      <planeGeometry args={[PLAYER_SPRITE_W, PLAYER_SPRITE_H]} />
-    </mesh>
+    <group ref={groupRef} position={[wp[0], 0, wp[2]]}>
+      <Character3D
+        isWalking={isMovingRef.current}
+        walkPhase={walkPhase.current}
+      />
+    </group>
   );
 }
