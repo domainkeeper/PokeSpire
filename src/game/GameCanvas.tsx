@@ -6,10 +6,9 @@ export function GameCanvas() {
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
       <Canvas
-        orthographic
         camera={{
-          zoom: 80,
-          position: [0, 10, 7],
+          position: [0, 12, 10],
+          fov: 35,
           near: 0.1,
           far: 100,
         }}

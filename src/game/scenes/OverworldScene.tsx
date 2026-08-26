@@ -4,6 +4,7 @@ import { getMap } from '../../data/maps';
 import { MapRenderer } from './MapRenderer';
 import { Player } from '../entities/Player';
 import { FollowCamera } from '../entities/FollowCamera';
+import { SkyBackground } from '../pixel/SkyBackground';
 import { eventBus, GameEvents } from '../eventBus';
 import { FOG_NEAR, FOG_FAR } from '../../utils/constants';
 
@@ -44,9 +45,9 @@ export function OverworldScene() {
     <>
       <color attach="background" args={['#87ceeb']} />
       <ambientLight intensity={1} />
-      <directionalLight position={[5, 10, 5]} intensity={0.6} />
-      <fog attach="fog" args={['#87ceeb', FOG_NEAR, FOG_FAR]} />
+      <fog attach="fog" args={['#c8e6ff', FOG_NEAR, FOG_FAR]} />
 
+      <SkyBackground type={mapData.backgroundType} />
       <MapRenderer mapData={mapData} />
       <Player mapData={mapData} onExitCheck={handleExitCheck} />
       <FollowCamera />

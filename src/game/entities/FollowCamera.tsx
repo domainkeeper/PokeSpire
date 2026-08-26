@@ -3,7 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useGameStore } from '../../state/gameStore';
 import { gridToWorld } from '../../utils/gridUtils';
-import { CAMERA_HEIGHT, CAMERA_DISTANCE, CAMERA_LERP } from '../../utils/constants';
+import { CAMERA_LERP } from '../../utils/constants';
 
 export function FollowCamera() {
   const { camera } = useThree();
@@ -15,8 +15,9 @@ export function FollowCamera() {
     const player = useGameStore.getState().player;
     const wp = gridToWorld(player.x, player.y);
 
-    const targetPos = new THREE.Vector3(wp[0], CAMERA_HEIGHT, wp[2] + CAMERA_DISTANCE);
-    const targetLook = new THREE.Vector3(wp[0], 0, wp[2]);
+    // perspective camera: position behind and above player
+    const targetPos = new THREE.Vector3(wp[0] * 0.7, 10, wp[2] * 0.7 + 8);
+    const targetLook = new THREE.Vector3(wp[0] * 0.8, 0, wp[2] * 0.8);
 
     if (!initialized.current) {
       currentPos.current.copy(targetPos);

@@ -42,9 +42,9 @@ export function MapRenderer({ mapData }: MapRendererProps) {
     const colors: number[] = [];
     const uvs: number[] = [];
 
-    const grassColor = new THREE.Color('#66bb6a');
+    const grassColor = new THREE.Color('#4caf50');
     const pathColor = new THREE.Color('#d7ccc8');
-    const waterColor = new THREE.Color('#29b6f6');
+    const waterColor = new THREE.Color('#039be5');
     const dirtColor = new THREE.Color('#bcaaa4');
 
     for (let y = 0; y < mapData.height; y++) {
