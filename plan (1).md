@@ -719,3 +719,173 @@ Each task below is sized to be completable and verifiable independently. Format:
 8. Automate everything possible — procedural tweens/camera-fx instead of hand-drawn animation frames (§8).
 9. The AI coding agent implements from this document phase-by-phase and task-by-task; a human should only need to review/playtest, not make architectural decisions mid-build.
 10. No infrastructure the MVP doesn't need — no backend, no database, no multiplayer, no CI/CD beyond a basic build script, no third-party UI kits, no image-generation APIs.
+
+
+
+
+---
+
+# ADDENDUM — VISUAL DIRECTION PIVOT (append this entire section beneath `plan.md`)
+
+**Status:** This is a directional amendment, not a replacement. `plan.md` is unchanged. Read this addendum *after* `plan.md` and apply the overrides below wherever they conflict with it. No application code has been written yet, so this pivot costs nothing to adopt now — it changes what gets built in Phase 1 onward, not something that needs to be un-built.
+
+**What changed:** The reference images (May/Hilda/Brendan-and-Pokémon scenes) and the named comparisons — **Mo.co** and **Brawl Stars** — signal that the desired look is **not flat retro 2D pixel art**. It's what the industry calls a **stylized, chunky, semi-3D "diorama" look**: real 3D geometry, toon/cel shading, a tilted-down camera, shallow depth-of-field (tilt-shift blur) that makes scenes read like miniature dioramas, saturated flat lighting, and rounded, chunky low-poly character models — while gameplay itself still reads cleanly as a top-down/three-quarter game, not a first-person 3D game. This section supersedes the "2D pixel-art" framing in `plan.md` §1.5, §3, §8, §11, §19, §20 and replaces it with a 2.5D/toon-3D approach, while leaving the *game logic* (battle rules, data model, save system, world design, task breakdown, day-by-day schedule) from `plan.md` fully intact.
+
+---
+
+## A.1 What "Mo.co / Brawl Stars" style actually means technically
+
+`[VERIFIED via research]` Both are true 3D games (not 2D sprites), rendered with:
+- **Real 3D low-poly models**, not flat sprites — chunky, rounded, few polygons, big simple shapes, bold silhouettes.
+- **Toon/cel shading** — flat color bands instead of smooth photorealistic lighting gradients; in Three.js this is `MeshToonMaterial` with a small gradient-map texture, a built-in, no-custom-shader-required feature.
+- **A tilted-down camera** (not top-down orthographic, not first-person) — roughly a 45–60° downward angle, giving the world dimensionality and readable depth without being a full free 3D camera.
+- **Shallow depth of field / tilt-shift blur** — background and foreground slightly blurred, only a "sweet spot" band in sharp focus, which is the single biggest ingredient in making a 3D scene read as a "cute miniature diorama" the way Mo.co-style games do. This is a **post-processing effect**, not something requiring per-asset work.
+- **Bright, saturated, high-contrast flat lighting** and **bold outlines** (optional rim-light/outline pass) rather than moody photorealistic shadows.
+- **Bloom** on bright highlights/particles for a punchy, candy-colored feel.
+
+None of this requires hand-painted pixel-art scenes like the reference images (those images are themselves AI-generated illustrations used as *mood/color-palette* references, not a literal pixel-art target) — it requires **real-time 3D rendering with a toon material and a postprocessing stack**, which is a well-trodden, well-documented path in the Three.js/React ecosystem.
+
+---
+
+## A.2 Engine pivot — supersedes `plan.md` §1.5 and §21
+
+**`[RECOMMENDATION]` Replace Phaser 3 with Three.js via `react-three-fiber` (R3F) + `@react-three/drei` (helper library) + `@react-three/postprocessing` for the world and battle rendering layer.**
+
+| Concern | Phaser (original plan) | Three.js + R3F (revised) |
+|---|---|---|
+| Renders true 3D geometry/depth | No (2D only) | Yes — this is the whole point of the pivot |
+| Toon/cel shading | Not built-in | Built-in: `THREE.MeshToonMaterial` |
+| Tilt-shift/DoF, bloom, vignette | Not applicable (2D) | Built-in via `@react-three/postprocessing`: `<DepthOfField/>`, `<Bloom/>`, `<Vignette/>` — a few lines, no custom shader needed for the MVP look |
+| React integration | Wrapper pattern (§3 of plan.md) | **Even tighter** — R3F *is* React; 3D objects are React components (`<mesh>`, `<Canvas>`), so the React/game boundary from plan.md §3 becomes simpler, not harder |
+| Community/docs for this exact style | N/A (2D engine) | Large, active community specifically doing this "cute stylized 3D" style (Three.js Journey course, Maxime Heckel's toon/Moebius shader writeups, pmndrs ecosystem) |
+| Risk | N/A | **Higher raw complexity than 2D** (3D math, camera framing, model sourcing) — mitigated by using only primitive/low-poly CC0 models and Three.js's *built-in* toon material rather than writing custom shaders (see Risk table §A.7) |
+| Mobile/Android via Capacitor | Works | Works identically — Capacitor wraps the web build regardless of Canvas2D vs WebGL, no change to `plan.md` §12 |
+
+**What does NOT change:** the backend decision (§4, still none), the save system (§13, still localStorage/Zustand), the data model (§5, species/moves/types JSON — completely renderer-agnostic), the gameplay scope numbers (§6), the world design *layout* (§7 — same 2 maps, same grass zone, just built as a small 3D scene instead of a Tiled tilemap), the battle system rules (§9), the trainer card approach (§10 — still plain HTML/CSS, still no image-gen API), the project structure's *separation principle* (§14 — same, just `/game` now contains R3F components instead of Phaser scenes), the task-phase ordering and day-by-day schedule (§15–§16, same phases, same fallback logic), and the MVP cut list (§17, unchanged) and legal audit (§2, unchanged and equally critical — see §A.5 below, the legal risk is *unchanged* by this pivot).
+
+**Why not "keep Phaser and fake it with CSS filters"?** A CSS blur/tilt-shift filter over a flat 2D Phaser canvas can approximate *some* of the look (and remains a legitimate fallback, see §A.7), but it cannot produce actual parallax depth, camera-angle framing, or chunky 3D character silhouettes — the single most identifying trait of the Mo.co/Brawl Stars look. Given the brief's explicit rejection of "much 2D," the real-3D-renderer approach is the correct primary path, with the CSS-filter approach demoted to an explicit fallback if 3D integration stalls (§A.7).
+
+---
+
+## A.3 Revised rendering architecture — supersedes `plan.md` §3, §14
+
+```
+┌─────────────────────────────────────────────┐
+│                 React (TS)                    │
+│  Same as plan.md §3: menus, HUD, dialogue,    │
+│  Pokédex, trainer card, battle command menu   │
+│  — all still plain DOM/CSS, unchanged.        │
+└───────────────┬────────────────────────────────┘
+                │ same Zustand store + eventBus
+                │ from plan.md §3 — UNCHANGED
+                ▼
+┌─────────────────────────────────────────────┐
+│      <Canvas> (react-three-fiber / Three.js)  │
+│  Replaces the Phaser <GameCanvas/> from       │
+│  plan.md. Owns:                               │
+│   - 3D world geometry (ground plane + simple  │
+│     low-poly props: trees, rocks, buildings)  │
+│   - Player + NPC + Pokémon low-poly models    │
+│   - Toon-shaded materials (MeshToonMaterial)  │
+│   - Angled follow-camera (drei's              │
+│     <PerspectiveCamera> or                    │
+│     <OrthographicCamera> + damped follow)     │
+│   - Simple animation via useFrame (bob, spin, │
+│     lunge, squash/stretch) — same procedural  │
+│     philosophy as plan.md §8, just 3D         │
+│   - Postprocessing stack: DepthOfField (tilt- │
+│     shift), Bloom, Vignette                   │
+└─────────────────────────────────────────────┘
+```
+
+Folder structure change (supersedes `plan.md` §14's `/game` subtree only — everything else identical):
+
+```
+  /src
+    /game
+      GameCanvas.tsx        -- <Canvas> wrapper, replaces Phaser's GameCanvas.tsx
+      /scenes
+        OverworldScene.tsx    -- R3F component tree: ground, props, player, camera rig
+        BattleScene.tsx        -- R3F component tree: arena plane, two creature models, fx
+      /entities
+        Player.tsx              -- player 3D model + movement (useFrame-driven)
+        CreatureModel.tsx        -- generic Pokémon-model wrapper (position/animation only;
+                                    swaps in whichever GLB/primitive per speciesId)
+      /systems                  -- movement.ts / encounter.ts / damage.ts / capture.ts
+                                    UNCHANGED from plan.md — these are pure logic functions,
+                                    completely renderer-agnostic, no edits needed
+      /fx
+        Postprocessing.tsx      -- the DepthOfField/Bloom/Vignette stack, one shared component
+      eventBus.ts               -- unchanged from plan.md
+```
+
+**Key point for the coding agent:** `plan.md`'s `systems/damage.ts`, `systems/capture.ts`, `systems/encounter.ts`, the Zustand store, and the entire data model in `plan.md` §5 need **zero changes** — they never referenced Phaser and don't reference Three.js either. Only the rendering layer (`/game/scenes`, `/game/entities`) is rewritten. This is precisely why the pivot is cheap to adopt now, before any of that logic code exists.
+
+---
+
+## A.4 Asset resources for the 3D/toon style — new resources, verified
+
+`[VERIFIED]`
+
+- **Kenney Character Assets** (by Kay Lousberg, published via Kenney) — `https://kenney.itch.io/kenney-character-assets` and `https://www.kaylousberg.com/work/kenney-character-assets` — 4 low-poly rigged character models, 75+ swappable skins, 40 accessories, **17 built-in animations** (idle, walk, run, attack, death, interact, jump, etc.), delivered as FBX + Blender source + Unity package. **License: CC0 / public domain, "suited for unlimited commercial projects."** This is an excellent, directly-usable source for the **player character and generic NPC models** — chunky, rounded, exactly the Brawl-Stars-adjacent silhouette, and it already ships the animations we'd otherwise have to hand-key.
+- **Kenney Nature Kit** — `https://kenney.nl/assets/nature-kit` — 330 low-poly 3D CC0 models (trees, rocks, fences, bridges, plants, terrain pieces) — directly usable for the route/town environment dressing, matching the low-poly aesthetic.
+- **KayKit** asset line (same author as above, "KayKit - Character Pack: Adventurers" etc., listed on itch.io's CC0 collection page `https://itch.io/game-assets/assets-cc0`) — additional CC0 low-poly character/prop packs if more variety is needed than the Kenney Character Assets pack alone provides.
+- **Generic "creature" stand-ins for wild Pokémon models:** `[RECOMMENDATION]` do **not** hunt for existing 3D Pokémon model rips (this is a materially higher legal risk than the 2D sprite question in `plan.md` §2.D — 3D model files are more clearly "derivative works" and are actively targeted by Nintendo's DMCA process on model-sharing sites; treat ripped 3D Pokémon models as **flatly excluded**, harder-line than the 2D sprite caveat). Instead: **build each of the 6–10 wild species as a simple primitive-composition low-poly model** (sphere/capsule/cone bodies, primitive-shape "ears/tails/limbs," toon-shaded in the species' signature color) — this is fast (each creature is 5–15 minutes of primitive assembly in Blender or even directly in Three.js/R3F code as composed `<mesh>` primitives with simple geometries), sidesteps the legal question entirely for the *models* even while the *species names/stats/type-matchups* still come from PokéAPI data per `plan.md` §5, and actually matches the Brawl-Stars-style "cute chunky primitive-based" aesthetic better than a detailed rip would.
+- **Toon shading:** `THREE.MeshToonMaterial` — built into Three.js core, no additional package needed; pair with a 3–4 step gradient-map texture (a tiny 4x1px PNG, trivial to generate) for classic cel-shaded banding.
+- **Postprocessing:** `@react-three/postprocessing` (`https://github.com/pmndrs/react-postprocessing`) — `[VERIFIED]` wraps the underlying `postprocessing` library for R3F; ships ready-made `<DepthOfField/>`, `<Bloom/>`, `<Vignette/>`, `<Noise/>` components usable directly in JSX with no custom GLSL required for the MVP look (custom Sobel-edge outline shaders exist in the ecosystem, per Maxime Heckel's writeups at `https://blog.maximeheckel.com/posts/moebius-style-post-processing/`, but are explicitly a **stretch/polish item**, not required for the core look).
+- **Helper library:** `@react-three/drei` — ships `<OrbitControls>`/camera helpers, `<Environment>` for quick ambient lighting/reflections, `<Sky>`/gradient backgrounds, and loader helpers (`useGLTF`) for the GLB/GLTF model files from the packs above.
+
+---
+
+## A.5 Legal note — unchanged risk profile, restated for the new asset types
+
+Everything in `plan.md` §2 still applies without modification, plus one clarification specific to 3D:
+
+- Kenney Character Assets, Nature Kit, and KayKit packs are CC0 — safe for any use, same category as the Kenney 2D packs in `plan.md` §2.A.
+- The **PokéAPI species/move/type data** (names, stats, matchups) is unaffected by this pivot and still sourced exactly as `plan.md` §5.3 describes.
+- The **visual representation of each wild species** changes from "sourced 2D sprite" (plan.md's original, Category D, private-prototype-only) to "**originally-modeled primitive-based 3D shape, colored/typed according to the species data**" — this is a **safer** legal position than the original plan for the visual asset specifically (an original chunky-primitive model inspired by a data-driven color/type is not the same derivative-work risk as a traced/ripped sprite), while the **species names and Pokédex framing** remain the same Category D consideration as before (still a private/portfolio prototype, still not for public Pokémon-branded distribution, per `plan.md` §2.D). If ever open-sourcing or publishing, this pivot actually makes that *easier*, not harder, since the creature models would already be original.
+
+---
+
+## A.6 Animation strategy — supersedes `plan.md` §8, same philosophy, 3D techniques
+
+Same principle as `plan.md` §8 ("procedural over hand-authored"), re-mapped to 3D:
+
+| Moment | 2D technique (plan.md §8) | 3D equivalent (this addendum) |
+|---|---|---|
+| Idle | subtle scale/frame loop | `useFrame` sine-wave bob on Y position + slight squash/stretch scale |
+| Walk | sprite-sheet frames | leg/limb primitives with a simple rotation oscillation, or (cheap alternative) just a bob + slight tilt in movement direction — full walk-cycle rigging is a **should-have**, a bobbing capsule reads fine for an MVP |
+| Attack lunge | position tween forward/back | identical: `useFrame` or a small tweening lib (`@react-spring/three`, part of the same pmndrs ecosystem as R3F) drives a forward-back position lerp |
+| Hit/damage | tint flash + shake + floating number | material color flash (swap `MeshToonMaterial.color` briefly) + camera shake (jitter the camera position for a few frames) + floating number as an R3F `<Html>` (from drei) or a billboarded sprite/text |
+| Faint | move down + fade | position lerp downward + material `opacity` fade (requires `transparent: true` on the material) |
+| Catch | ball arc + wiggle + particle burst | parabolic position lerp (simple quadratic easing) + rotation wiggle + a small particle system (drei has `<Sparkles>` for cheap particle bursts) |
+| Battle transition | camera fade | full-screen quad fade (a plain React/CSS black overlay div is simplest — cheaper than a 3D fade plane) between scene swaps |
+| Tilt-shift "always on" ambiance | N/A (2D had no equivalent) | `<DepthOfField>` from `@react-three/postprocessing`, tuned once for the whole game, always active — this alone contributes most of the "diorama" feel with zero per-animation work |
+
+**Nothing here requires hand-authored animation clips.** Rigged animations from the Kenney Character Assets pack (walk/idle/attack) are a bonus if time allows (§A.4), but the fallback of pure procedural `useFrame` transforms is sufficient for a convincing MVP, consistent with `plan.md`'s core "lively without hundreds of animations" principle.
+
+---
+
+## A.7 Risk analysis — additions to `plan.md` §18 specific to this pivot
+
+| Risk | Probability | Impact | Mitigation | Fallback |
+|---|---|---|---|---|
+| 3D math/camera framing (angle, follow-damping, field of view) takes longer to get "feeling right" than 2D tile rendering did | Medium-High | Medium (Day 1 slip) | Use `@react-three/drei`'s camera helpers rather than hand-rolling camera math; start from a fixed, non-following camera angle and only add follow-damping once the static framing looks right | Ship with a fixed (non-follow) camera per small scene if follow-cam proves fiddly — still reads as intentional "diorama" framing |
+| Sourcing/building 6–10 primitive creature models eats more time than sourcing 2D sprites did | Medium | Medium | Build creatures as simple composed-primitive React components directly in code (sphere body + cone ears + capsule limbs, colored via the species' type), not in a separate 3D modeling tool — this is scriptable/parametrized (a `getCreatureShape(speciesId)` component) rather than 10 hand-modeled assets | Reuse 2–3 base "body shapes" (quadruped/biped/blob) across all 10 species, varying only color/size/accessory primitive — cuts unique-model count from 10 to 3 |
+| Toon/postprocessing stack performance on low-end mobile (relevant given Android target in `plan.md` §12) | Medium | Medium | Keep polycount low (primitive-composed models, not imported high-detail GLBs), keep postprocessing to DepthOfField+Bloom+Vignette only (skip custom SSAO/outline passes), test on a mid-range Android device early (Day 2-3), not only on Day 5 | Provide a "low-power mode" toggle that disables DepthOfField/Bloom (cheap conditional render) if a target device struggles |
+| React-three-fiber has a steeper API-surface for an AI coding agent than Phaser's more heavily-tutorialed 2D API (per `plan.md` §1.5's original "AI-agent friendliness" ranking, which favored Phaser partly for this reason) | Medium | Medium | Constrain to R3F's most common, best-documented primitives only: `<Canvas>`, `<mesh>`, `useFrame`, `useGLTF`, `drei` camera/environment helpers, `@react-three/postprocessing`'s ready-made effect components — avoid custom shaders/GLSL entirely for the MVP (per §A.4, toon material and DoF/Bloom/Vignette need none) | If R3F integration stalls on Day 1, the CSS-filter-over-Phaser-2D fallback (§A.2) remains available as a lower-fidelity but still-on-brief-enough backstop, using CSS `filter: blur()` gradient masks over a Phaser canvas to fake a partial tilt-shift look without true 3D |
+| Grid-based collision/movement logic (`plan.md` `systems/movement.ts`) was designed with 2D tile coordinates in mind | Low | Low | The pure logic (which tile is walkable, which zone triggers an encounter) is dimension-agnostic — represent the world as the same 2D grid internally, and only the *rendering* maps grid X/Y to 3D X/Z (Y stays as a constant ground-height plus animation bob) — no logic rewrite needed, only a coordinate-mapping function at the render boundary |
+
+---
+
+## A.8 Revised UI/visual style notes — supersedes `plan.md` §11's "CRT/scanline" framing
+
+- Drop the CRT/scanline filter idea from `plan.md` §11 entirely — it was a retro-pixel-era flourish and actively conflicts with the new "clean chunky toon-3D" direction. Do not implement it.
+- Keep Press Start 2P (or a similarly punchy display font) for HUD numbers/headers — a bold, slightly-blocky display font still reads well against a toon-3D background and matches the Brawl-Stars-style bold, chunky UI typography; re-evaluate only if it visually clashes once real screens are up.
+- Dialogue box, HP bars, battle menu, Pokédex, and trainer card **stay exactly as planned in `plan.md` §10/§11** — plain DOM/CSS overlay components. The visual pivot is about the 3D *world/battle rendering layer* underneath them, not the UI chrome, which can stay clean, rounded, colorful (drop any pixel-art borders in favor of soft rounded corners and drop shadows to match the toon-3D world it now sits on top of).
+
+---
+
+## A.9 Net effect on the day-by-day schedule (`plan.md` §16)
+
+No change to which day each *system* is built (world/movement Day 1, encounters/Pokédex Day 2, battle Day 3, polish Day 4, mobile Day 5) — only the rendering technology within Day 1's and Day 3's tasks changes (R3F/Three.js scenes instead of Phaser scenes; primitive-composed creature models instead of sprite files). The **Day 1 fallback** in `plan.md` §16 ("fall back to a hand-coded 2D array grid...") should be read as superseded by: *if R3F/Three.js integration stalls on Day 1, fall back to the CSS-filter-over-Phaser-2D approach from §A.2/§A.7 of this addendum, not back to plain flat 2D,* to preserve the "not much 2D" direction even in the worst case.
