@@ -969,3 +969,453 @@ This ordering satisfies the "prefer one complete pack over assembling many small
 - `plan.md` §2 (License/Legal Audit) stands in full, including the private-prototype framing for anything Pokémon-specific.
 - The visual-direction addendum's engine pivot (Three.js/toon-3D) and its primitive-composed-creature approach are unaffected — this amendment's pack search is about **environment/tile assets**, which remain relevant background/prop dressing regardless of whether creatures themselves are rendered as 2D sprites or 3D primitives.
 - No search was directed at, and none of the packs above are, ripped or derived Pokémon-game assets (GBA/DS tile rips, RPG Maker "Essentials" graphics, or similar) — those remain excluded per the standing legal audit, and the strong CC0 alternative found (Ninja Adventure) makes that exclusion cost-free rather than a real trade-off.
+
+
+
+
+# VISUAL_DIRECTION_RESEARCH.md
+**Type:** Research & implementation specification (NOT an implementation task — no code was changed to produce this document)
+**Audience:** A coding agent that will implement changes in a later task
+**Research basis:** `PLAN.md` (as uploaded, including its "ADDENDUM — VISUAL DIRECTION PIVOT" and "AMENDMENT — ASSET PIPELINE ARCHITECTURE" sections), the three attached reference images (a pixel-art anime browser-wallpaper scene, and two classic Pokémon Gen-V-style overworld Squirtle sprites — front-facing static + animated walk), and web research conducted for this task (sources at the end).
+
+> **Important caveat up front:** this task did not include the actual current codebase or screenshots of what the live game currently renders — only `PLAN.md` and the three style-reference images. Section 12 ("current implementation — root causes") is therefore built from a **documented paper trail**, not a visual code audit: `PLAN.md`'s own "ADDENDUM — VISUAL DIRECTION PIVOT" section explicitly specifies the rendering approach that is almost certainly producing the Minecraft/Roblox look you're seeing (see §12 for the exact mechanism). Everything else — the target style, technique research, resource list, roadmap — is fully researched and actionable regardless. If you want §12 double-checked against actual screenshots or the real source tree, that's a fast follow-up, not a blocker to starting implementation.
+
+---
+
+## 1. THE ACTUAL VISUAL TARGET (restated precisely)
+
+Based on the reference images and your brief, the target is the style the games industry calls **HD-2D**: hand/pixel-drawn 2D sprites (characters, creatures, some props) rendered *inside* a real 3D low-poly environment, with modern lighting, shadow, and depth-of-field. This is not a style you have to invent from scratch — it's a well-documented, named technique with a direct lineage:
+
+- **Octopath Traveler / Octopath Traveler II / Triangle Strategy / Live A Live remake / Dragon Quest III HD-2D Remake** (Square Enix, developed with Acquire) coined and popularized the term. Their own description of the goal: "fusing 2D pixels together with a 3D environment"<cite index="2-1">so we came up with the concept of fusing 2D pixels together with a 3D environment in HD-2D</cite>, motivated by wanting pixel art that felt "new and fresh" rather than "just plain old and outdated" when combined with modern 3D backgrounds.
+- The technique, per Wikipedia's summary, is <cite index="5-1">a 2.5D style combining pixel character sprites with 3D environments, enhanced with detailed textures and dynamic shading enabled by modern engines, where backgrounds are entirely rendered in 3D with complex camerawork</cite> — as opposed to older "2D sprite on pre-rendered flat background" approaches.
+- The reason it reads as a believable diorama rather than "cardboard cutout in a box" comes down to two things the coverage repeatedly calls out: **dynamic lighting/shadow** interacting with the pixel sprites (a building's shadow actually falls correctly, a lantern's light dynamically changes as a character explores<cite index="7-1">shadows dynamically grow and shrink as the character explores the catacombs with a lantern in hand, and a building's exterior accurately reflects the size of its interior</cite>), and a **tilt-shift / shallow depth-of-field camera** that blurs foreground and background so only a "sweet spot" band stays sharp — described as a <cite index="8-1">tilt-shift camera setup with a wide field of view that flattens the viewpoint while keeping depth, solving the common problem of showing 2D sprites in 3D spaces</cite>. The billboarding itself is handled by making sprites always face the camera while still casting/receiving real shadows: <cite index="8-1">a sophisticated billboarding technique that makes sprites face the camera while casting proper shadows, creating a unified visual experience where pixel art characters blend naturally with their surroundings</cite>.
+- This is not a hypothetical mashup for a monster-RPG specifically — it's already a well-known fan fantasy. Kotaku's coverage of fan art applying this exact treatment to Pokémon describes it as <cite index="6-1">that joyful fusion of pixel art with modern 3D rendering that creates a delicate, dreamy atmosphere</cite>, and frames it as literally "Pokémon in HD-2D." That is, almost word for word, your brief's "monster-RPG pixel-art anime world with convincing 3D depth."
+
+**Conclusion: HD-2D is the correct name and reference point for your target style, and the camera angle you already have (tilted-down 3/4 view) is the right starting point — the pivot needed is in the *rendering technique underneath the camera*, not the camera itself, exactly as your brief suspected.**
+
+Note one honest caveat: the reference images you attached are pure hand-drawn 2D pixel art (a wallpaper illustration, and two flat overworld sprites), not screenshots of an actual HD-2D 3D engine. They're excellent references for **character/creature sprite style, palette, and proportions** — but the "3D depth, camera reveals hidden geometry" requirement in your brief has to be validated against real HD-2D games (Octopath Traveler, Triangle Strategy) and 2.5D indie references (below), not against the attached images alone, since the attached images don't themselves demonstrate 3D geometry.
+
+---
+
+## 2. REFERENCE IMAGE ANALYSIS
+
+### Image 1 — pixel-art anime wallpaper scene (Misty quote, cyclist, Tangela, ocean/city backdrop)
+- **Pixel density:** small, tight clusters — individual pixels read as roughly 2–3px per "unit" of detail at the source resolution, then likely displayed at 1–2x. Facial features (eyes, mouth) are built from single-pixel accents, not blocky regions.
+- **Character proportions:** anime-correct — roughly 5–6 heads tall, small head-to-body ratio, defined limbs, visible clothing folds, hair rendered as few large shapes with 2–3 shade bands, not per-strand detail.
+- **Color palette:** desaturated-but-warm overall (muted teal sky, warm tan sun, olive greens), with a small number of saturated accent colors (red bike frame, pink Jigglypuff) used sparingly to direct the eye. Not neon, not grayscale — controlled mid-contrast.
+- **Shading technique:** soft dithered gradients in large background elements (sky, water, sun) using visible but fine dither patterns rather than smooth gradients or flat cel-shading; character shading uses 2–3 flat bands per surface (a "soft-cel" pixel technique, not full toon banding).
+- **Environment style:** layered parallax-style background (distant city skyline, mid-ground water/creature, foreground fence/grass), high object density in the frame, "one continuous scene" composition rather than tiled repetition.
+- **Depth cues:** achieved entirely through layering, scale, and atmospheric desaturation of distant objects — not real 3D geometry (this is a flat illustration). This is useful for palette/mood, not for the "camera reveals hidden geometry" requirement.
+- **Camera perspective:** side-on / cinematic illustration angle — not representative of the overworld gameplay camera you need (which should stay tilted-down 3/4, per your brief).
+
+### Images 2–3 — Squirtle sprites (static front-facing PNG + animated walk GIF)
+- These are the classic **Pokémon Black/White-era overworld sprite** style: small (roughly 32–48px working canvas), chunky-but-clean outlines, minimal internal shading (2 tones per color region), highly readable silhouette even at tiny size.
+- **This is the correct reference for your creature/character sprite target** — small, clean, anime-flavored, *not* photorealistic, *not* blocky/voxel. It directly contradicts a voxel or primitive-3D-shape approach to creature design (see §12 for why your current implementation likely drifted toward exactly that).
+- The animated GIF demonstrates a **2–3 frame walk cycle** — a bob/step motion, not a full run-cycle skeleton animation. This is achievable as a small sprite-sheet per direction, which keeps asset scope small (matches your `PLAN.md`'s "ruthlessly small MVP scope" §6 philosophy).
+
+### Extracted shared visual rules (the actual style guide, not "copy one image")
+1. Small, tight pixel clusters; avoid large flat color blocks bigger than a few pixels.
+2. Anime-correct body proportions for characters (not oversized heads / boxy torsos).
+3. 2–3 shade bands per surface — some soft dithering allowed in large background gradients, cleaner flat-to-2-tone shading on characters/creatures.
+4. Controlled, desaturated-but-warm palettes with sparing saturated accents.
+5. Readable silhouette is prioritized over internal detail at small size — this is the same design principle real Pokémon overworld sprites use and the same principle HD-2D games use for their pixel characters.
+6. Depth/atmosphere comes from layering + lighting + selective blur (tilt-shift/DOF) in a 3D-capable pipeline — not from the sprites being flat billboards with no shadow interaction.
+
+---
+
+## 3. CURRENT IMPLEMENTATION — ROOT CAUSES (from `PLAN.md`'s own documented pivot)
+
+`PLAN.md` contains **three chronological layers**, and the second layer is almost certainly the direct cause of the "Minecraft/Roblox/voxel" look:
+
+**Layer 1 — original plan (§0–§20):** Phaser 3, pure 2D, Kenney/Ninja-Adventure CC0 pixel tilesets, PokeAPI sprite data. This layer, if it had shipped as-is, would look like a normal 2D pixel-art Pokémon-style game — not Minecraft-like at all, because it never had 3D geometry.
+
+**Layer 2 — "ADDENDUM — VISUAL DIRECTION PIVOT":** this is the layer that changed everything and is the root cause. It explicitly:
+- **Replaced Phaser (2D) with Three.js via react-three-fiber (3D).** This part is *correct and should be kept* — you do need real 3D geometry for the depth requirement in your new brief.
+- Targeted a **"stylized, chunky, semi-3D diorama" look modeled on Mo.co and Brawl Stars** — i.e., **toon-shaded, rounded, chunky low-poly 3D models**, explicitly *not* pixel art. The addendum is explicit about this: it frames the goal as real 3D low-poly geometry with `MeshToonMaterial` flat-color-band shading, not 2D pixel sprites.
+- Specified that **wild creatures be built as "primitive-composition low-poly models"** — i.e., spheres, cones, capsules assembled directly in code (a "quadruped/biped/blob" base shape with primitive "ears/tails/limbs" swapped by color/type) — explicitly to sidestep the legal risk of ripping 3D Pokémon models. **This primitive-shape-assembly technique is, almost by definition, indistinguishable from "crude voxel/blocky people" and "primitive pixel boxes" at a glance** — it is not a pixel-art technique, it's a low-poly-primitive technique, and it is very easy for it to visually read as "voxel game" / "Roblox" even though the addendum's stated inspiration (Brawl Stars) is a much more refined art style than raw spheres-and-cones would produce without a skilled 3D artist doing significant additional sculpting, texturing, and rigging work that a 5–15-minute-per-creature primitive-assembly approach explicitly does not budget time for.
+- Recommended trees from **Kenney's "Nature Kit"** — a low-poly (not pixel-art) 3D asset pack. Low-poly Kenney-style trees, when combined with a primitive-composed low-poly character and a toon shader, is visually adjacent to exactly the "large-pixel retro / blocky" look your brief is rejecting, even though technically it's "low-poly 3D," not "voxel" — the visual result (large flat faces, few polygons, blocky silhouettes, saturated flat colors with no fine detail) reads to a viewer as extremely similar to Minecraft/Roblox-style low-poly-primitive worlds, especially at close camera distance.
+- Recommended **billboarded floating-number UI text** for damage numbers, and describes trees/houses only at the "asset pack" level without a specified polycount, silhouette-detail, or texture-resolution target — leaving significant room for "primitive-shape default" results if an agent implements literally from the addendum's primitive-composition instruction.
+
+**Layer 3 — "AMENDMENT — ASSET PIPELINE ARCHITECTURE":** adds a swappable-asset-registry pattern (good, keep it) and searches for more complete 2D CC0 tile packs (Ninja Adventure, etc.) — notably, this layer's own closing line explicitly says it does *not* change or override the Layer-2 3D/toon pivot; it treats the 2D packs as "background/prop dressing regardless of whether creatures themselves are rendered as 2D sprites or 3D primitives," i.e., it left the primitive-creature approach in place.
+
+### Diagnosis, by category
+
+| Symptom in your brief | Root cause per `PLAN.md` | Category |
+|---|---|---|
+| Characters look like "blocky robots / oversized heads / crude voxel people / primitive pixel boxes" | Layer 2's "primitive-composition" creature/character spec (sphere/cone/capsule assembly) — this is a low-poly-primitive technique, not a pixel-art or refined-anime-model technique, and is the single most direct explanation for a Minecraft/Roblox impression | **(C) Fundamentally incompatible with target — must be replaced**, not tuned |
+| Trees are "2D billboard planes" | The addendum's animation table treats billboarding as the default technique for floating UI text and doesn't specify real tree geometry; Kenney Nature Kit trees (if used well) are actually real 3D meshes, so this symptom suggests either billboarded placeholder planes were used instead of the Nature Kit's actual mesh trees, or a custom quick-and-dirty billboard was substituted during implementation | **(A) Fixable incrementally** if Nature Kit (or better) meshes are actually wired in; **(C)** if literal flat planes are the current approach and need real geometry from scratch |
+| Houses "glitching," look primitive | Not explicitly specified in the addendum beyond "environment dressing" — likely built ad hoc without depth-sorting/collision/occlusion rules being defined anywhere in `PLAN.md` (no section addresses render order, z-fighting, or transparent-object sorting for 3D houses) | **(A) Fixable incrementally** — this is a missing-specification gap, not an architectural dead end; Three.js/R3F handles this correctly out of the box once configured properly (see §7) |
+| Water looks like "a blue wall / flat rectangle / broken geometry" | Same gap — `PLAN.md` never specifies a water technique at all in either the original or the addendum; a flat colored plane with no shader, no transparency depth-sort configuration, and no shoreline handling is the default naive Three.js result and matches the symptom exactly | **(A) Fixable incrementally** with a defined technique (see §7) |
+| Directional animation is "wrong" (wrong side shown moving up/down) | `PLAN.md`'s animation table (§8/Layer 2's equivalent) never specifies a facing-direction-to-sprite/model mapping at all — it describes damage-flash/shake/particle effects but not locomotion-direction visuals. This is a genuine spec gap, not a wrong decision that needs undoing | **(A) Fixable incrementally** — needs a new, explicit spec (see §5) |
+| "Every iteration changes the style" / inconsistency | Three sequential documents (original → addendum → amendment) each changed the rendering target (2D pixel → chunky toon 3D primitives → "either 2D or 3D creatures, doesn't matter") without a single locked-down style guide or acceptance-criteria doc — this document is meant to be that lock-down | **(A) Process fix**, not a technical one |
+
+### The core recommendation arising from this diagnosis
+**Keep** the Layer 2 decision to use Three.js/react-three-fiber for real 3D geometry (trees, houses, water, terrain) — this part of the pivot was correct and is required for your "objects should reveal hidden geometry as camera moves" requirement.
+**Reverse** the Layer 2 decision to render characters/creatures as toon-shaded primitive-composed 3D shapes. **Replace it with 2D pixel-art sprites (matching the Squirtle reference images) billboarded inside the 3D scene** — i.e., pivot from "Brawl Stars chunky 3D" to "Octopath Traveler HD-2D." This single change is the most important recommendation in this document, because it is the one that directly explains and fixes the "looks like Minecraft/Roblox" complaint while fully preserving the "real 3D depth" requirement (the environment stays 3D; only the creature/character *rendering technique* changes from low-poly-primitive-mesh to billboarded-pixel-sprite).
+
+---
+
+## 4. RECOMMENDED APPROACH (concrete architecture)
+
+**Rendering:** Three.js via `react-three-fiber` (R3F) + `@react-three/drei` + `@react-three/postprocessing` — keep this from `PLAN.md`'s addendum. Render at a **reduced internal resolution via a WebGLRenderTarget** (e.g. render at 1/2–1/4 of the display resolution, or a fixed low internal resolution such as 480×270 scaled up), then upscale with `THREE.NearestFilter` to produce a consistent, deliberate pixel density across every 3D object in the scene — this is the standard technique confirmed in Three.js community write-ups: <cite index="29-1">using a WebGLRenderTarget at a reduced resolution with NearestFilter magnification, then applying additional shader effects on top of the render-to-texture result, is the standard way to get a consistent pixelated look from a Three.js scene</cite>. This solves your §8 "pixel density consistency across characters/trees/houses/ground/water" requirement in one central place instead of per-asset.
+
+**Camera:** Keep the existing tilted-down 3/4 angle (per your brief — do not change it). Add:
+- A narrow-ish FOV perspective camera (or orthographic, see trade-off below) angled ~45–60° downward, matching the HD-2D convention.
+- A **depth-of-field post-process pass** (`@react-three/postprocessing`'s `<DepthOfField>`) with a shallow focal range, blurring near/far ground while keeping the player character band sharp — this is the single highest-leverage effect for making the scene read as a "believable diorama" rather than a flat game world, per the HD-2D coverage above.
+- Bring the camera slightly closer, as your brief requests, once DOF is in — closer framing makes the DOF's "miniature" effect read more strongly.
+
+**Ground:** Real 3D plane geometry (not literally flat — very slight per-tile height variance is optional polish, not required) with a **tileable, hand-authored pixel-art texture atlas** (grass/dirt/path/edge-transition tiles), sampled with `NearestFilter`/no mipmapping-blur, projected via planar UVs. Source tiles from a curated pixel-art overworld tileset (see §10) rather than procedural noise — this directly satisfies your §6 "intentional, not randomly generated" requirement.
+
+**Water:** A separate, slightly-recessed 3D plane (real depth below the shoreline geometry, not a coplanar decal) with:
+- A **scrolling/animated pixel-art water texture** (2–4 frame hand-drawn ripple animation, looped, sampled with `NearestFilter` to preserve pixel art quality) — the low-tech, framerate-cheap, pixel-art-correct equivalent of a UV-scroll shader.
+- Alternatively/additionally, a lightweight custom `ShaderMaterial` doing UV distortion (sine-wave offset sampling) for a subtler animated-surface look, layered under the pixel-art texture rather than replacing it, if a shinier "shader water" look is wanted later — but the pixel-art animated-texture approach should be the MVP baseline since it's simpler and matches the target aesthetic better than a glossy realtime shader would.
+- A distinct **shoreline tile transition** (grass→sand→water tiles authored as actual transition art, not a hard color cut) to solve the "blue wall" symptom directly.
+- Correct **transparency render order**: water material's `depthWrite` and render order configured explicitly so it never z-fights with the ground plane beneath it or house walls behind it (this is the most common cause of "flickering/blue wall" artifacts in Three.js scenes with naive transparent planes).
+
+**Trees / environment props:** Real 3D low-poly meshes — a trunk mesh (a handful of cylinder/tapered segments) plus a foliage volume, textured with a **pixel-art bark/leaf texture** rather than a smooth toon-shaded solid color. This matches the "middle complexity" approach documented as standard practice: <cite index="25-1">a middle-complexity tree is built from a trunk mesh with a foliage mass made of alpha-textured planes, each representing a cluster of leaves</cite> — i.e., use a **small number of intersecting alpha-cutout foliage planes arranged in 3D around a real trunk mesh** ("billboard cloud" foliage), not a single flat 2D plane and not a fully-modeled leaf-by-leaf mesh. This is exactly the middle ground your brief is asking for: real 3D presence (the crossed/clustered planes occupy volume and reveal different silhouettes as the camera orbits) without the modeling cost of literal per-leaf geometry.
+
+**Houses:** Real boxy-but-detailed 3D geometry: separate wall, roof, and trim meshes (not a single textured cube), pixel-art-texture-mapped (not flat toon color), each with correctly assigned normals so lighting reads walls vs. roof distinctly. Explicit render-order/depth-testing configuration (Three.js defaults handle opaque objects correctly via the depth buffer automatically — most "glitching" in naive implementations comes from mixing transparent materials, like glass windows, into the same draw call ordering as opaque walls without setting `transparent`/`depthWrite` correctly, or from overlapping geometry with coincident faces causing z-fighting). Door/window cutouts as actual geometry or alpha-cutout texture holes with a proper interior-dark backing plane, not a flat texture painted on with no depth.
+
+**Characters/NPCs/creatures:** **2D pixel-art sprites, billboarded** (always facing the camera — R3F/`drei` provides a `<Billboard>` helper component for exactly this) with a **sprite-sheet-per-direction system** (see §5), NOT primitive-composed 3D meshes. This is the single biggest change from `PLAN.md`'s addendum and the direct fix for the "blocky robot/voxel person" complaint. Cast a real drop shadow onto the ground plane (a simple blob-shadow decal or a proper `THREE.DirectionalLight` shadow map with the billboard's alpha-cutout shape) so the character visually "sits in" the 3D scene rather than floating.
+
+**Animation:** Sprite-sheet frame-swapping driven by movement-vector-to-facing-direction logic (§5), not skeletal 3D animation — consistent with the reference sprites and with keeping the character pipeline simple/fast to produce, per your project's small-scope philosophy.
+
+**Depth sorting:** Because characters/creatures are billboarded sprites (transparent alpha-cutout quads) inside a scene with opaque 3D geometry, correct results require: (1) opaque objects (ground, houses, tree trunks) using the standard Z-buffer with `depthTest`/`depthWrite` both true (Three.js default — this "just works" for opaque meshes), and (2) transparent objects (billboarded characters, foliage alpha planes, water) sorted correctly relative to each other, which Three.js handles automatically for most cases via per-object distance-to-camera sorting, with the known limitation that intersecting/overlapping transparent objects (e.g. a character standing inside tall grass) can still show sorting artifacts — mitigate by keeping transparent geometry simple (single quads, not overlapping alpha-planes for the same object) and by explicitly setting `renderOrder` on any object pairs that are known to need a fixed draw order (e.g., always draw the ground before water, always draw water before the character standing near shore).
+
+**Lighting:** A single soft directional "sun" light (for consistent shadow direction across the whole scene) plus ambient/hemisphere fill light to avoid pure-black shadow areas — avoid full toon/cel-shaded `MeshToonMaterial` banding on the *environment* geometry (that was Layer 2's "chunky Brawl Stars" look); regular `MeshStandardMaterial`/`MeshLambertMaterial` with pixel-art textures and soft real-time shadows better matches the HD-2D references, since HD-2D deliberately keeps its 3D backgrounds naturalistic/painterly rather than flat-toon-banded, reserving the "flat 2D" read purely for the character sprites themselves.
+
+**Pixel rendering:** Central render-target-based pixelation (described above) applied to the whole composited frame, so every element — 3D geometry, billboarded sprites, water — shares one consistent pixel density, directly satisfying your §8/§9 consistency requirements. Sprite textures themselves should also be authored at your target native pixel resolution (not a photo/painting downsampled) and sampled with `NearestFilter` so they don't get double-blurred by two different pixelation passes.
+
+**Asset pipeline:** Keep `PLAN.md`'s asset-registry pattern (§B.1, `ASSET_REGISTRY`/`resolveAsset()`) — it's a good, renderer-agnostic pattern and needs no change, just extend it to include the new pixel-art sprite-sheet and 3D-mesh-with-pixel-texture entries.
+
+**Animation pipeline:** A small per-character/creature manifest describing: sprite-sheet path, frame size, frame count per direction, frame duration, and which of the 8 directions map to which sprite rows (some packs only ship 4-5 directions and mirror for the rest — see §5).
+
+**Performance:** Low internal render resolution (the pixelation technique) is itself a major performance win on top of being an art requirement — you're intentionally rendering fewer real pixels. Keep polycounts on trees/houses low (a tree with ~6–10 intersecting foliage planes plus a simple trunk, a house as ~6–12 boxes/planes) — this is well within budget for a small handful of on-screen objects on mobile WebGL, consistent with `PLAN.md`'s existing Android/Capacitor target and its own performance risk mitigation notes (§16 risk table: keep maps small, keep postprocessing to a small fixed set of passes).
+
+### How these systems interact
+The render-target pixelation pass wraps *everything* (ground, water, trees, houses, billboarded sprites) uniformly, so no single asset category needs its own bespoke "make it pixel-art" trick — pixel-art textures on 3D geo plus a shared pixelation pass plus `NearestFilter` sampling is sufficient. The DOF post-process sits on top of that pixelated render and is what turns "a 3D scene with pixel textures" into "a believable HD-2D diorama" — it's the piece most likely to be missing if a naive implementation still "looks video-gamey" rather than atmospheric even after fixing geometry and textures.
+
+---
+
+## 5. CHARACTER / DIRECTIONAL ANIMATION SYSTEM (detailed spec)
+
+### Recommendation: **8-direction pixel-art sprite sheets on a billboarded quad**, not 3D skeletal animation.
+
+Rationale: your reference images are 2D sprites; a full 3D character model with directional skeletal animation is a much larger asset-production and rigging effort than sprite-sheet swapping, and doesn't match your visual references at all. This also matches how the actual HD-2D games work — their characters *are* 2D pixel sprites, billboarded in 3D space, not 3D character models.
+
+Compare the four options your brief lists:
+| Option | Verdict |
+|---|---|
+| **A. 8-direction sprites** | **Recommended.** Matches references, low production cost, well-documented pattern (RPG Maker's "diagonal movement" plugins, LPC character sheets, itch.io "8-direction" sprite packs all implement exactly this). |
+| B. 8-direction 3D animation | Rejected for this project — high production cost (modeling + rigging + 8-directional walk cycles per creature), contradicts the pixel-art reference images, and is the *closer-to-Roblox* direction, not further from it. |
+| C. 4-direction sprites with interpolation | Workable fallback if 8-direction art can't be sourced/authored in time, but diagonal movement will look subtly "off" (character faces a cardinal direction while visually moving diagonally) — acceptable only as a time-boxed MVP compromise, not the target. |
+| D. Other (e.g., 2D sprite rotated/skewed to fake diagonals) | Rejected — this is explicitly what your brief says NOT to do ("do not simply rotate a 2D sprite"); rotating a front-facing 2D sprite to face a diagonal produces a visibly wrong, tilted-flat-image artifact, not a new viewing angle. |
+
+### Direction mapping (movement vector → facing → animation)
+1. **Input/velocity → movement vector.** Compute the player's (or NPC's) normalized movement vector `(dx, dy)` each frame from input or pathing.
+2. **Movement vector → 1-of-8 facing direction.** Use `atan2(dy, dx)` (in world/grid space, accounting for your grid's axis convention), then bucket the resulting angle into 8 45°-wide sectors: N, NE, E, SE, S, SW, W, NW. This is the same math RPG Maker diagonal-movement plugins use internally, just generalized from their 4-direction default: <cite index="42-1">RPG Maker uses numbered directions where, on a numpad-style layout, 1 is down-left, 2 is down, 3 is down-right, 4 is left, 6 is right, 7 is up-left, 8 is up, and 9 is up-right</cite> — i.e., exactly the 8-sector bucketing this project needs, just renamed to compass directions.
+3. **Facing direction → sprite row/sheet selection.** Maintain a manifest per character/creature: which sprite-sheet row (or which sub-sheet, if diagonals are stored separately from orthogonal directions) corresponds to each of the 8 directions. Classic Japanese RPG-engine sprite sheets historically shipped only orthogonal directions and derived diagonals by combining/mirroring; if your sourced or authored sprite packs only include 4–5 base directions, mirror horizontally for the missing left/right pair and reuse the closest diagonal (SE≈S+E blend, i.e., pick one of the two orthogonal sprites consistently, or author true diagonals if time allows) — this is explicitly supported as a valid simplification: <cite index="41-1">sprite sets can include either full eight-direction turnarounds or five-direction sets designed to be flipped to produce all eight</cite>.
+4. **Animation frame selection.** Within the selected direction's row, advance through N walk frames on a fixed timer while velocity is nonzero; freeze on the idle frame (typically frame 0 or a dedicated idle frame) when velocity is zero. Keep the last-known facing direction when idle (do not reset to a default "south" idle) — this is the single most common "direction is wrong" bug: idle state must preserve facing, not reset it.
+5. **Idle orientation.** On stopping, hold the current direction's idle frame; do not interpolate back to a neutral pose.
+6. **Transition between directions.** Snap immediately on direction-bucket change (no cross-fade/blend needed between 2D sprite frames — that's a 3D-animation concept that doesn't apply to sprite swapping); only the *walk-frame advancement* needs smooth timing, not the direction switch itself.
+
+### The specific bug pattern your brief describes ("moving up shows wrong side")
+This is the classic symptom of one of two implementation errors, both worth explicitly checking for in the current code:
+- **Axis/sign confusion:** world "up" (decreasing Y or increasing Z, depending on your coordinate convention) being mapped to the sprite sheet's "down/front" row instead of "up/back" row — i.e., a Y-axis sign flip between your movement code and your sprite-row lookup table.
+- **Sheet indexing offset:** sprite sheets that store rows in a different order than the lookup table assumes (e.g., sheet row order is Down/Left/Right/Up but the code assumes Up/Down/Left/Right) — a one-off indexing mismatch that silently produces "backwards" behavior only on some directions, matching your description of it being wrong specifically for vertical movement.
+
+### 8-direction sprite sheet layout recommendation
+- Grid layout: one row per direction (8 rows) × N columns for walk-cycle frames (2–4 frames matches your Squirtle GIF reference) + 1 idle frame per row (can reuse walk-frame 0).
+- Frame size: pick one fixed size for all characters/creatures in the game (e.g. 32×32 or 48×48px source art) so the asset registry and animation code never need per-entity special-casing.
+- Store as a single PNG spritesheet + a small JSON manifest (frame width/height, frame counts, direction-to-row mapping) — this is the standard pattern used by essentially every 2D engine's sprite-sheet animation system and by the itch.io "8-direction" packs referenced in §10.
+
+---
+
+## 6. TREES / ENVIRONMENT OBJECTS (detailed spec)
+
+**Technique: real 3D mesh (trunk) + intersecting alpha-cutout foliage planes ("billboard cloud" foliage), not a single flat billboard.**
+
+This directly answers your brief's list of options:
+- ❌ Low-poly 3D models + smooth toon textures alone → this was Layer 2's approach and is what likely caused the Minecraft-adjacent look when foliage is represented as a few large flat-shaded polygon blobs.
+- ❌ Crossed planes / impostors *as the sole technique for every tree at every distance* → acceptable for background/distant trees only (a standard LOD/optimization technique — impostors exist specifically because <cite index="24-1">billboards have been the quintessential optimization method for creating distant foliage LODs, maintaining intricate detail while using just one or two quads</cite> — but distant-LOD impostors are not meant to be the *primary, close-up* representation of trees the player walks right next to, which is what your brief is complaining about ("basically 2D billboard planes").
+- ❌ Generic Minecraft-style cubes → explicitly rejected by your brief; also just wrong for a tree's actual silhouette.
+- ✅ **Trunk mesh (a short tapered cylinder or a few stacked cylinder segments) + a cluster of intersecting alpha-textured foliage planes arranged around/above the trunk in 3D**, each plane textured with a pixel-art leaf-cluster texture (not a smooth toon material). This is exactly the documented "middle complexity" approach: <cite index="25-1">a trunk mesh has a foliage mass made of little alpha-textured planes, each representing a leaf or twig cluster</cite> rather than either a single flat plane or a fully-modeled leaf-by-leaf mesh.
+- The foliage planes should be arranged **non-coplanar** (crossed/staggered, not all facing one direction) specifically so that camera movement reveals different silhouettes and the tree doesn't "flip" to a flat card from certain angles — a true "crossed billboard cloud," as documented: <cite index="20-1">the simplest billboard cloud imposter is two quads crossed with the tree rendered from two perspectives</cite>, extendable to more planes for a fuller silhouette.
+- This is inexpensive (a handful of quads per tree, well within mobile WebGL budget) while genuinely satisfying "camera movement reveals different sides/hidden geometry."
+
+---
+
+## 7. HOUSES / BUILDINGS (detailed spec)
+
+**Root-cause categories for "glitching":**
+- **Z-fighting:** two coincident/near-coincident opaque faces (e.g., a decorative trim plane placed exactly flush with a wall face) fighting for which renders on top, flickering per-frame. Fix: offset decorative geometry by a small but real distance from the base wall, or model trim as part of the same mesh rather than a separate coincident plane.
+- **Incorrect transparency handling:** windows/glass using a transparent material without `depthWrite: false` and correct `renderOrder`, causing them to occlude or fail to occlude interior geometry unpredictably as the camera moves. Fix: explicit Three.js transparency configuration (opaque walls default-sorted by depth buffer; transparent windows/glass forced to render after opaque geometry with `depthWrite: false`).
+- **Missing/incorrect face normals or backface culling:** a wall authored with inverted normals will vanish or render black from the "wrong" side as the camera orbits — reads as "glitching" exactly as described. Fix: verify normals point outward on every wall/roof face; only disable backface culling deliberately (e.g., for thin foliage cards where you want both sides visible), never for solid walls.
+- **Collision boundaries not matching visual geometry:** if the walkable-area collider is a simple bounding box but the visual mesh has an irregular footprint (a porch overhang, an angled roof edge), the player can appear to visually clip into or float outside the building — this reads as "glitching" even though it's a collision/visual mismatch, not a rendering bug. Fix: author collision as a simplified 2D footprint polygon matching the building's actual ground-level walls, independent of (but aligned to) the visual mesh's real geometry.
+- **Render order / layering with the ground and other props:** if houses aren't explicitly given a "core solid geometry" role (i.e., if for example a house was originally represented as a flat sprite billboard "faked" as a building, as your brief's Minecraft/Roblox concern would suggest), then any 3D character walking near or behind it will sort incorrectly relative to its silhouette. Fix: houses must be real opaque 3D meshes (see §4) precisely so the Z-buffer handles occlusion automatically and correctly — this eliminates the entire category of "layer ordering" bugs simple 2D billboard buildings are prone to.
+
+**Construction recommendation:** separate meshes for walls, roof, and trim/door/window frame (not one monolithic textured box) so that lighting correctly differentiates each surface's orientation, pixel-art wall/roof textures tiled or mapped per-face (not one stretched texture across the whole building), and door/window openings modeled as actual geometric cutouts (or alpha-cutout texture holes backed by a dark interior plane) rather than flat texture decals with no depth — this is what will make buildings read as solid structures instead of "textured boxes" even at your target's more painterly-pixel style.
+
+---
+
+## 8. WATER (detailed spec)
+
+Techniques evaluated:
+
+| Technique | Verdict for this project |
+|---|---|
+| Fully custom GLSL shader water (Gerstner waves, real-time reflections) | Overkill — high implementation risk, expensive on mobile WebGL, and a shinier realism than fits an HD-2D pixel-art target. |
+| **Animated pixel-art texture (2–4 hand-drawn ripple frames, looped) on a real, slightly-recessed 3D plane** | **Recommended baseline.** Cheap, mobile-safe, matches the pixel-art aesthetic directly (no risk of "shiny 3D water inside a pixel-art world" mismatch), trivially avoids z-fighting if the plane is placed at a real lower height than the shore. |
+| Lightweight custom `ShaderMaterial` with UV sine-distortion sampling a static or animated texture | Optional enhancement layered on top of the above if a subtler "surface movement" look is wanted beyond frame-swapping — still cheap, still compatible with the pixel-art texture. |
+| Vertex displacement (physically moving vertices for waves) | Not necessary at this camera distance/angle for a small RPG water feature — adds complexity without a proportional visual payoff at this art scale. |
+
+**Why the current "blue wall/rectangle/broken geometry" symptom happens (and how the above fixes it):**
+- A flat, un-textured, un-recessed colored plane at the same height as the surrounding ground reads exactly as "a blue rectangle" — because that's literally what it is. Giving water **real depth** (a plane placed measurably below the shoreline plane, with a visible bank/edge mesh connecting the two heights) immediately fixes the "flat wall" impression on its own, independent of any shader work.
+- **Shoreline transition tiles** (grass → wet-sand → water, authored as real transition art in the tileset, not a hard cut) fix the "no clear shoreline" complaint directly — this is a tileset-authoring task, not a code/shader task (see §10 for sourcing).
+- **Explicit transparency/z-order configuration** (water's material given a defined `renderOrder` after opaque ground/props, `depthWrite` set appropriately) eliminates z-fighting between the water plane and the ground/bank geometry beneath or beside it — the most common cause of "flickering/broken layers."
+- **Collision** should treat water as a distinct walkability zone (blocked or slowed, matching your existing grid-based collision system per `PLAN.md`'s note that movement/collision logic is dimension-agnostic and only needs a coordinate-mapping function at the render boundary) — no changes needed to the underlying collision *logic*, only to which tiles are flagged water in your grid data.
+
+---
+
+## 9. GROUND TEXTURES (detailed spec)
+
+- Use a **hand-authored pixel-art tile atlas** (grass base + variant tiles + dirt/path tiles + explicit edge-transition tiles + a small number of flower/detail overlay tiles), not procedural noise generation — this is a sourcing/authoring task, not an algorithmic one, and is exactly what dedicated pixel-art overworld tilesets are built for (see §10 for specific packs).
+- **Tile variation without noise:** use 3–5 authored variants of the "plain grass" tile (subtly different pixel-cluster placement, not random per-pixel color) and place them with a light weighted-random pass or hand-placement, so repetition is broken up without ever looking chaotic — this is the standard tile-variety technique used by essentially every 2D pixel-art RPG (Pokémon overworld included) and is explicitly *not* the same thing as procedural pixel noise.
+- **Edge/biome transitions:** author explicit transition tiles (grass-to-dirt corner/edge pieces, grass-to-water shoreline pieces per §8) — this is a standard "autotile" or "blob tileset" pattern most tile editors (including Tiled, already referenced in `PLAN.md`) support directly via terrain/wang-tile brushes.
+- **Sampling:** `NearestFilter`, no mipmap blur, matching pixel density to the character sprites and the global render-target pixelation pass from §4 — a mismatch here (e.g., a higher-resolution ground texture than the character sprite's native resolution) is the single most common cause of "some areas still look wrong" once other fixes land, so this should be checked explicitly as an acceptance criterion (§12).
+
+---
+
+## 10. SEARCH RESULTS — EXISTING RESOURCES (with integration notes)
+
+### HD-2D / technique references (not asset downloads — read/watch these for technique validation)
+1. **Octopath Traveler's "HD-2D" art style — Unreal Engine developer spotlight** (`unrealengine.com/spotlights/octopath-traveler-s-hd-2d-art-style-and-story-make-for-a-jrpg-dream-come-true`) — Director interview explaining the "fuse 2D pixels with a 3D environment" origin of the technique. **Relevance:** primary-source validation that your target style is a known, named, well-documented technique, not something to invent from scratch. **Integration:** conceptual reference only, informs §4's architecture. **Style:** 2.5D (billboarded 2D in 3D).
+2. **HD-2D — Wikipedia** (`en.wikipedia.org/wiki/HD-2D`) — concise technical summary of the technique's defining traits (3D-rendered backgrounds, dynamic shading, complex camerawork vs. older flat-2D-on-3D approaches). **Relevance:** the clearest single-page technical definition to hand to a coding agent. **Integration:** background reading. **Style:** 2.5D.
+3. **"Octopath Traveler II builds a bigger, bolder world" — Unreal Engine interview** (`unrealengine.com/en-US/developer-interviews/octopath-traveler-ii-builds-a-bigger-bolder-world-in-its-stunning-hd-2d-style`) — discusses head-to-body ratio tuning between the two games and the "characters are flat sheets of paper vs. 3D backgrounds" integration challenge. **Relevance:** directly validates the character-proportion notes in §2 and confirms the "how do flat sprites sit naturally in a 3D scene" problem is a known, solved challenge, not a novel risk. **Style:** 2.5D.
+4. **"Why Octopath Traveler's HD-2D Style Changed RPG Gaming Forever"** (`samppy.com/octopath-travelers-hd-2d`) — explains the tilt-shift camera and sprite-billboarding-with-real-shadows techniques in accessible terms. **Relevance:** the clearest available explanation of the camera + billboarding + shadow combination that makes HD-2D read as a diorama — directly informs §4's camera/lighting recommendations. **Style:** 2.5D.
+5. **"Can 3D Pixel Diorama-Style Graphics Be The New Indie Trend?"** (`noplatform.wordpress.com/2024/08/30/can-3d-pixel-diorama-style-graphics-be-the-new-indie-trend`) — situates HD-2D as a revival of PS1/Saturn-era "2D sprites on tilted low-poly 3D" games (Grandia, Breath of Fire IV, Xenogears, Dragon Quest VII). **Relevance:** these older, much-lower-budget PS1-era games are a useful *lower-fidelity, easier-to-approximate* reference point if the full Octopath-level DOF/lighting polish proves too time-costly — the "2D sprite in tilted low-poly world" bones of the technique work even without the fanciest lighting. **Style:** 2.5D.
+6. **Kotaku — "You Gotta See Pokémon In 'HD-2D'"** (`kotaku.com/pokemon-hd-2d-octopath-traveler-fan-art-unreal-engine-5-1850350661`) — fan-art coverage applying the exact style to Pokémon. **Relevance:** directly validates that your target ("Pokémon-like monster RPG in HD-2D") is a specific, already-imagined aesthetic with existing visual precedent to point at. **Style:** 2.5D.
+
+### Rendering technique / engine references
+7. **Three.js pixelated lo-fi look (Medium write-up)** (`eriksachse.medium.com/three-js-pixelated-lo-fi-energy-look-298b8dc3eaad`) — demonstrates the exact render-target-at-reduced-resolution technique recommended in §4, including working code for the `WebGLRenderTarget`/`NearestFilter` setup. **Relevance:** direct implementation reference for the central pixelation pass. **Integration:** copy the render-target pattern; adapt resolution/scale constants to project needs. **Style:** technique applies regardless of 2D/2.5D/3D scene content.
+8. **Three.js GitHub issue — nearest-neighbor texture scaling** (`github.com/mrdoob/three.js/issues/1418`) — confirms `THREE.NearestFilter` (both `magFilter` and `minFilter`) is the correct, built-in way to stop pixel-art textures from blurring on 3D geometry. **Relevance:** the single most important one-line fix for "3D pixel art textures look blurry" — must be applied to every pixel-art texture in the project (ground, trees, houses, sprites alike). **Style:** applies to any technique.
+9. **Three.js official "Pixelation" postprocessing example** (`threejs.org/examples/webgl_postprocessing_pixel.html`) — a ready-made pixelation post-process pass (with optional single-pixel outlines) usable via `@react-three/postprocessing` or the raw `EffectComposer`. **Relevance:** an alternative/complementary implementation of the pixelation effect to the render-target approach — either is valid; the render-target approach is generally cheaper and simpler to reason about for a whole-scene pixel-density target. **Style:** applies to any 3D scene.
+10. **MDN — "Crisp pixel art look with image-rendering"** (`developer.mozilla.org/en-US/docs/Games/Techniques/Crisp_pixel_art_look`) — the general web-platform explanation of nearest-neighbor upscaling for pixel art, useful for any 2D-canvas/DOM-rendered UI chrome (menus, dialogue boxes, HUD) layered outside the Three.js canvas, per `PLAN.md`'s React-UI-overlay architecture. **Relevance:** ensures UI chrome pixel-art assets (if any are used) stay crisp using the same `image-rendering: pixelated` CSS property, independent of the 3D canvas's own pixelation pipeline. **Style:** 2D/DOM.
+11. **Wikipedia — Pixel-art scaling algorithms** (`en.wikipedia.org/wiki/Pixel-art_scaling_algorithms`) — background on nearest-neighbor vs. hqx/xBR-style "smart" scalers. **Relevance:** confirms nearest-neighbor (not a smoothing scaler) is the correct choice for preserving authored pixel-art intent — smart scalers are designed to *soften* blocky pixel edges, which is the opposite of this project's "sharp pixel edges" requirement (§8 of your brief). **Style:** general technique reference.
+12. **Phaser 4 Pixel Art Guide (GitHub docs)** (`github.com/phaserjs/phaser/blob/master/docs/Phaser%204%20Pixel%20Art%20Guide/Phaser%204%20Pixel%20Art%20Guide.md`) — comprehensive reference on `pixelArt`/`roundPixels` config, per-object `vertexRoundMode`, and common pixel-art rendering pitfalls. **Relevance:** not directly applicable if the project stays on the Three.js/R3F 3D pivot from `PLAN.md`'s addendum, but **highly relevant as a fallback reference** if time pressure forces a retreat to a 2D-only (non-3D-depth) approach for any sub-scene (e.g., battle UI, menus) — also useful background for understanding *why* naive pixel-art rendering goes wrong (sub-pixel positioning, unrounded camera scroll), lessons that transfer conceptually to the Three.js render-target approach. **Style:** 2D (Phaser-specific).
+
+### Foliage / billboard technique references
+13. **GameDev.net forum — "Low Poly Trees"** (`gamedev.net/forums/topic/160349-low-poly-trees`) — a long-standing, widely-cited community explanation of the trunk-mesh + alpha-planed-foliage technique. **Relevance:** grounds §6's tree-construction recommendation in established, non-exotic practice. **Style:** 2.5D-ish 3D technique.
+14. **Simplygon — "Impostor: Billboard cloud for vegetation"** (`simplygon.com/posts/b9c254b6-9ee1-47d3-b6aa-9418743e1f2a`) and **"Rendering vegetation imposters"** (`simplygon.com/posts/4bf1787d-6d76-48a7-9111-787d6985005c`) — industry-standard explanation of "billboard cloud" foliage (multiple crossed planes forming a volumetric-reading foliage mass). **Relevance:** the specific technique recommended in §6 for trees that read as 3D from any camera angle without full leaf-by-leaf modeling. **Style:** 3D.
+15. **Daggerfall Workshop forum — "Billboard Clouds for Daggerfall Trees"** (`forums.dfworkshop.net/viewtopic.php?t=2573`) — a concrete, retro-game-specific discussion of crossed-billboard tree techniques as a *deliberate retro-style* choice, not just a performance optimization. **Relevance:** directly useful precedent for using billboard-cloud trees as a **style choice** (matching a retro/pixel aesthetic) rather than purely a performance LOD trick — validates that this technique fits a pixel-art game specifically, not just realistic ones. **Style:** 3D, retro-styled.
+16. **"How To Make Low Poly Game Foliage" (video/article summary)** (`blog.plantids.com/how-to-make-low-poly-game-foliage.html`) — walkthrough of building a low-poly tree in Blender with alpha-textured leaf planes. **Relevance:** a concrete production workflow if trees are authored in Blender and exported as GLTF/GLB rather than composed procedurally in code. **Style:** 3D asset-authoring workflow.
+
+### Directional sprite / animation references
+17. **HimeWorks — "Eight Directional Movement"** and **"Introducing Diagonal Movement into RPG Maker"** (`himeworks.com/2014/11/eight-directional-movement`, `himeworks.com/2014/11/introducing-diagonal-movement-into-rpg-maker`) — the most detailed, widely-referenced write-up of exactly the direction-bucketing and sprite-sheet-row-mapping logic recommended in §5, including the numbered-direction convention (1/2/3/4/6/7/8/9 matching a numpad layout) that maps cleanly onto compass-direction buckets. **Relevance:** direct implementation reference for §5's core algorithm. **Integration:** port the direction-bucketing logic (not the RPG Maker-specific plugin code) into your movement/animation system. **Style:** 2D sprite technique, engine-agnostic logic.
+18. **OpenGameArt — "5/8 Directional Sprite Sets"** (`opengameart.org/content/58-directional-sprite-sets`) — a curated collection of both full-8-direction and mirror-able 5-direction character turnaround sheets, including LPC-compatible run/walk cycles. **Relevance:** a direct sourcing option for placeholder or final 8-direction character sprites if custom art isn't authored in time. **Integration:** check individual sheet licenses on the page (LPC-derived assets typically require CC-BY-SA/GPL-compatible attribution — verify per-sheet, same "check the specific license" discipline `PLAN.md` already applies to its other asset sourcing). **Style:** 2D pixel-art sprites.
+19. **itch.io — "8-direction" tag** (`itch.io/game-assets/tag-8-direction`) — active marketplace of 8-direction character sprite packs, several free. **Relevance:** additional sourcing option; check each pack's specific license page individually (same standing rule `PLAN.md` §2.C already establishes for itch.io assets — don't assume "free" means redistribution-safe). **Style:** 2D pixel-art sprites.
+
+### Tileset / pixel-art environment resources
+20. **Time Fantasy** (`timefantasy.net`, packs at `plaza-us.komodo.jp/products/time-fantasy` and the author's itch.io/Patreon) — a large, long-running, purpose-built "SNES-era-feeling" pixel-art RPG asset line covering characters, wilderness, town, dungeon tilesets in one consistent art style. **Relevance:** one of the very few asset lines specifically built around exactly your target aesthetic (crisp anime-adjacent pixel-art RPG world, not cute-mobile-game pixel art, not 8-bit NES style). **Note:** this is a **paid** asset line, not CC0 — verify current licensing terms on the specific pack page before use, per `PLAN.md`'s standing licensing-discipline rule (§2.C). **Style:** 2D pixel-art tiles + characters.
+21. **finalbossblues — "Open RPG Fantasy Tilesets"** (`finalbossblues.itch.io/openrtp-tiles`) — CC0-licensed, RPG-Maker-RTP-compatible original tilesets covering a full game world (confirmed on-page: <cite index="48-1">the art in this pack is released to the public domain under a CC0 license with no restrictions whatsoever on its use and no credit necessary</cite>). **Relevance:** a strong, legally-clean, complete-coverage tileset candidate in the same spirit as `PLAN.md`'s already-identified Ninja Adventure/Kenney packs — worth adding to the sourcing priority list in `PLAN.md` §B.2. **Style:** 2D pixel-art tiles.
+22. **0x72 — "µFantasy Tileset"** (`0x72.itch.io/microfantasy`) — small, clean, CC0 pixel-art fantasy tileset with both topdown and isometric variants and several ready-made character sprite sheets with idle/walk animations (confirmed CC0 on-page). **Relevance:** good supplementary/placeholder source for early prototyping given its small, clean, well-organized structure. **Style:** 2D pixel-art tiles + characters.
+23. **ansimuz — "Tiny Overworld"** (`ansimuz.itch.io/tiny-overworld`) — 32×32 16-bit-style overworld tileset (ground, roads, trees/hills, houses) in a classic SNES-JRPG-adjacent style, name-your-own-price. **Relevance:** good additional/reference tileset for the ground/path/tree-topper pixel textures described in §9; verify the exact license terms on the page (some ansimuz packs are attribution-required, not CC0) before committing to redistribution assumptions. **Style:** 2D pixel-art tiles.
+24. **OpenGameArt — "CC0/OGA-BY Pixel Art" collection** (`opengameart.org/content/cc0oga-by-pixel-art`) and **"THEME: fantasy/rpg"** (`opengameart.org/content/theme-fantasy-rpg`) — broad curated collections of CC0/attribution-only pixel-art and LPC-family RPG assets. **Relevance:** a good first stop for filling small specific gaps (a missing prop, a specific creature placeholder) once the primary tileset/character packs are chosen. **Style:** 2D pixel-art, mixed sub-styles — quality/consistency varies per item, curate carefully rather than grabbing indiscriminately (directly relevant to your brief's §9 "visual consistency" concern — a grab-bag of mismatched OpenGameArt pieces is a fast way to reintroduce the "every iteration changes style" problem).
+
+### Existing open-source/reference projects for architecture patterns (technique, not assets)
+25. **`PLAN.md`'s own §1.7 list** (`boxerbomb/PokemonClone`, `konato-debug/pokemon-phaser`, `khaifahmi99/pokemon-phaser`, `ariroffe/personal-website`, Phaser+TS starter templates) — already-verified-good architectural references for the *2D/Tiled/grid-collision* layer, still relevant even after the 3D pivot, since your grid-based collision/encounter logic stays 2D internally per `PLAN.md`'s own note (coordinate-mapping happens only at the render boundary). No new search needed here — carry these forward as-is.
+
+---
+
+## 11. IMPLEMENTATION ROADMAP
+
+Ordering follows `PLAN.md`'s existing day-by-day philosophy (rendering foundation → world → creatures/animation → polish), adapted to the specific pivot this document recommends (billboarded pixel sprites + real 3D environment, replacing the addendum's primitive-composed-creature approach).
+
+### PHASE 1 — Rendering foundation & pixel-perfect pipeline
+- **Files/systems:** `/game` R3F canvas bootstrap, a new central `PixelationPipeline`/render-target wrapper component.
+- **Changes:** Set up `WebGLRenderTarget` at a fixed reduced internal resolution, `NearestFilter` on the resulting texture, composited to the visible canvas; configure `THREE.NearestFilter` as the default for every texture loader used in the project (a one-time loader-config change, not per-asset).
+- **Dependencies:** None — this is the foundation everything else renders through.
+- **Acceptance criteria:** A single test scene (a textured cube + a ground plane) renders with visibly crisp, non-blurred, consistently-sized pixel blocks regardless of camera distance/zoom.
+- **How to test:** Visually zoom the camera in/out and orbit; pixel density on the test objects should look constant and sharp, never blurry or shimmering.
+
+### PHASE 2 — Camera & depth-of-field
+- **Files/systems:** camera rig component (angled follow-camera per `PLAN.md`'s addendum architecture), `@react-three/postprocessing` `<DepthOfField>` pass.
+- **Changes:** Confirm/tune the existing tilted-down 3/4 camera angle (do not redesign it); bring it slightly closer per the brief; add a DOF pass with a shallow focal range centered on the player.
+- **Dependencies:** Phase 1 (pixelation pipeline must already be composed correctly with the DOF pass — order matters: pixelate first, then apply DOF on the pixelated result, or vice versa — test both orders and pick whichever preserves crisp sprite pixels better while still blurring background/foreground).
+- **Acceptance criteria:** The test scene from Phase 1 now shows background/foreground objects softly blurred while a mid-depth "player position" object stays sharp; camera framing is visibly closer than the current implementation while preserving the same general downward angle.
+- **How to test:** Place a few test objects at varying depths; confirm only the intended focal band stays sharp.
+
+### PHASE 3 — Ground & tile authoring
+- **Files/systems:** ground plane mesh + tile-atlas texture, tilemap-to-3D-plane UV mapping (reusing `PLAN.md`'s existing grid/Tiled data if already authored, remapped to 3D per the addendum's "coordinate-mapping function at the render boundary" note).
+- **Changes:** Source or author the pixel-art tile atlas (see §10 resources), replace any procedural-noise or placeholder ground material with the authored atlas, add edge/transition tiles.
+- **Dependencies:** Phase 1 (pixelation must be active so the tile atlas isn't double-blurred by mismatched filtering).
+- **Acceptance criteria:** Ground reads as intentional, varied, non-repetitive at normal camera distance; no visible tiling seams; grass/dirt/path transitions look authored, not abrupt.
+- **How to test:** Walk the camera across a stretch of varied terrain; check for seams, repetition patterns, and blurring.
+
+### PHASE 4 — Water
+- **Files/systems:** water plane mesh (recessed below shoreline height), animated pixel-art water texture, shoreline transition tiles (extends Phase 3's tile atlas).
+- **Changes:** Replace any flat/coplanar water plane with a genuinely lower-height plane; add animated ripple texture frames; add shoreline transition tiles; configure explicit transparency render order.
+- **Dependencies:** Phase 3 (shoreline tiles are part of the same atlas/authoring pass).
+- **Acceptance criteria:** No blue-wall/flat-rectangle appearance; visible depth step at the shoreline; animated surface; no z-fighting/flicker as camera moves; correct occlusion with nearby props.
+- **How to test:** Orbit/pan the camera around a water edge; confirm no flicker, no coplanar "wall" look, and a visible bank/shore transition.
+
+### PHASE 5 — Environment geometry (trees, houses, props)
+- **Files/systems:** tree component (trunk mesh + billboard-cloud foliage planes), house components (separated wall/roof/trim meshes), prop placement data.
+- **Changes:** Replace any flat billboard trees and any single-textured-box houses with the multi-mesh constructions described in §6/§7; verify normals, transparency flags, and collision-footprint alignment on every building.
+- **Dependencies:** Phase 1 (pixel-art textures need the shared pixelation/filtering pipeline already active to look correct).
+- **Acceptance criteria:** Orbiting the camera around a tree reveals different foliage silhouettes from different angles (not a flat card); houses show no z-fighting/flicker/vanishing-face glitches from any camera angle within normal gameplay range; player collision against building walls matches the visual wall position.
+- **How to test:** Deliberately orbit/rotate the camera fully around one instance of each object type and watch for flat-card reveal, flicker, or vanishing faces; walk the player character directly against a building's visual wall and confirm collision blocks at the right position, not early/late.
+
+### PHASE 6 — Character/creature sprite system
+- **Files/systems:** billboarded sprite component (`drei`'s `<Billboard>` or an equivalent always-face-camera quad), sprite-sheet asset manifest format, direction-bucketing movement code.
+- **Changes:** This is the core pivot — remove/replace the primitive-composed 3D creature/character meshes from `PLAN.md`'s addendum with billboarded pixel-art sprite quads; wire in the 8-direction sprite-sheet manifest format from §5; add ground-contact shadow per character.
+- **Dependencies:** Phase 1 (pixel-art sprite textures need the shared filtering/pixelation pipeline).
+- **Acceptance criteria:** Characters/creatures visually match the pixel-art reference style (small, clean, anime-proportioned — not blocky/voxel); no "primitive shape" appearance remains anywhere in the character/creature rendering path.
+- **How to test:** Side-by-side visual comparison against the attached Squirtle reference sprites — silhouette cleanliness, proportion, and pixel density should read as the same art family.
+
+### PHASE 7 — Directional animation correctness
+- **Files/systems:** movement-vector-to-facing-direction logic, sprite-row lookup table, idle-state handling.
+- **Changes:** Implement the exact algorithm from §5 (movement vector → 8-sector bucket → sprite row → frame advance); explicitly audit for the axis-sign-flip and sheet-indexing-offset bugs called out in §5 as the likely cause of the "wrong side shows when moving up" symptom.
+- **Dependencies:** Phase 6 (sprite sheets must exist with all 8 directions available/derived before this logic can be meaningfully tested).
+- **Acceptance criteria:** Moving in each of the 8 compass directions shows the correct corresponding sprite facing, with no direction reversed or mismatched; diagonal movement shows a true diagonal-facing sprite, not a rotated cardinal sprite; stopping preserves the last facing direction.
+- **How to test:** Manually move the player through all 8 directions in sequence (including diagonals) and visually confirm each shows the matching facing; stop after each direction and confirm the idle pose matches.
+
+### PHASE 8 — Collision, depth sorting & occlusion polish
+- **Files/systems:** render-order/transparency configuration across water/foliage/character billboards, collision-footprint audit across all buildings/trees/water tiles.
+- **Changes:** Sweep for any remaining z-fighting/flicker between transparent objects (water vs. foliage vs. character billboards near each other); confirm every solid object's collision footprint matches its visual geometry.
+- **Dependencies:** Phases 4–6 (all the transparent/collidable object types must exist first).
+- **Acceptance criteria:** No visible flicker/z-fighting anywhere in normal gameplay movement through the whole map; no visual/collision mismatch anywhere a player can walk.
+- **How to test:** Walk the full test map, including standing at water's edge next to a tree next to a house, and watch for any sorting artifacts; walk along every building/tree boundary checking for early/late collision.
+
+### PHASE 9 — Lighting & shading pass
+- **Files/systems:** directional "sun" light + ambient/hemisphere fill light setup, shadow-map configuration for characters/trees/houses.
+- **Changes:** Replace/avoid any remaining `MeshToonMaterial` flat-banding on environment geometry per §4; tune shadow softness and direction; confirm billboarded characters cast a visible, correctly-shaped ground shadow.
+- **Dependencies:** Phases 5–6 (geometry and characters must exist to light).
+- **Acceptance criteria:** Consistent single light direction across the whole scene; characters/creatures visually "sit in" the world via a ground shadow rather than appearing to float; no harsh unlit-black shadow areas.
+- **How to test:** Visual review at a few different times/positions in the scene; confirm shadow direction consistency and character ground-contact readability.
+
+### PHASE 10 — Visual consistency pass & acceptance sign-off
+- **Files/systems:** none new — this is a review/QA phase against §12's acceptance criteria and this document's §2 style-guide rules.
+- **Changes:** Any remaining mismatched-pixel-density textures, any remaining flat/toon-shaded environment surfaces, any remaining non-8-direction character, any remaining z-fighting — fixed as found.
+- **Dependencies:** All prior phases.
+- **Acceptance criteria:** All items in §12 below pass.
+- **How to test:** Walk through the full §12 checklist against the running build.
+
+---
+
+## 12. ACCEPTANCE CRITERIA
+
+**CHARACTER / CREATURE:**
+- [ ] No box/robot/voxel appearance anywhere — silhouette matches the pixel-art reference sprites' proportions and cleanliness.
+- [ ] Correct facing sprite shown for all 8 movement directions, including diagonals.
+- [ ] Idle pose preserves last facing direction (does not reset).
+- [ ] Diagonal movement shows a true diagonal sprite, never a rotated cardinal sprite.
+- [ ] Character casts a visible, correctly-positioned ground shadow (does not appear to float).
+- [ ] Character billboard always faces the camera correctly regardless of camera angle changes.
+
+**TREES:**
+- [ ] Orbiting the camera around a tree reveals different foliage silhouettes (not a flat card from any angle).
+- [ ] Trunk is real geometry, not a texture-only trick.
+- [ ] No flat, single-plane "billboard tree" appearance remains anywhere in the environment.
+
+**HOUSES:**
+- [ ] No z-fighting/flicker from any normal gameplay camera angle.
+- [ ] No vanishing/inverted-normal faces from any angle.
+- [ ] Collision boundary matches visual wall position exactly (no early/late blocking).
+- [ ] Correct occlusion: player and other objects correctly appear in front of/behind building geometry as expected from the Z-buffer.
+
+**WATER:**
+- [ ] Visible real depth/recession relative to the shoreline (not coplanar with the ground).
+- [ ] Animated surface (looping ripple frames or shader distortion).
+- [ ] No z-fighting with ground/bank geometry.
+- [ ] No "blue wall/rectangle" appearance from any angle.
+- [ ] Clear, authored shoreline transition tiles (not a hard color cut).
+- [ ] Correct collision/walkability behavior at water edges.
+
+**GROUND:**
+- [ ] Pixel clusters are small and intentional — no giant Minecraft-scale flat color blocks.
+- [ ] No random per-pixel noise appearance.
+- [ ] Visible but non-repetitive tile variation.
+- [ ] Authored transitions between grass/dirt/path/water — no abrupt hard cuts.
+- [ ] Pixel density visually matches character sprites and other environment textures (single consistent scale, verified via the shared render-target pixelation pipeline).
+
+**CAMERA:**
+- [ ] General downward 3/4 angle preserved from the current implementation (not redesigned from scratch).
+- [ ] Camera positioned closer than the prior implementation.
+- [ ] Depth-of-field visibly blurs background/foreground while keeping the player-depth band sharp.
+- [ ] Smooth follow movement with damping (no jarring snap, per `PLAN.md`'s addendum's existing follow-camera guidance).
+- [ ] Pixel-art sharpness preserved at the chosen zoom level (no blur introduced by the DOF/pixelation pass interaction — verify render order between the two effects).
+
+**OVERALL:**
+- [ ] A person looking at the running game would describe it as "pixel-art anime RPG with real 3D depth," not "Minecraft," "Roblox," or "voxel game."
+- [ ] Every asset category (characters, trees, houses, ground, water) reads as belonging to one coherent, deliberately-designed art style.
+
+---
+
+## 13. WHAT THIS DOCUMENT DOES NOT COVER / OPEN ITEMS
+
+- **No access to the actual running game or source tree was available for this research task** (see the caveat at the top) — the diagnosis in §3 is inferred from `PLAN.md`'s own documented design decisions, not from inspecting real screenshots or code. If the actual implementation has drifted from `PLAN.md` in additional undocumented ways, a follow-up pass with real screenshots/code access would sharpen §3 and §11 further, but would not change the fundamental §1/§4 recommendation (HD-2D billboarded-sprite-in-3D-world is correct either way, since it's derived from your stated target and the attached reference images, not from the diagnosis).
+- **Specific sprite-sheet dimensions/pixel-per-unit ratio** are recommended as "pick one fixed size and stick to it" (§5) rather than a single hard number, since the right absolute size depends on your chosen camera distance/FOV and internal render resolution from Phase 1/2 — this should be locked down empirically during Phase 1–2 (render a placeholder character at a few candidate native resolutions and pick whichever reads cleanest at your actual target camera distance) rather than guessed in the abstract here.
+- **Exact creature roster art** (the 6–10 species from `PLAN.md` §6) still needs to be sourced or authored in the pixel-art style — this document specifies the *technique* (billboarded 8-direction pixel sprites) and the *legal framing* (unchanged from `PLAN.md` §2/§A.5 — original pixel-art creature designs remain the safer legal position than ripped sprites, exactly as the addendum already concluded for its primitive-3D approach, just now applied to original pixel-art instead of original primitive-3D shapes), but does not hand-produce the actual per-species sprite sheets.
+
+---
+
+## SOURCES
+
+### Art References
+- Octopath Traveler's HD-2D art style and story — Unreal Engine spotlight: https://www.unrealengine.com/spotlights/octopath-traveler-s-hd-2d-art-style-and-story-make-for-a-jrpg-dream-come-true — director interview on the origin of fusing 2D pixels with 3D environments; primary technique validation.
+- HD-2D — Wikipedia: https://en.wikipedia.org/wiki/HD-2D — concise technical definition of the style, contrasted with older "2D-on-flat-3D" approaches.
+- Octopath Traveler II builds a bigger, bolder world — Unreal Engine: https://www.unrealengine.com/en-US/developer-interviews/octopath-traveler-ii-builds-a-bigger-bolder-world-in-its-stunning-hd-2d-style — character proportion/head-ratio tuning discussion, "flat sheets of paper vs 3D backgrounds" integration challenge.
+- Why Octopath Traveler's HD-2D Style Changed RPG Gaming Forever: https://samppy.com/octopath-travelers-hd-2d/ — tilt-shift camera and shadow-casting billboard technique explained.
+- Can 3D Pixel Diorama-Style Graphics Be The New Indie Trend? — Black Box: https://noplatform.wordpress.com/2024/08/30/can-3d-pixel-diorama-style-graphics-be-the-new-indie-trend/ — PS1/Saturn-era lower-fidelity precedent for the same technique family.
+- Kotaku — You Gotta See Pokémon In 'HD-2D': https://kotaku.com/pokemon-hd-2d-octopath-traveler-fan-art-unreal-engine-5-1850350661 — direct fan-art precedent for exactly this project's stated goal.
+- Octopath Traveler carries on the legacy of 3D functionality — Goomba Stomp: https://goombastomp.com/project-octopath-traveler-carries-legacy-3d-functionality/ — shadow/scale/diorama-feel discussion.
+
+### Pixel Art / Rendering Technique References
+- Three.js pixelated lo-fi energy look — Medium: https://eriksachse.medium.com/three-js-pixelated-lo-fi-energy-look-298b8dc3eaad — working render-target + NearestFilter pixelation implementation.
+- Three.js GitHub issue #1418 — nearest-neighbor texture scaling: https://github.com/mrdoob/three.js/issues/1418 — confirms `NearestFilter` usage for crisp pixel-art textures on 3D geometry.
+- Three.js official pixelation postprocessing example: https://threejs.org/examples/webgl_postprocessing_pixel.html — ready-made pixelation pass.
+- MDN — Crisp pixel art look with image-rendering: https://developer.mozilla.org/en-US/docs/Games/Techniques/Crisp_pixel_art_look — DOM/CSS-layer pixel-art crispness for UI chrome outside the 3D canvas.
+- Wikipedia — Pixel-art scaling algorithms: https://en.wikipedia.org/wiki/Pixel-art_scaling_algorithms — nearest-neighbor vs. smoothing scalers background.
+- Phaser 4 Pixel Art Guide (GitHub docs): https://github.com/phaserjs/phaser/blob/master/docs/Phaser%204%20Pixel%20Art%20Guide/Phaser%204%20Pixel%20Art%20Guide.md — fallback-scenario reference if any sub-scene retreats to 2D-only rendering.
+
+### 3D Foliage / Low-Poly Technique References
+- GameDev.net — Low Poly Trees forum thread: https://gamedev.net/forums/topic/160349-low-poly-trees/ — trunk-mesh + alpha-plane foliage technique, community-standard explanation.
+- Simplygon — Impostor: Billboard cloud for vegetation: https://www.simplygon.com/posts/b9c254b6-9ee1-47d3-b6aa-9418743e1f2a — industry billboard-cloud technique explanation.
+- Simplygon — Rendering vegetation imposters: https://www.simplygon.com/posts/4bf1787d-6d76-48a7-9111-787d6985005c — further billboard-cloud detail.
+- Daggerfall Workshop forums — Billboard Clouds for Daggerfall Trees: https://forums.dfworkshop.net/viewtopic.php?t=2573 — crossed-billboard trees as a deliberate retro style choice, not just an LOD optimization.
+- How To Make Low Poly Game Foliage: https://blog.plantids.com/how-to-make-low-poly-game-foliage.html — Blender authoring workflow for trunk+foliage-plane trees.
+- Creating tree shaders – the bark (O'Reilly excerpt): https://www.oreilly.com/library/view/blender-3d-designing/9781787127197/ch32s05.html — trunk/foliage-plane complexity spectrum reference.
+
+### Character/Sprite Resources
+- HimeWorks — Eight Directional Movement: https://himeworks.com/2014/11/eight-directional-movement/ — direction-to-sprite-row mapping reference.
+- HimeWorks — Introducing Diagonal Movement into RPG Maker: https://himeworks.com/2014/11/introducing-diagonal-movement-into-rpg-maker/ — numbered 8-direction convention and bucketing logic.
+- OpenGameArt — 5/8 Directional Sprite Sets: https://opengameart.org/content/58-directional-sprite-sets — sourceable 8-direction and mirror-able 5-direction character turnaround sheets (verify individual licenses).
+- itch.io — "8-direction" tag: https://itch.io/game-assets/tag-8-direction — marketplace of 8-direction sprite packs (verify individual licenses).
+
+### Tilesets
+- Time Fantasy: https://www.timefantasy.net/ and https://plaza-us.komodo.jp/products/time-fantasy — large purpose-built pixel-art RPG asset line matching the target aesthetic (paid — verify license terms).
+- finalbossblues — Open RPG Fantasy Tilesets: https://finalbossblues.itch.io/openrtp-tiles — CC0, complete-world-coverage pixel tileset.
+- 0x72 — µFantasy Tileset: https://0x72.itch.io/microfantasy — CC0, small clean tileset + character sprites with idle/walk animation.
+- ansimuz — Tiny Overworld: https://ansimuz.itch.io/tiny-overworld — 32×32 16-bit-style overworld tileset (verify license terms).
+- OpenGameArt — CC0/OGA-BY Pixel Art collection: https://opengameart.org/content/cc0oga-by-pixel-art — broad curated CC0/attribution pixel-art collection.
+- OpenGameArt — THEME: fantasy/rpg: https://opengameart.org/content/theme-fantasy-rpg — broad curated fantasy/RPG asset collection, mixed licenses (verify per item).
+
+### 3D/Low-Poly Resources
+- Kenney.nl Nature Kit (already identified in `PLAN.md` §A.4): https://kenney.nl/assets/nature-kit — CC0 low-poly 3D environment models; keep for structural/background dressing, pair with pixel-art textures rather than flat toon-shaded solid colors per this document's §4/§6 recommendations.
+
+### Water Techniques
+- (No single dedicated water-shader source was needed beyond the general Three.js/rendering references above — see §8 for the full technique writeup; the render-target/NearestFilter and transparency-handling sources above cover the required implementation mechanics for the recommended animated-pixel-texture-on-recessed-plane approach.)
+
+### Phaser/WebGL Techniques
+- Phaser Cameras documentation: https://docs.phaser.io/phaser/concepts/cameras — `roundPixels`/zoom reference (fallback-scenario relevance only, per §13).
+- Phaser 3.70.0 changelog — Round Pixels feature: https://newdocs.phaser.io/docs/3.70.0/changelog — GPU-side pixel-rounding background (fallback-scenario relevance only).
+
+### GitHub/Open Source Projects
+- `PLAN.md`'s own §1.7 reference list (`boxerbomb/PokemonClone`, `konato-debug/pokemon-phaser`, `khaifahmi99/pokemon-phaser`, `ariroffe/personal-website`) — carried forward unchanged; still relevant for the 2D grid/collision/encounter logic layer that stays dimension-agnostic under this document's 3D-rendering recommendations.
+
+### Technical Articles
+- (See "Pixel Art / Rendering Technique References" and "3D Foliage" groups above — all technical-implementation sources are grouped there rather than duplicated here.)
+
+### Other Useful References
+- `PLAN.md` itself (uploaded document) — the single most important source for this task: contains the full prior planning history, the exact addendum text that this document identifies as the root cause of the "Minecraft/Roblox" symptom, and the existing legal/licensing framework (§2) that this document's recommendations leave fully intact.

@@ -15,8 +15,8 @@ export function FollowCamera() {
     const player = useGameStore.getState().player;
     const wp = gridToWorld(player.x, player.y);
 
-    const desiredPos = new THREE.Vector3(wp[0], 10, wp[2] + 8);
-    const desiredLook = new THREE.Vector3(wp[0], 0, wp[2]);
+    const desiredPos = new THREE.Vector3(wp[0], 4.5, wp[2] + 4.0);
+    const desiredLook = new THREE.Vector3(wp[0], 0, wp[2] - 0.2);
 
     if (!initialized.current) {
       targetPos.current.copy(desiredPos);

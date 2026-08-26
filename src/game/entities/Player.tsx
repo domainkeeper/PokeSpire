@@ -1,6 +1,7 @@
 import { useRef, useEffect, useCallback, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { Billboard } from '@react-three/drei';
 import { useGameStore } from '../../state/gameStore';
 import { buildBlockedGrid, gridToWorld } from '../../utils/gridUtils';
 import {
@@ -9,17 +10,18 @@ import {
   PLAYER_DECELERATION,
   TILE_SIZE,
 } from '../../utils/constants';
-import { Character3D } from './Character3D';
 import type { GameMap } from '../../data/mapTypes';
+import { getCharacterTexture, setCharacterFrame, ensureCharacterTexturesLoaded, type Dir8, type WalkFrame } from '../pixel/sprites/characterSprites';
+import { getShadowTexture } from '../pixel/groundTexture';
 
 interface PlayerProps {
   mapData: GameMap;
   onExitCheck?: (gx: number, gy: number) => void;
 }
 
-function computeDir8(dx: number, dz: number): string {
+function computeDir8(dx: number, dz: number): Dir8 {
   if (dx === 0 && dz === 0) return 'down';
-  const angle = Math.atan2(dx, -dz) * (180 / Math.PI);
+  const angle = Math.atan2(dx, dz) * (180 / Math.PI);
   if (angle >= -22.5 && angle < 22.5) return 'down';
   if (angle >= 22.5 && angle < 67.5) return 'down_right';
   if (angle >= 67.5 && angle < 112.5) return 'right';
@@ -31,35 +33,44 @@ function computeDir8(dx: number, dz: number): string {
   return 'down';
 }
 
-function dirToRotationY(dir: string): number {
-  const map: Record<string, number> = {
-    down: 0,
-    down_right: -Math.PI / 4,
-    right: -Math.PI / 2,
-    up_right: -Math.PI * 3 / 4,
-    up: Math.PI,
-    up_left: Math.PI * 3 / 4,
-    left: Math.PI / 2,
-    down_left: Math.PI / 4,
-  };
-  return map[dir] ?? 0;
+function dirToFacing4(dir: Dir8): 'up' | 'down' | 'left' | 'right' {
+  if (dir.includes('up')) return 'up';
+  if (dir.includes('down') && !dir.includes('left') && !dir.includes('right')) return 'down';
+  if (dir.includes('left')) return 'left';
+  if (dir.includes('right')) return 'right';
+  if (dir === 'down_left' || dir === 'down_right') return 'down';
+  if (dir === 'up_left' || dir === 'up_right') return 'up';
+  return 'down';
 }
 
-function dirToFacing4(dir: string): 'up' | 'down' | 'left' | 'right' {
-  if (dir.includes('up')) return 'up';
-  if (dir.includes('down')) return 'down';
-  if (dir.includes('left')) return 'left';
-  return 'right';
-}
+const SPRITE_W = 0.7;
+const SPRITE_H = 1.0;
 
 export function Player({ mapData, onExitCheck }: PlayerProps) {
   const groupRef = useRef<THREE.Group>(null);
+  const meshRef = useRef<THREE.Mesh>(null);
   const velocity = useRef(new THREE.Vector3());
   const walkPhase = useRef(0);
   const keysDown = useRef(new Set<string>());
-  const currentDir = useRef('down');
-  const rotYRef = useRef(0);
+  const currentDir = useRef<Dir8>('down');
   const isMovingRef = useRef(false);
+  const walkFrame = useRef<WalkFrame>(0);
+  const walkTimer = useRef(0);
+  const lastDir = useRef<Dir8>('down');
+  const lastFrame = useRef<WalkFrame>(0);
+
+  const shadowTex = useMemo(() => getShadowTexture(), []);
+
+  // Eagerly load all character textures
+  const textures = useMemo(() => {
+    ensureCharacterTexturesLoaded();
+    const dirs: Dir8[] = ['down', 'down_right', 'right', 'up_right', 'up', 'up_left', 'left', 'down_left'];
+    const map = new Map<Dir8, THREE.Texture>();
+    for (const d of dirs) {
+      map.set(d, getCharacterTexture(d));
+    }
+    return map;
+  }, []);
 
   const player = useGameStore((s) => s.player);
   const setPlayerPosition = useGameStore((s) => s.setPlayerPosition);
@@ -80,7 +91,7 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
   );
 
   const checkExit = useCallback(
-    (wx: number, wz: number, dir: string) => {
+    (wx: number, wz: number, dir: Dir8) => {
       const gx = Math.round(wx / TILE_SIZE);
       const gz = Math.round(wz / TILE_SIZE);
       if (gx < 0 || gx >= mapData.width || gz < 0 || gz >= mapData.height) return;
@@ -117,7 +128,7 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
   }, []);
 
   useFrame((_, delta) => {
-    if (!groupRef.current) return;
+    if (!groupRef.current || !meshRef.current) return;
 
     const keys = keysDown.current;
     let dx = 0;
@@ -138,7 +149,6 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
 
     if (isMoving) {
       currentDir.current = computeDir8(dx, dz);
-      rotYRef.current = dirToRotationY(currentDir.current);
     }
 
     const vel = velocity.current;
@@ -162,19 +172,33 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
 
     if (isMoving) {
       walkPhase.current += delta * 8;
-      g.position.y = Math.abs(Math.sin(walkPhase.current * 2)) * 0.03;
+      walkTimer.current += delta;
+      if (walkTimer.current > 0.12) {
+        walkTimer.current = 0;
+        walkFrame.current = ((walkFrame.current + 1) % 4) as WalkFrame;
+      }
+      g.position.y = Math.abs(Math.sin(walkPhase.current * 2)) * 0.003;
     } else {
       walkPhase.current *= 0.85;
-      g.position.y = Math.sin(Date.now() * 0.002) * 0.008;
+      g.position.y = 0;
+      walkFrame.current = 0;
+      walkTimer.current = 0;
     }
 
-    // Smooth rotation lerp
-    let target = rotYRef.current;
-    let current = g.rotation.y;
-    let diff = target - current;
-    while (diff > Math.PI) diff -= Math.PI * 2;
-    while (diff < -Math.PI) diff += Math.PI * 2;
-    g.rotation.y += diff * Math.min(1, 12 * delta);
+    // Update sprite texture
+    const dir = currentDir.current;
+    const frame = isMoving ? walkFrame.current : 0 as WalkFrame;
+
+    if (dir !== lastDir.current || frame !== lastFrame.current) {
+      lastDir.current = dir;
+      lastFrame.current = frame;
+      const tex = textures.get(dir);
+      if (tex) {
+        setCharacterFrame(tex, frame);
+        (meshRef.current.material as THREE.MeshBasicMaterial).map = tex;
+        (meshRef.current.material as THREE.MeshBasicMaterial).needsUpdate = true;
+      }
+    }
 
     const gx = Math.round(g.position.x / TILE_SIZE);
     const gz = Math.round(g.position.z / TILE_SIZE);
@@ -187,13 +211,35 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
   });
 
   const wp = gridToWorld(player.x, player.y);
+  const initialTex = textures.get('down') || new THREE.Texture();
 
   return (
     <group ref={groupRef} position={[wp[0], 0, wp[2]]}>
-      <Character3D
-        isWalking={isMovingRef.current}
-        walkPhase={walkPhase.current}
-      />
+      <Billboard follow={true} lockX={false} lockY={false} lockZ={false}>
+        <mesh ref={meshRef} position={[0, SPRITE_H * 0.5, 0]} renderOrder={wp[2] * 10 + 5}>
+          <planeGeometry args={[SPRITE_W, SPRITE_H]} />
+          <meshBasicMaterial
+            map={initialTex}
+            transparent
+            alphaTest={0.1}
+            depthWrite={false}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      </Billboard>
+      <mesh
+        position={[0, 0.005, 0]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        renderOrder={-1}
+      >
+        <planeGeometry args={[0.5, 0.15]} />
+        <meshBasicMaterial
+          map={shadowTex}
+          transparent
+          opacity={0.25}
+          depthWrite={false}
+        />
+      </mesh>
     </group>
   );
 }

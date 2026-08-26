@@ -1,5 +1,6 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import * as THREE from 'three';
+import { Billboard } from '@react-three/drei';
 import { gridToWorld } from '../../utils/gridUtils';
 import { TILE_SIZE } from '../../utils/constants';
 import type { GameMap } from '../../data/mapTypes';
@@ -10,43 +11,71 @@ import { Bush3D, Rock3D, Flower3D, Fence3D, Sign3D } from '../entities/EnvProps3
 import { Tree, SmallTree } from '../entities/Tree3D';
 import { House } from '../entities/House3D';
 import { WaterSurface } from '../entities/WaterSurface';
-import { Character3D } from '../entities/Character3D';
 import { makeGroundTexture } from '../pixel/groundTexture';
 import { PixelSprite } from '../pixel/PixelSprite';
+import { getCharacterTexture } from '../pixel/sprites/characterSprites';
+import { getShadowTexture } from '../pixel/groundTexture';
 
-function usePokemonTexture(species: PokemonSpeciesKey): THREE.Texture | null {
-  const [tex, setTex] = useState<THREE.Texture | null>(null);
-  const sprite = getPokemonSprite(species);
+const pokemonTextureCache = new Map<string, THREE.Texture>();
+const pokemonTextureLoading = new Map<string, boolean>();
 
-  useEffect(() => {
+function getPokemonTexture(species: string): THREE.Texture {
+  if (pokemonTextureCache.has(species)) return pokemonTextureCache.get(species)!;
+
+  const placeholder = new THREE.Texture();
+  placeholder.magFilter = THREE.NearestFilter;
+  placeholder.minFilter = THREE.NearestFilter;
+  pokemonTextureCache.set(species, placeholder);
+
+  if (!pokemonTextureLoading.get(species)) {
+    pokemonTextureLoading.set(species, true);
+    const sprite = getPokemonSprite(species as PokemonSpeciesKey);
     const loader = new THREE.TextureLoader();
     loader.load(
-      sprite.animated,
+      sprite.front,
       (texture) => {
         texture.magFilter = THREE.NearestFilter;
         texture.minFilter = THREE.NearestFilter;
+        texture.colorSpace = THREE.SRGBColorSpace;
         texture.needsUpdate = true;
-        setTex(texture);
+        pokemonTextureCache.set(species, texture);
       },
       undefined,
       () => {
-        loader.load(sprite.front, (texture) => {
-          texture.magFilter = THREE.NearestFilter;
-          texture.minFilter = THREE.NearestFilter;
-          texture.needsUpdate = true;
-          setTex(texture);
-        });
+        // front failed, try gif
+        loader.load(
+          sprite.animated,
+          (texture) => {
+            texture.magFilter = THREE.NearestFilter;
+            texture.minFilter = THREE.NearestFilter;
+            texture.colorSpace = THREE.SRGBColorSpace;
+            texture.needsUpdate = true;
+            pokemonTextureCache.set(species, texture);
+          },
+          undefined,
+          () => {
+            // both failed, make magenta placeholder
+            const c = document.createElement('canvas');
+            c.width = 32; c.height = 32;
+            const ctx = c.getContext('2d')!;
+            ctx.fillStyle = '#ff00ff';
+            ctx.fillRect(0, 0, 32, 32);
+            const t = new THREE.CanvasTexture(c);
+            t.magFilter = THREE.NearestFilter;
+            t.minFilter = THREE.NearestFilter;
+            pokemonTextureCache.set(species, t);
+          },
+        );
       },
     );
-  }, [sprite]);
+  }
 
-  return tex;
+  return placeholder;
 }
 
 function PokemonSprite({ species, position }: { species: PokemonSpeciesKey; position: [number, number, number] }) {
   const sprite = getPokemonSprite(species);
-  const tex = usePokemonTexture(species);
-  if (!tex) return null;
+  const tex = getPokemonTexture(species);
   return (
     <PixelSprite
       texture={tex}
@@ -56,6 +85,61 @@ function PokemonSprite({ species, position }: { species: PokemonSpeciesKey; posi
       anchorY={0.15}
       animScale={true}
     />
+  );
+}
+
+const NPC_SPRITE_SIZE = { w: 0.7, h: 1.0 };
+
+interface NpcSpriteProps {
+  variant: string;
+  position: [number, number, number];
+}
+
+const NPC_TINT: Record<string, number> = {
+  professor: 0x4488ff,
+  gardener: 0x44bb44,
+  hiker: 0xaa7744,
+  ranger: 0x66aa66,
+  resident: 0xffffff,
+};
+
+function NpcBillboard({ variant, position }: NpcSpriteProps) {
+  const tex = useMemo(() => {
+    const t = getCharacterTexture('down');
+    return t;
+  }, []);
+  const shadowTex = useMemo(() => getShadowTexture(), []);
+  const tintColor = NPC_TINT[variant] ?? 0xffffff;
+
+  return (
+    <group position={position}>
+      <Billboard follow={true} lockX={false} lockY={false} lockZ={false}>
+        <mesh position={[0, NPC_SPRITE_SIZE.h * 0.5, 0]} renderOrder={position[2] * 10 + 5}>
+          <planeGeometry args={[NPC_SPRITE_SIZE.w, NPC_SPRITE_SIZE.h]} />
+          <meshBasicMaterial
+            map={tex}
+            color={tintColor}
+            transparent
+            alphaTest={0.1}
+            depthWrite={false}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      </Billboard>
+      <mesh
+        position={[0, 0.005, 0]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        renderOrder={-1}
+      >
+        <planeGeometry args={[0.4, 0.25]} />
+        <meshBasicMaterial
+          map={shadowTex}
+          transparent
+          opacity={0.25}
+          depthWrite={false}
+        />
+      </mesh>
+    </group>
   );
 }
 
@@ -70,21 +154,15 @@ function CanvasGround({ mapData }: { mapData: GameMap }) {
 
   return (
     <mesh
-      position={[width / 2, -0.05, height / 2]}
+      position={[width / 2, -0.01, height / 2]}
       rotation={[-Math.PI / 2, 0, 0]}
       receiveShadow
     >
       <planeGeometry args={[width, height]} />
-      <meshBasicMaterial map={tex} />
+      <meshStandardMaterial map={tex} roughness={0.9} metalness={0} />
     </mesh>
   );
 }
-
-const NPC_VARIANT_COLORS: Record<string, { jacket: string; hair: string; shorts: string }> = {
-  professor: { jacket: '#1565c0', hair: '#e65100', shorts: '#212121' },
-  gardener: { jacket: '#2e7d32', hair: '#4e342e', shorts: '#33691e' },
-  resident: { jacket: '#c62828', hair: '#1b5e20', shorts: '#3e2723' },
-};
 
 export function MapRenderer({ mapData }: MapRendererProps) {
   const sortedObjects = useMemo(() => {
@@ -199,16 +277,15 @@ export function MapRenderer({ mapData }: MapRendererProps) {
         const [wx, , wz] = gridToWorld(npc.x, npc.y);
         const variantKey = npc.name?.toLowerCase().includes('professor') ? 'professor'
           : npc.name?.toLowerCase().includes('garden') ? 'gardener'
+          : npc.name?.toLowerCase().includes('hik') ? 'hiker'
+          : npc.name?.toLowerCase().includes('rang') ? 'ranger'
           : 'resident';
-        const variantColors = NPC_VARIANT_COLORS[variantKey] || NPC_VARIANT_COLORS.resident;
         return (
-          <group key={`npc-${i}`} position={[wx, 0, wz]}>
-            <Character3D
-              isWalking={false}
-              walkPhase={0}
-              colors={variantColors}
-            />
-          </group>
+          <NpcBillboard
+            key={`npc-${i}`}
+            variant={variantKey}
+            position={[wx, 0, wz]}
+          />
         );
       })}
 

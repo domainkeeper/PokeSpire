@@ -42,15 +42,23 @@ export function OverworldScene() {
 
   return (
     <>
-      <color attach="background" args={['#87ceeb']} />
-      <ambientLight intensity={0.6} />
+      <color attach="background" args={['#a0bcd0']} />
+      <ambientLight intensity={0.5} color="#d8d0c0" />
+      <hemisphereLight args={['#90b8d0', '#4a7a42', 0.5]} />
       <directionalLight
-        position={[5, 10, 5]}
+        position={[8, 12, 6]}
         intensity={1.2}
-        color="#fff5e1"
+        color="#f0e8d8"
         castShadow
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-camera-near={0.5}
+        shadow-camera-far={40}
+        shadow-camera-left={-15}
+        shadow-camera-right={15}
+        shadow-camera-top={15}
+        shadow-camera-bottom={-15}
+        shadow-bias={-0.001}
       />
 
       <SkyBackground type={mapData.backgroundType} />

@@ -32,14 +32,14 @@ export function makeSkyBackground(): THREE.CanvasTexture {
     const h1 = Math.round(20 + Math.sin(x * 0.02) * 8 + Math.sin(x * 0.05) * 4);
     const h2 = Math.round(15 + Math.sin(x * 0.015 + 1) * 6 + Math.sin(x * 0.04 + 2) * 3);
 
-    pixelRect(ctx, x, 160 - h1, 1, h1, '#2e7d32');
-    pixelRect(ctx, x, 160 - h2, 1, h2, '#388e3c');
+    pixelRect(ctx, x, 160 - h1, 1, h1, '#3a6a3a');
+    pixelRect(ctx, x, 160 - h2, 1, h2, '#3e6e3e');
   }
 
   // hills overlay
   for (let x = 0; x < 480; x++) {
     const h = Math.round(10 + Math.sin(x * 0.03 + 3) * 5);
-    pixelRect(ctx, x, 160 - h, 1, h, '#43a047');
+    pixelRect(ctx, x, 160 - h, 1, h, '#427242');
   }
 
   const tex = createPixelTexture(c, 'sky-bg');

@@ -1,6 +1,7 @@
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { Billboard } from '@react-three/drei';
 
 interface PixelSpriteProps {
   texture: THREE.Texture;
@@ -33,7 +34,7 @@ export function PixelSprite({
       transparent: true,
       alphaTest: 0.1,
       side: THREE.DoubleSide,
-      depthWrite: true,
+      depthWrite: false,
     });
   }, [texture]);
 
@@ -57,13 +58,15 @@ export function PixelSprite({
   });
 
   return (
-    <mesh
-      ref={meshRef}
-      position={[position[0], baseY.current, position[2]]}
-      material={mat}
-      renderOrder={position[2] * 10}
-    >
-      <planeGeometry args={[width, height]} />
-    </mesh>
+    <Billboard follow={true} lockX={false} lockY={false} lockZ={false}>
+      <mesh
+        ref={meshRef}
+        position={[position[0], baseY.current, position[2]]}
+        material={mat}
+        renderOrder={position[2] * 10}
+      >
+        <planeGeometry args={[width, height]} />
+      </mesh>
+    </Billboard>
   );
 }
