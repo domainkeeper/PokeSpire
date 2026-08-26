@@ -889,3 +889,83 @@ Same principle as `plan.md` §8 ("procedural over hand-authored"), re-mapped to 
 ## A.9 Net effect on the day-by-day schedule (`plan.md` §16)
 
 No change to which day each *system* is built (world/movement Day 1, encounters/Pokédex Day 2, battle Day 3, polish Day 4, mobile Day 5) — only the rendering technology within Day 1's and Day 3's tasks changes (R3F/Three.js scenes instead of Phaser scenes; primitive-composed creature models instead of sprite files). The **Day 1 fallback** in `plan.md` §16 ("fall back to a hand-coded 2D array grid...") should be read as superseded by: *if R3F/Three.js integration stalls on Day 1, fall back to the CSS-filter-over-Phaser-2D approach from §A.2/§A.7 of this addendum, not back to plain flat 2D,* to preserve the "not much 2D" direction even in the worst case.
+
+
+---
+
+# AMENDMENT — ASSET PIPELINE ARCHITECTURE & EXPANDED ASSET SOURCING (append beneath `plan.md` and the visual-direction addendum)
+
+**Status:** Amendment, not a replacement. Everything in `plan.md` §2 (License/Legal Audit) still applies in full and is **not weakened by this amendment**. What changes here is (1) a cleaner asset-swapping architecture, and (2) a wider, more thorough search for **complete, permissively-licensed** environment packs, so less has to be hand-assembled from small disparate pieces. This does not authorize sourcing ripped Pokémon-game tiles/sprites/UI (GBA/DS rips, RPG Maker "Pokémon Essentials" graphics, or similar) — those remain out of scope for the reasons already given in `plan.md` §2.D, and no version of this plan instructs an agent to stop checking a license before using an asset.
+
+---
+
+## B.1 Asset pipeline architecture — new mandatory layer, applies regardless of which packs are used
+
+**`[RECOMMENDATION]`, now a hard project rule:** gameplay and rendering code must never reference a specific downloaded file path directly. Every visual/audio asset is addressed through a symbolic **asset ID**, resolved through one central registry.
+
+```
+GAMEPLAY LOGIC  (e.g. "spawn a tree at this tile", "play grass-rustle sfx")
+        ↓  references only symbolic IDs, e.g. "tree_large_01", "sfx_grass_rustle"
+ASSET IDENTIFIERS  (a typed enum/string-union of every ID used in the game)
+        ↓
+ASSET REGISTRY / LOADER  (single JSON or TS map: id → actual file path + metadata)
+        ↓
+ACTUAL ART/AUDIO FILES  (whichever pack they currently come from)
+```
+
+**Implementation (small, one afternoon of work, do this in Phase 1 alongside other setup tasks):**
+
+```ts
+// /src/assets/registry.ts
+export const ASSET_REGISTRY: Record<string, AssetEntry> = {
+  tree_large_01: { path: '/assets/tiles/kenney-rpg-urban/tree_large.png', kind: 'tile', w: 16, h: 16 },
+  tile_grass_tall: { path: '/assets/tiles/ninja-adventure/grass_tall.png', kind: 'tile', w: 16, h: 16 },
+  sfx_hit_impact: { path: '/assets/audio/kenney-impact/impact_04.ogg', kind: 'sfx' },
+  // ...
+};
+
+export function resolveAsset(id: string): AssetEntry {
+  const entry = ASSET_REGISTRY[id];
+  if (!entry) throw new Error(`Unknown asset id: ${id}`);
+  return entry;
+}
+```
+
+- Tilemap data (Tiled JSON exports, per `plan.md` §14) references **tileset images by their registry-resolved path only at build/export time** — the Tiled project file itself can point at whichever pack is current; if a pack is swapped later, only the tileset image + registry entry change, not gameplay code, not the map's tile-index logic.
+- The same pattern applies to 3D model IDs if the visual-direction addendum's Three.js pivot is used (`creature_body_quadruped_01`, `player_model_a`, etc.) — a `useGLTF(resolveAsset(id).path)` call, never a hardcoded path scattered through component code.
+- **Why this matters here specifically:** it means the search-and-swap work described below (§B.2) can happen *continuously*, even after Day 1 — if a better tileset/pack turns up on Day 3, swapping it in touches the registry file and re-exported Tiled maps, not gameplay logic, collision code, or the battle/encounter systems.
+
+---
+
+## B.2 Expanded search — complete, permissively-licensed RPG environment packs
+
+Goal: prefer **one complete pack that already bundles grass + paths + water + trees + buildings + decorations** over assembling many small disparate pieces, wherever such a pack exists under clear terms. Below are verified findings beyond what `plan.md` §19 already lists.
+
+### Strongest find: Ninja Adventure — Asset Pack (pixel-boy)
+- **URL:** `https://pixel-boy.itch.io/ninja-adventure-asset-pack` (also mirrored on GitHub: `https://github.com/pixel-boy/NinjaAdventure`, Godot 4.0 project)
+- **What it provides:** `[VERIFIED]` an unusually complete top-down RPG kit — multiple full biome tilesets (grassland, desert, and others added via updates), dozens of playable character sprite sheets, ~26 monster facesets, a complete UI theme (menus/dialogue boxes/icons), and several music tracks — essentially the "one pack instead of ten" the amendment is asking for.
+- **License:** `[VERIFIED]` **CC0** — confirmed directly by the author in the pack's own Q&A: *"You can use any and all of the assets found in this package in your own games, even commercial ones. Attribution is not required but appreciated."* Same category as Kenney (`plan.md` §2.A) — no restriction on redistribution, modification, or commercial use.
+- **Suitability:** Excellent primary candidate for the town + route + interiors in this project. Its "monster" sprites/facesets are a reasonable additional option for wild-creature stand-ins alongside (not replacing) the primitive-composed 3D creatures from the visual-direction addendum, if the project stays 2D for any portion of the world.
+- **Integration difficulty:** Low — same PNG/spritesheet format as the Kenney packs already planned; drop into the same `/public/assets/tiles` and `/public/assets/characters` structure, register each needed piece in the asset registry (§B.1).
+
+### Other complete/near-complete packs found, with license notes (verify the specific tab before use, per the standing rule in `plan.md` §2.C)
+- **AU_pixel — "Top Down RPG Terrains and Buildings"** (`https://au-pixel.itch.io/top-down-rpg-terrain-and-building-tilesets`) — 16×16 and 32×32 grass/water/rock/mud/cliff/waterfall terrain plus bridges/trees/flowers/fences. `[VERIFIED]` License is a **standard itch commercial license**, not CC0: explicitly permits use in commercial and non-commercial games and modification, but explicitly **prohibits reselling/repackaging/redistributing the raw asset files** and prohibits use in logos/trademarks or NFT projects. **Usable in this project's shipped game** (using the assets *in* the game is allowed) but **not to be committed into a public template repo as redistributable raw files** — keep it in a private/local assets folder if the code repo is ever made public, same handling as `plan.md` §2.E already prescribes for other non-CC0 content.
+- **"Epic RPG World Complete Collection" (RafaelMatos)** (`https://rafaelmatos.itch.io/epic-rpg-world-collection`) — very large, actively-updated, multi-biome collection (grassland, coastline with animated water, village/interiors, and more) with Tiled-editor support. This is a **paid, custom-license pack**, not CC0 — do not use without purchasing and reading its specific license terms; flagged here only as a known, high-quality option if budget/time allows a purchase and the license terms (not yet verified here) turn out to permit the intended use.
+- **Bountiful Bits — "10x10 RPG Assets Top-Down Tileset"** and **16x16 Mini World Sprites** (both appear on itch.io's CC0-tagged tileset listings) — smaller-scope CC0 packs, useful as supplementary decoration/variety rather than a primary complete environment.
+
+### Net sourcing priority order for this project (supersedes nothing in `plan.md`, just orders the search)
+1. **Ninja Adventure — Asset Pack** (CC0) as the primary "almost-complete environment" pack — covers grass/paths/water/trees/buildings/UI/characters/music in one download.
+2. **Kenney packs already listed in `plan.md` §19** (RPG Urban Pack, Roguelike/RPG Pack, Map Pack, audio packs) to fill any gaps Ninja Adventure doesn't cover, or where a specific tile reads better.
+3. Supplementary CC0 packs (Bountiful Bits, MurphysDad's RPG Asset Pack from `plan.md` §1.3) for further variety if needed.
+4. Non-CC0-but-permissive packs (e.g., AU_pixel) only if steps 1–3 leave a specific, material gap, and only ever used in-game (not redistributed as raw files in a public repo).
+5. Paid packs (e.g., Epic RPG World) only by deliberate purchase decision, outside this plan's time/asset budget unless explicitly approved.
+
+This ordering satisfies the "prefer one complete pack over assembling many small ones" goal directly — Ninja Adventure alone likely covers the large majority of `plan.md`'s Town/Route1 asset needs (§7) in a single download, which is exactly the kind of asset-availability win the brief is asking this amendment to chase down.
+
+---
+
+## B.3 What this amendment does NOT change
+
+- `plan.md` §2 (License/Legal Audit) stands in full, including the private-prototype framing for anything Pokémon-specific.
+- The visual-direction addendum's engine pivot (Three.js/toon-3D) and its primitive-composed-creature approach are unaffected — this amendment's pack search is about **environment/tile assets**, which remain relevant background/prop dressing regardless of whether creatures themselves are rendered as 2D sprites or 3D primitives.
+- No search was directed at, and none of the packs above are, ripped or derived Pokémon-game assets (GBA/DS tile rips, RPG Maker "Essentials" graphics, or similar) — those remain excluded per the standing legal audit, and the strong CC0 alternative found (Ninja Adventure) makes that exclusion cost-free rather than a real trade-off.

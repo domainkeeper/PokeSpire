@@ -1,7 +1,9 @@
 import * as THREE from 'three';
 import { makeCanvas, pixelRect, createPixelTexture } from '../PixelCanvas';
 
-export function makePlayerSprite(dir: 'down' | 'up' | 'left' | 'right' = 'down'): THREE.CanvasTexture {
+type WalkFrame = 0 | 1 | 2 | 3;
+
+export function makePlayerSprite(dir: 'down' | 'up' | 'left' | 'right' = 'down', frame: WalkFrame = 0): THREE.CanvasTexture {
   const [c, ctx] = makeCanvas(16, 24);
 
   // hair (dark brown, spiky)
@@ -40,22 +42,25 @@ export function makePlayerSprite(dir: 'down' | 'up' | 'left' | 'right' = 'down')
   pixelRect(ctx, 4, 11, 2, 4, '#e3f2fd');
   pixelRect(ctx, 10, 11, 2, 4, '#e3f2fd');
 
-  // arms
-  pixelRect(ctx, 1, 10, 2, 5, '#ffcc80');
-  pixelRect(ctx, 13, 10, 2, 5, '#ffcc80');
+  // arms with walk animation
+  const armSwing = frame === 1 ? -1 : frame === 3 ? 1 : 0;
+  pixelRect(ctx, 1, 10 + armSwing, 2, 5, '#ffcc80');
+  pixelRect(ctx, 13, 10 - armSwing, 2, 5, '#ffcc80');
 
   // shorts
   pixelRect(ctx, 4, 16, 8, 3, '#0d47a1');
 
-  // legs
-  pixelRect(ctx, 5, 19, 2, 4, '#ffcc80');
-  pixelRect(ctx, 9, 19, 2, 4, '#ffcc80');
+  // legs with walk animation
+  const legOffset1 = frame === 1 ? 1 : frame === 3 ? -1 : 0;
+  const legOffset2 = frame === 1 ? -1 : frame === 3 ? 1 : 0;
+  pixelRect(ctx, 5, 19 + legOffset1, 2, 4, '#ffcc80');
+  pixelRect(ctx, 9, 19 + legOffset2, 2, 4, '#ffcc80');
 
-  // shoes (red)
-  pixelRect(ctx, 4, 22, 3, 2, '#c62828');
-  pixelRect(ctx, 9, 22, 3, 2, '#c62828');
+  // shoes with walk animation
+  pixelRect(ctx, 4, 22 + legOffset1, 3, 2, '#c62828');
+  pixelRect(ctx, 9, 22 + legOffset2, 3, 2, '#c62828');
 
-  const tex = createPixelTexture(c, `player-v2-${dir}`);
+  const tex = createPixelTexture(c, `player-${dir}-f${frame}`);
   tex.needsUpdate = true;
   return tex;
 }

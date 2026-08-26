@@ -1,4 +1,5 @@
 import type { Direction } from '../types/game';
+import type { PokemonSpeciesKey } from './pokemon/pokemonSprites';
 
 export type TileType =
   | 'grass'
@@ -45,6 +46,12 @@ export interface MapExit {
   facing: Direction;
 }
 
+export interface PokemonEncounter {
+  species: PokemonSpeciesKey;
+  gx: number;
+  gy: number;
+}
+
 export interface GameMap {
   name: string;
   width: number;
@@ -54,5 +61,6 @@ export interface GameMap {
   spawn: { x: number; y: number; facing: Direction };
   exits: MapExit[];
   npcPositions: { x: number; y: number; name: string; dialogue: string; color?: string }[];
+  pokemon?: PokemonEncounter[];
   backgroundType: 'town' | 'route';
 }

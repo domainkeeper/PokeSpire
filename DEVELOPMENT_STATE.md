@@ -1,114 +1,104 @@
 # Development State
 
 ## Current Phase
-Day 2 — Visual Rework + Micro-Grid Movement (COMPLETE)
+Day 3 — Visual + Movement Rework (IN PROGRESS)
 
 ## Completed
 - **Day 0**: Full architecture pivot from Phaser to Three.js/R3F
 - **Day 1**: Playable town with player movement, collision, two maps, map transitions
 - **Day 2**: Micro-grid movement system + pixel-art visual foundation
+- **Day 3**: Real Pokémon sprites, continuous movement, walk animations
 
-## Day 2 Details
+## Day 3 Progress
 
-### Micro-Grid Movement System
-- **TILE_SIZE**: 0.25 world units per cell
-- **Town**: 60×60 micro-cells (15×15 world units)
-- **Route 1**: 80×60 micro-cells (20×15 world units)
-- **Player**: Hold WASD/arrows for continuous movement
-- **Speed**: 6 units/sec with smooth interpolation
-- **Collision**: Built from multi-cell object footprints
-- **Grid vs Movement**: Grid is for logic, movement is for humans
+### Real Pokémon Sprites
+- Downloaded Gen 5 animated sprites from PokéAPI for 8 species
+- Pikachu, Eevee, Bulbasaur, Charmander, Squirtle, Pidgey, Rattata, Caterpie
+- Sprites cached locally in `public/assets/pokemon/`
+- Fallback to front sprites if animated fails
+- PokéAPI credit documented in `docs/ASSET_SOURCES.md`
 
-### Multi-Cell Objects
-- Trees: 2×2 collision footprint, 2×3 sprite
-- Buildings: 12×10 collision footprint, 6×5 sprite
-- Rocks: 2×2 collision footprint, 2×1 sprite
-- Fences: variable width, 1-cell height collision
-- Flowers: 1×1 collision-free, animated scale
-- Bushes: 1×1 collision, animated sway
-- Water: multi-cell collision, 4×4 sprite
-- Signs: 1×1 collision, 1×2 sprite
+### Continuous 8-Directional Movement
+- **Max Speed**: 2.0 WU/sec (configurable)
+- **Acceleration**: 12 (smooth start)
+- **Deceleration**: 18 (smooth stop)
+- **Diagonal**: Normalized for consistent speed
+- **Collision**: Grid-based with wall sliding
+- **No grid snapping**: Purely continuous movement
 
-### Pixel-Art Rendering
-- CanvasTexture sprites with NearestFilter (no smoothing)
-- Procedurally generated pixel-art sprites (16×24 characters, 16×24 trees, 20×24 buildings)
-- Sprite-based world: 2D art in 3D space
-- Orthographic camera for pixel-perfect rendering
-- Vertex-colored ground mesh (batched, efficient)
+### Walk Animation
+- 4-frame walk cycle: idle, left-step, idle, right-step
+- Arm swing animation
+- Leg movement animation
+- Vertical bob while walking
+- Idle breathing bob when stationary
 
-### Sprite System
-- `PixelSprite`: Reusable billboard sprite with animation support
-- `PixelCanvas`: Canvas texture generation utilities
-- `characterSprites`: Player + NPC sprite generators
-- `envSprites`: Tree, bush, rock, flower, fence, sign, water, building sprites
-- Animation: `animScale` (flowers), `animSway` (trees/bushes)
+### Route 1 Pokémon Encounters
+- 8 Pokémon placed in Route 1
+- Pikachu near entrance
+- Eevee in clearing
+- Pidgey scattered (2)
+- Rattata in grass (2)
+- Caterpie in grass (2)
 
-### Camera
-- Orthographic camera with zoom 60
-- Smooth follow using player's continuous world position
-- No OrbitControls
+### Environment Animations
+- Trees: gentle rotation sway
+- Flowers: scale pulse
+- Water: vertical bob
+- Bushes: gentle rotation sway
 
-### Visual Style
-- Bright, saturated color palette
-- Pixel-art sprites with visible pixel edges
-- Billboard sprites in 3D space
-- No postprocessing (removed DoF/Bloom/Vignette for pixel clarity)
-- Clean, crisp pixel rendering
+### Visual Improvements
+- Grass tile variation (subtle color noise)
+- Perspective camera FOV 35 (diorama feel)
+- Sky backdrop with clouds/hills
+
+## Day 3 Documentation
+- `docs/VISUAL_STYLE.md` — Visual style guide, palette, scale, animations
+- `docs/ASSET_SOURCES.md` — Asset sources, licenses, attribution
 
 ## Files Created / Modified
 
-### Day 2 New Files
-- `src/utils/gridUtils.ts` — Added `buildBlockedGrid()` for multi-cell collision
-- `src/data/mapTypes.ts` — New types: `MapObject`, `ObjectType`, multi-cell footprints
-- `src/data/townMap.ts` — Rewritten: 60×60 micro-grid, object-based layout
-- `src/data/route1Map.ts` — Rewritten: 80×60 micro-grid, object-based layout
-- `src/game/pixel/PixelCanvas.ts` — Canvas texture utilities
-- `src/game/pixel/PixelSprite.tsx` — Reusable billboard sprite component
-- `src/game/pixel/sprites/characterSprites.ts` — Player + NPC sprite generators
-- `src/game/pixel/sprites/envSprites.ts` — Environment sprite generators
+### Day 3 New Files
+- `docs/VISUAL_STYLE.md` — Visual style guide
+- `docs/ASSET_SOURCES.md` — Asset documentation
+- `src/data/pokemon/pokemonSprites.ts` — Pokémon sprite data and loader
+- `public/assets/pokemon/` — PokéAPI sprite files (8 species × 2 variants)
 
-### Day 2 Modified Files
-- `src/utils/constants.ts` — TILE_SIZE=0.25, camera constants
-- `src/game/entities/Player.tsx` — Complete rewrite: continuous hold-to-move, multi-cell collision
-- `src/game/entities/FollowCamera.tsx` — Smooth follow using continuous position
-- `src/game/scenes/MapRenderer.tsx` — Rewritten: batched ground mesh + sprite objects
-- `src/game/scenes/OverworldScene.tsx` — Updated for new map types
-- `src/game/GameCanvas.tsx` — Orthographic camera, removed Postprocessing
-
-### Day 2 Deleted Files
-- `src/game/entities/Tree.tsx` — Replaced by envSprites
-- `src/game/entities/Rock.tsx` — Replaced by envSprites
-- `src/game/entities/Building.tsx` — Replaced by envSprites
-- `src/game/entities/Flower.tsx` — Replaced by envSprites
-- `src/game/entities/Fence.tsx` — Replaced by envSprites
-- `src/game/entities/Sign.tsx` — Replaced by envSprites
-- `src/game/entities/Water.tsx` — Replaced by envSprites
-- `src/game/entities/NPC.tsx` — Replaced by PixelSprite in MapRenderer
-- `src/game/fx/Postprocessing.tsx` — Removed for pixel clarity
-- `src/game/pixel/PixelCharacter.tsx` — Superseded by Player.tsx
+### Day 3 Modified Files
+- `src/data/mapTypes.ts` — Added `PokemonEncounter` type, optional `pokemon` field
+- `src/data/route1Map.ts` — Added 8 Pokémon encounters
+- `src/utils/constants.ts` — Added PLAYER_ACCELERATION, PLAYER_DECELERATION
+- `src/game/entities/Player.tsx` — Complete rewrite: continuous movement, walk animation
+- `src/game/pixel/sprites/characterSprites.ts` — Added walk frame parameter
+- `src/game/scenes/MapRenderer.tsx` — Added Pokémon sprite rendering, `animWater`
+- `src/game/pixel/PixelSprite.tsx` — Added `animWater` animation type
 
 ## Architecture
-React + TypeScript + Vite + Three.js/R3F + Zustand + CanvasTexture sprites
+React + TypeScript + Vite + Three.js/R3F + Zustand + CanvasTexture sprites + PokéAPI
 
 ## Build Status
 - TypeScript: PASS (zero errors)
-- Vite build: PASS (1,038 KB bundle)
+- Vite build: PASS (1,043 KB bundle)
 
 ## Known Issues
 - Chunk size warning (Three.js ~1MB) — expected
 - No audio yet
 - No save/load UI yet
-- Placeholder sprites (procedural, not hand-drawn)
+- No battle system yet
+- No NPC interaction yet
 
 ## Movement Test Checklist
-1. Hold RIGHT → smooth continuous movement ✓
-2. Hold LEFT → smooth continuous movement ✓
-3. Hold UP/DOWN → smooth continuous movement ✓
-4. Walk around tree → natural collision ✓
-5. Walk alongside building → reasonable collision ✓
-6. Stop moving → immediate idle ✓
+1. Hold WASD → smooth continuous diagonal movement ✓
+2. Hold arrows → smooth continuous diagonal movement ✓
+3. Acceleration/deceleration feels smooth ✓
+4. Wall sliding on collision ✓
+5. Walk animation plays while moving ✓
+6. Idle bob when stationary ✓
 7. Camera follows smoothly ✓
-8. No visible cell-to-cell teleportation ✓
+8. Pokémon sprites visible in Route 1 ✓
+9. Map transitions still work ✓
 
-## Next Task
-Day 3: Battle system, creature encounters, catching mechanics
+## Next Steps
+- Complete remaining Day 3 items (NPC interaction, more world density)
+- Day 4: Battle system foundation
+- Day 5: Polish and testing

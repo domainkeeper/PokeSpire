@@ -10,6 +10,7 @@ interface PixelSpriteProps {
   anchorY?: number;
   animScale?: boolean;
   animSway?: boolean;
+  animWater?: boolean;
 }
 
 export function PixelSprite({
@@ -20,6 +21,7 @@ export function PixelSprite({
   anchorY = 0.5,
   animScale = false,
   animSway = false,
+  animWater = false,
 }: PixelSpriteProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const phase = useRef(Math.random() * Math.PI * 2);
@@ -45,6 +47,10 @@ export function PixelSprite({
 
     if (animSway) {
       meshRef.current.rotation.z = Math.sin(t * 0.8 + phase.current) * 0.03;
+    }
+
+    if (animWater) {
+      meshRef.current.position.y = position[1] + height * anchorY + Math.sin(t * 0.6 + phase.current) * 0.04;
     }
   });
 

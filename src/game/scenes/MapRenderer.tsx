@@ -1,8 +1,10 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import * as THREE from 'three';
 import { gridToWorld } from '../../utils/gridUtils';
 import { TILE_SIZE } from '../../utils/constants';
 import type { GameMap, TileType } from '../../data/mapTypes';
+import { getPokemonSprite } from '../../data/pokemon/pokemonSprites';
+import type { PokemonSpeciesKey } from '../../data/pokemon/pokemonSprites';
 
 import { makeTreeSprite, makeSmallTreeSprite, makeBushSprite, makeRockSprite, makeFlowerSprite, makeFenceSprite, makeSignSprite, makeWaterSprite, makeBuildingSprite } from '../pixel/sprites/envSprites';
 import { makeNpcSprite } from '../pixel/sprites/characterSprites';
@@ -30,6 +32,62 @@ function getSprite(type: string): THREE.Texture {
   return tex;
 }
 
+function usePokemonTexture(species: PokemonSpeciesKey): THREE.Texture | null {
+  const [tex, setTex] = useState<THREE.Texture | null>(null);
+  const sprite = getPokemonSprite(species);
+
+  useEffect(() => {
+    const loader = new THREE.TextureLoader();
+    loader.load(
+      sprite.animated,
+      (texture) => {
+        texture.magFilter = THREE.NearestFilter;
+        texture.minFilter = THREE.NearestFilter;
+        texture.needsUpdate = true;
+        setTex(texture);
+      },
+      undefined,
+      () => {
+        // Fallback to front sprite
+        loader.load(
+          sprite.front,
+          (texture) => {
+            texture.magFilter = THREE.NearestFilter;
+            texture.minFilter = THREE.NearestFilter;
+            texture.needsUpdate = true;
+            setTex(texture);
+          },
+        );
+      },
+    );
+  }, [sprite]);
+
+  return tex;
+}
+
+interface PokemonSpriteProps {
+  species: PokemonSpeciesKey;
+  position: [number, number, number];
+}
+
+function PokemonSprite({ species, position }: PokemonSpriteProps) {
+  const sprite = getPokemonSprite(species);
+  const tex = usePokemonTexture(species);
+
+  if (!tex) return null;
+
+  return (
+    <PixelSprite
+      texture={tex}
+      position={position}
+      width={sprite.spriteWidth}
+      height={sprite.spriteHeight}
+      anchorY={0.15}
+      animScale={true}
+    />
+  );
+}
+
 interface MapRendererProps {
   mapData: GameMap;
 }
@@ -43,6 +101,7 @@ export function MapRenderer({ mapData }: MapRendererProps) {
     const uvs: number[] = [];
 
     const grassColor = new THREE.Color('#4caf50');
+    const grassColor2 = new THREE.Color('#66bb6a');
     const pathColor = new THREE.Color('#d7ccc8');
     const waterColor = new THREE.Color('#039be5');
     const dirtColor = new THREE.Color('#bcaaa4');
@@ -58,7 +117,12 @@ export function MapRenderer({ mapData }: MapRendererProps) {
           case 'path': color = pathColor; break;
           case 'water': color = waterColor; break;
           case 'dirt': color = dirtColor; break;
-          default: color = grassColor; break;
+          default: {
+            // Subtle grass variation
+            const noise = ((x * 7 + y * 13) % 5) / 5;
+            color = noise > 0.5 ? grassColor : grassColor2;
+            break;
+          }
         }
 
         positions.push(wx, -0.05, wz, wx+s, -0.05, wz, wx+s, -0.05, wz+s, wx, -0.05, wz, wx+s, -0.05, wz+s, wx, -0.05, wz+s);
@@ -88,7 +152,6 @@ export function MapRenderer({ mapData }: MapRendererProps) {
       {sortedObjects.map((obj, i) => {
         const [wx, , wz] = gridToWorld(obj.gx, obj.gy);
         const tex = getSprite(obj.type);
-        // spriteW and spriteH are in WORLD UNITS, not grid cells
         const sw = obj.spriteW;
         const sh = obj.spriteH;
         const animScale = obj.type === 'flower';
@@ -104,6 +167,7 @@ export function MapRenderer({ mapData }: MapRendererProps) {
             anchorY={0.15}
             animScale={animScale}
             animSway={animSway}
+            animWater={obj.type === 'water'}
           />
         );
       })}
@@ -119,6 +183,17 @@ export function MapRenderer({ mapData }: MapRendererProps) {
             width={0.7}
             height={1.1}
             anchorY={0.15}
+          />
+        );
+      })}
+
+      {mapData.pokemon?.map((p, i) => {
+        const [wx, , wz] = gridToWorld(p.gx, p.gy);
+        return (
+          <PokemonSprite
+            key={`pokemon-${i}`}
+            species={p.species}
+            position={[wx, 0, wz]}
           />
         );
       })}

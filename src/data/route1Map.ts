@@ -111,5 +111,15 @@ export const route1Map: GameMap = {
   npcPositions: [
     { x: 60, y: 40, name: 'Hiker', dialogue: 'This route leads to tall grass. Be careful!', color: '#8d6e63' },
   ],
+  pokemon: [
+    { species: 'pikachu', gx: 30, gy: 20 },
+    { species: 'eevee', gx: 100, gy: 24 },
+    { species: 'pidgey', gx: 14, gy: 70 },
+    { species: 'pidgey', gx: 146, gy: 30 },
+    { species: 'rattata', gx: 56, gy: 56 },
+    { species: 'rattata', gx: 110, gy: 88 },
+    { species: 'caterpie', gx: 22, gy: 100 },
+    { species: 'caterpie', gx: 120, gy: 104 },
+  ],
   backgroundType: 'route',
 };
