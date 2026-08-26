@@ -5,113 +5,111 @@ const P: TileType = 'path';
 const W: TileType = 'water';
 
 function makeGround(): TileType[][] {
-  const grid: TileType[][] = Array.from({ length: 60 }, () =>
-    Array.from({ length: 80 }, () => G),
+  const grid: TileType[][] = Array.from({ length: 120 }, () =>
+    Array.from({ length: 160 }, () => G),
   );
 
-  // main path running vertically
-  for (let y = 0; y < 60; y++) {
-    for (let x = 38; x <= 42; x++) {
-      grid[y][x] = P;
-    }
+  // main vertical path
+  for (let y = 0; y < 120; y++) {
+    for (let x = 76; x <= 84; x++) grid[y][x] = P;
   }
 
   // branching paths
-  for (let x = 20; x <= 42; x++) {
-    for (let y = 18; y <= 22; y++) {
-      grid[y][x] = P;
-    }
+  for (let x = 40; x <= 84; x++) {
+    for (let y = 36; y <= 44; y++) grid[y][x] = P;
   }
-
-  for (let x = 38; x <= 60; x++) {
-    for (let y = 38; y <= 42; y++) {
-      grid[y][x] = P;
-    }
+  for (let x = 76; x <= 120; x++) {
+    for (let y = 76; y <= 84; y++) grid[y][x] = P;
   }
 
   // pond
-  for (let y = 28; y <= 36; y++) {
-    for (let x = 10; x <= 22; x++) {
-      grid[y][x] = W;
-    }
+  for (let y = 56; y <= 72; y++) {
+    for (let x = 18; x <= 42; x++) grid[y][x] = W;
   }
 
-  // exit path at top
-  for (let y = 0; y <= 4; y++) {
-    for (let x = 38; x <= 42; x++) {
-      grid[y][x] = P;
-    }
+  // exit path
+  for (let y = 0; y <= 6; y++) {
+    for (let x = 76; x <= 84; x++) grid[y][x] = P;
   }
 
   return grid;
 }
 
 const objects: MapObject[] = [
-  // border trees top
-  ...Array.from({ length: 80 }, (_, i) => ({ type: 'tree' as const, gx: i, gy: 0, footprintW: 2, footprintH: 2, collision: true, spriteW: 2, spriteH: 3 })),
-  // border trees bottom
-  ...Array.from({ length: 80 }, (_, i) => ({ type: 'tree' as const, gx: i, gy: 58, footprintW: 2, footprintH: 2, collision: true, spriteW: 2, spriteH: 3 })),
-  // border trees left
-  ...Array.from({ length: 60 }, (_, i) => ({ type: 'tree' as const, gx: 0, gy: i, footprintW: 2, footprintH: 2, collision: true, spriteW: 2, spriteH: 3 })),
-  // border trees right
-  ...Array.from({ length: 60 }, (_, i) => ({ type: 'tree' as const, gx: 78, gy: i, footprintW: 2, footprintH: 2, collision: true, spriteW: 2, spriteH: 3 })),
+  // border trees
+  ...Array.from({ length: 28 }, (_, i) => ({
+    type: 'tree' as const, gx: i * 6, gy: 0, footprintW: 4, footprintH: 4,
+    collision: true, spriteW: 2, spriteH: 3,
+  })),
+  ...Array.from({ length: 28 }, (_, i) => ({
+    type: 'tree' as const, gx: i * 6, gy: 116, footprintW: 4, footprintH: 4,
+    collision: true, spriteW: 2, spriteH: 3,
+  })),
+  ...Array.from({ length: 20 }, (_, i) => ({
+    type: 'tree' as const, gx: 0, gy: i * 6, footprintW: 4, footprintH: 4,
+    collision: true, spriteW: 2, spriteH: 3,
+  })),
+  ...Array.from({ length: 20 }, (_, i) => ({
+    type: 'tree' as const, gx: 156, gy: i * 6, footprintW: 4, footprintH: 4,
+    collision: true, spriteW: 2, spriteH: 3,
+  })),
 
   // scattered trees
-  { type: 'tree', gx: 5, gy: 8, footprintW: 2, footprintH: 2, collision: true, spriteW: 2, spriteH: 3, animSway: true },
-  { type: 'tree', gx: 70, gy: 10, footprintW: 2, footprintH: 2, collision: true, spriteW: 2, spriteH: 3, animSway: true },
-  { type: 'tree', gx: 8, gy: 45, footprintW: 2, footprintH: 2, collision: true, spriteW: 2, spriteH: 3, animSway: true },
-  { type: 'tree', gx: 65, gy: 48, footprintW: 2, footprintH: 2, collision: true, spriteW: 2, spriteH: 3, animSway: true },
-  { type: 'tree', gx: 30, gy: 10, footprintW: 2, footprintH: 2, collision: true, spriteW: 2, spriteH: 3, animSway: true },
-  { type: 'tree', gx: 55, gy: 30, footprintW: 2, footprintH: 2, collision: true, spriteW: 2, spriteH: 3, animSway: true },
-  { type: 'small_tree', gx: 15, gy: 15, footprintW: 1, footprintH: 1, collision: true, spriteW: 1, spriteH: 2, animSway: true },
-  { type: 'small_tree', gx: 60, gy: 20, footprintW: 1, footprintH: 1, collision: true, spriteW: 1, spriteH: 2, animSway: true },
-  { type: 'small_tree', gx: 25, gy: 50, footprintW: 1, footprintH: 1, collision: true, spriteW: 1, spriteH: 2, animSway: true },
-  { type: 'small_tree', gx: 50, gy: 52, footprintW: 1, footprintH: 1, collision: true, spriteW: 1, spriteH: 2, animSway: true },
+  { type: 'tree', gx: 8, gy: 16, footprintW: 4, footprintH: 4, collision: true, spriteW: 2, spriteH: 3, animSway: true },
+  { type: 'tree', gx: 140, gy: 20, footprintW: 4, footprintH: 4, collision: true, spriteW: 2, spriteH: 3, animSway: true },
+  { type: 'tree', gx: 14, gy: 90, footprintW: 4, footprintH: 4, collision: true, spriteW: 2, spriteH: 3, animSway: true },
+  { type: 'tree', gx: 130, gy: 96, footprintW: 4, footprintH: 4, collision: true, spriteW: 2, spriteH: 3, animSway: true },
+  { type: 'tree', gx: 56, gy: 20, footprintW: 4, footprintH: 4, collision: true, spriteW: 2, spriteH: 3, animSway: true },
+  { type: 'tree', gx: 110, gy: 60, footprintW: 4, footprintH: 4, collision: true, spriteW: 2, spriteH: 3, animSway: true },
+  { type: 'small_tree', gx: 28, gy: 30, footprintW: 3, footprintH: 3, collision: true, spriteW: 1.2, spriteH: 2, animSway: true },
+  { type: 'small_tree', gx: 120, gy: 40, footprintW: 3, footprintH: 3, collision: true, spriteW: 1.2, spriteH: 2, animSway: true },
+  { type: 'small_tree', gx: 50, gy: 100, footprintW: 3, footprintH: 3, collision: true, spriteW: 1.2, spriteH: 2, animSway: true },
+  { type: 'small_tree', gx: 100, gy: 104, footprintW: 3, footprintH: 3, collision: true, spriteW: 1.2, spriteH: 2, animSway: true },
 
   // bushes
-  { type: 'bush', gx: 12, gy: 12, footprintW: 1, footprintH: 1, collision: true, spriteW: 1, spriteH: 1, animSway: true },
-  { type: 'bush', gx: 62, gy: 15, footprintW: 1, footprintH: 1, collision: true, spriteW: 1, spriteH: 1, animSway: true },
-  { type: 'bush', gx: 18, gy: 42, footprintW: 1, footprintH: 1, collision: true, spriteW: 1, spriteH: 1, animSway: true },
-  { type: 'bush', gx: 58, gy: 45, footprintW: 1, footprintH: 1, collision: true, spriteW: 1, spriteH: 1, animSway: true },
-  { type: 'bush', gx: 35, gy: 30, footprintW: 1, footprintH: 1, collision: true, spriteW: 1, spriteH: 1, animSway: true },
-  { type: 'bush', gx: 48, gy: 28, footprintW: 1, footprintH: 1, collision: true, spriteW: 1, spriteH: 1, animSway: true },
+  { type: 'bush', gx: 22, gy: 24, footprintW: 2, footprintH: 2, collision: true, spriteW: 0.8, spriteH: 0.6, animSway: true },
+  { type: 'bush', gx: 124, gy: 30, footprintW: 2, footprintH: 2, collision: true, spriteW: 0.8, spriteH: 0.6, animSway: true },
+  { type: 'bush', gx: 36, gy: 84, footprintW: 2, footprintH: 2, collision: true, spriteW: 0.8, spriteH: 0.6, animSway: true },
+  { type: 'bush', gx: 116, gy: 90, footprintW: 2, footprintH: 2, collision: true, spriteW: 0.8, spriteH: 0.6, animSway: true },
+  { type: 'bush', gx: 70, gy: 60, footprintW: 2, footprintH: 2, collision: true, spriteW: 0.8, spriteH: 0.6, animSway: true },
+  { type: 'bush', gx: 96, gy: 56, footprintW: 2, footprintH: 2, collision: true, spriteW: 0.8, spriteH: 0.6, animSway: true },
 
   // rocks
-  { type: 'rock', gx: 25, gy: 25, footprintW: 2, footprintH: 2, collision: true, spriteW: 2, spriteH: 1 },
-  { type: 'rock', gx: 52, gy: 35, footprintW: 2, footprintH: 2, collision: true, spriteW: 2, spriteH: 1 },
-  { type: 'rock', gx: 15, gy: 52, footprintW: 2, footprintH: 2, collision: true, spriteW: 2, spriteH: 1 },
+  { type: 'rock', gx: 50, gy: 50, footprintW: 3, footprintH: 3, collision: true, spriteW: 1, spriteH: 0.7 },
+  { type: 'rock', gx: 104, gy: 70, footprintW: 3, footprintH: 3, collision: true, spriteW: 1, spriteH: 0.7 },
+  { type: 'rock', gx: 30, gy: 104, footprintW: 3, footprintH: 3, collision: true, spriteW: 1, spriteH: 0.7 },
 
   // flowers
-  { type: 'flower', gx: 8, gy: 20, footprintW: 1, footprintH: 1, collision: false, spriteW: 1, spriteH: 1, animScale: true },
-  { type: 'flower', gx: 9, gy: 21, footprintW: 1, footprintH: 1, collision: false, spriteW: 1, spriteH: 1, animScale: true },
-  { type: 'flower', gx: 55, gy: 22, footprintW: 1, footprintH: 1, collision: false, spriteW: 1, spriteH: 1, animScale: true },
-  { type: 'flower', gx: 30, gy: 48, footprintW: 1, footprintH: 1, collision: false, spriteW: 1, spriteH: 1, animScale: true },
-  { type: 'flower', gx: 60, gy: 40, footprintW: 1, footprintH: 1, collision: false, spriteW: 1, spriteH: 1, animScale: true },
-  { type: 'flower', gx: 22, gy: 35, footprintW: 1, footprintH: 1, collision: false, spriteW: 1, spriteH: 1, animScale: true },
+  { type: 'flower', gx: 14, gy: 40, footprintW: 1, footprintH: 1, collision: false, spriteW: 0.4, spriteH: 0.5, animScale: true },
+  { type: 'flower', gx: 16, gy: 42, footprintW: 1, footprintH: 1, collision: false, spriteW: 0.4, spriteH: 0.5, animScale: true },
+  { type: 'flower', gx: 110, gy: 44, footprintW: 1, footprintH: 1, collision: false, spriteW: 0.4, spriteH: 0.5, animScale: true },
+  { type: 'flower', gx: 60, gy: 96, footprintW: 1, footprintH: 1, collision: false, spriteW: 0.4, spriteH: 0.5, animScale: true },
+  { type: 'flower', gx: 120, gy: 80, footprintW: 1, footprintH: 1, collision: false, spriteW: 0.4, spriteH: 0.5, animScale: true },
+  { type: 'flower', gx: 44, gy: 70, footprintW: 1, footprintH: 1, collision: false, spriteW: 0.4, spriteH: 0.5, animScale: true },
 
-  // water pond (collision)
-  { type: 'water', gx: 10, gy: 28, footprintW: 12, footprintH: 8, collision: true, spriteW: 6, spriteH: 4 },
+  // water pond (large)
+  { type: 'water', gx: 18, gy: 56, footprintW: 24, footprintH: 16, collision: true, spriteW: 4, spriteH: 3 },
 
-  // sign at entrance
-  { type: 'sign', gx: 44, gy: 5, footprintW: 1, footprintH: 1, collision: true, spriteW: 1, spriteH: 2 },
+  // sign
+  { type: 'sign', gx: 88, gy: 10, footprintW: 2, footprintH: 2, collision: true, spriteW: 0.6, spriteH: 1 },
 
   // fence sections
-  { type: 'fence', gx: 30, gy: 15, footprintW: 6, footprintH: 1, collision: true, spriteW: 3, spriteH: 1 },
-  { type: 'fence', gx: 45, gy: 35, footprintW: 6, footprintH: 1, collision: true, spriteW: 3, spriteH: 1 },
+  { type: 'fence', gx: 60, gy: 30, footprintW: 12, footprintH: 2, collision: true, spriteW: 2, spriteH: 0.5 },
+  { type: 'fence', gx: 90, gy: 70, footprintW: 12, footprintH: 2, collision: true, spriteW: 2, spriteH: 0.5 },
 ];
 
 export const route1Map: GameMap = {
   name: 'route1',
-  width: 80,
-  height: 60,
+  width: 160,
+  height: 120,
   ground: makeGround(),
   objects,
-  spawn: { x: 40, y: 3, facing: 'down' },
+  spawn: { x: 80, y: 4, facing: 'down' },
   exits: [
-    { x: 38, y: 0, w: 4, h: 1, toMap: 'town', spawnX: 30, spawnY: 55, facing: 'down' },
+    { x: 76, y: 0, w: 8, h: 2, toMap: 'town', spawnX: 60, spawnY: 114, facing: 'down' },
   ],
   npcPositions: [
-    { x: 30, y: 20, name: 'Hiker', dialogue: 'This route leads to tall grass. Be careful!', color: '#8d6e63' },
+    { x: 60, y: 40, name: 'Hiker', dialogue: 'This route leads to tall grass. Be careful!', color: '#8d6e63' },
   ],
   backgroundType: 'route',
 };

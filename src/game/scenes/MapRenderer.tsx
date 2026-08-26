@@ -35,7 +35,6 @@ interface MapRendererProps {
 }
 
 export function MapRenderer({ mapData }: MapRendererProps) {
-  // batch ground into one geometry
   const groundMesh = useMemo(() => {
     const geo = new THREE.BufferGeometry();
     const positions: number[] = [];
@@ -43,10 +42,10 @@ export function MapRenderer({ mapData }: MapRendererProps) {
     const colors: number[] = [];
     const uvs: number[] = [];
 
-    const grassColor = new THREE.Color('#4caf50');
-    const pathColor = new THREE.Color('#bcaaa4');
+    const grassColor = new THREE.Color('#66bb6a');
+    const pathColor = new THREE.Color('#d7ccc8');
     const waterColor = new THREE.Color('#29b6f6');
-    const dirtColor = new THREE.Color('#a1887f');
+    const dirtColor = new THREE.Color('#bcaaa4');
 
     for (let y = 0; y < mapData.height; y++) {
       for (let x = 0; x < mapData.width; x++) {
@@ -62,19 +61,9 @@ export function MapRenderer({ mapData }: MapRendererProps) {
           default: color = grassColor; break;
         }
 
-        const v = [
-          wx, -0.05, wz,
-          wx + s, -0.05, wz,
-          wx + s, -0.05, wz + s,
-          wx, -0.05, wz,
-          wx + s, -0.05, wz + s,
-          wx, -0.05, wz + s,
-        ];
-        const n = [0,1,0, 0,1,0, 0,1,0, 0,1,0, 0,1,0, 0,1,0];
-
-        for (let i = 0; i < 18; i++) positions.push(v[i]);
-        for (let i = 0; i < 18; i++) normals.push(n[i]);
-        for (let i = 0; i < 6; i++) colors.push(color.r, color.g, color.b);
+        positions.push(wx, -0.05, wz, wx+s, -0.05, wz, wx+s, -0.05, wz+s, wx, -0.05, wz, wx+s, -0.05, wz+s, wx, -0.05, wz+s);
+        normals.push(0,1,0, 0,1,0, 0,1,0, 0,1,0, 0,1,0, 0,1,0);
+        colors.push(color.r, color.g, color.b, color.r, color.g, color.b, color.r, color.g, color.b, color.r, color.g, color.b, color.r, color.g, color.b, color.r, color.g, color.b);
         uvs.push(0,0, 1,0, 1,1, 0,0, 1,1, 0,1);
       }
     }
@@ -88,7 +77,6 @@ export function MapRenderer({ mapData }: MapRendererProps) {
     return new THREE.Mesh(geo, mat);
   }, [mapData]);
 
-  // object sprites sorted by Y for depth
   const sortedObjects = useMemo(() => {
     return [...mapData.objects].sort((a, b) => a.gy - b.gy);
   }, [mapData]);
@@ -100,8 +88,9 @@ export function MapRenderer({ mapData }: MapRendererProps) {
       {sortedObjects.map((obj, i) => {
         const [wx, , wz] = gridToWorld(obj.gx, obj.gy);
         const tex = getSprite(obj.type);
-        const sw = obj.spriteW * TILE_SIZE;
-        const sh = obj.spriteH * TILE_SIZE;
+        // spriteW and spriteH are in WORLD UNITS, not grid cells
+        const sw = obj.spriteW;
+        const sh = obj.spriteH;
         const animScale = obj.type === 'flower';
         const animSway = obj.animSway;
 
@@ -109,10 +98,10 @@ export function MapRenderer({ mapData }: MapRendererProps) {
           <PixelSprite
             key={`obj-${i}`}
             texture={tex}
-            position={[wx + sw / 2, 0, wz + sh / 2]}
+            position={[wx, 0, wz]}
             width={sw}
             height={sh}
-            anchorY={0.2}
+            anchorY={0.15}
             animScale={animScale}
             animSway={animSway}
           />
@@ -127,9 +116,9 @@ export function MapRenderer({ mapData }: MapRendererProps) {
             key={`npc-${i}`}
             texture={npcTex}
             position={[wx, 0, wz]}
-            width={0.8}
-            height={1.2}
-            anchorY={0.2}
+            width={0.7}
+            height={1.1}
+            anchorY={0.15}
           />
         );
       })}

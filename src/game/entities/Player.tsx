@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useGameStore } from '../../state/gameStore';
 import { gridToWorld, buildBlockedGrid } from '../../utils/gridUtils';
-import { PLAYER_SPEED } from '../../utils/constants';
+import { PLAYER_SPEED, PLAYER_SPRITE_W, PLAYER_SPRITE_H } from '../../utils/constants';
 import { makePlayerSprite } from '../pixel/sprites/characterSprites';
 import type { Direction } from '../../types/game';
 import type { GameMap } from '../../data/mapTypes';
@@ -110,12 +110,11 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
       const ddz = target.z - pos.z;
       const dist = Math.sqrt(ddx * ddx + ddz * ddz);
 
-      if (dist < 0.02) {
+      if (dist < 0.01) {
         pos.x = target.x;
         pos.z = target.z;
         isMoving.current = false;
 
-        // continue moving if key held
         const keys2 = keysDown.current;
         let nextDir: Direction | null = null;
         if (keys2.has('w') || keys2.has('arrowup')) nextDir = 'up';
@@ -134,14 +133,13 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
         }
       }
 
-      bobPhase.current += delta * 10;
+      bobPhase.current += delta * 8;
       meshRef.current.position.y = Math.sin(bobPhase.current) * 0.03;
     } else {
-      bobPhase.current += delta * 2;
+      bobPhase.current += delta * 1.5;
       meshRef.current.position.y = Math.sin(bobPhase.current) * 0.015;
     }
 
-    // update sprite facing
     const facing = useGameStore.getState().player.facing;
     const newTex = makePlayerSprite(facing);
     mat.current.map = newTex;
@@ -159,9 +157,8 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
       ref={meshRef}
       position={[wp[0], 0, wp[2]]}
       material={mat.current}
-      renderOrder={100}
     >
-      <planeGeometry args={[0.8, 1.2]} />
+      <planeGeometry args={[PLAYER_SPRITE_W, PLAYER_SPRITE_H]} />
     </mesh>
   );
 }

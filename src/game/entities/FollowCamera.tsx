@@ -9,18 +9,20 @@ export function FollowCamera() {
   const { camera } = useThree();
   const currentPos = useRef(new THREE.Vector3());
   const lookTarget = useRef(new THREE.Vector3());
+  const initialized = useRef(false);
 
   useFrame((_, delta) => {
     const player = useGameStore.getState().player;
     const wp = gridToWorld(player.x, player.y);
 
-    const targetPos = new THREE.Vector3(
-      wp[0] * 0.6,
-      CAMERA_HEIGHT,
-      wp[2] * 0.6 + CAMERA_DISTANCE,
-    );
+    const targetPos = new THREE.Vector3(wp[0], CAMERA_HEIGHT, wp[2] + CAMERA_DISTANCE);
+    const targetLook = new THREE.Vector3(wp[0], 0, wp[2]);
 
-    const targetLook = new THREE.Vector3(wp[0] * 0.7, 0, wp[2] * 0.7);
+    if (!initialized.current) {
+      currentPos.current.copy(targetPos);
+      lookTarget.current.copy(targetLook);
+      initialized.current = true;
+    }
 
     const lerp = Math.min(1, CAMERA_LERP * delta);
     currentPos.current.lerp(targetPos, lerp);

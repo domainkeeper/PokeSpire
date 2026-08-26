@@ -8,8 +8,8 @@ export function GameCanvas() {
       <Canvas
         orthographic
         camera={{
-          zoom: 60,
-          position: [0, 12, 10],
+          zoom: 80,
+          position: [0, 10, 7],
           near: 0.1,
           far: 100,
         }}
