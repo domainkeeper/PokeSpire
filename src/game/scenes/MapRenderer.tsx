@@ -81,31 +81,37 @@ function PokemonSprite({ species, position }: { species: PokemonSpeciesKey; posi
   );
 }
 
-// Tile type to color mapping
+// Tile type to color mapping — rich, saturated palette
 const TILE_COLORS: Record<TileType, THREE.Color[]> = {
   grass: [
+    new THREE.Color('#3d8b37'),
     new THREE.Color('#4caf50'),
+    new THREE.Color('#5cb85c'),
     new THREE.Color('#66bb6a'),
-    new THREE.Color('#81c784'),
     new THREE.Color('#43a047'),
+    new THREE.Color('#388e3c'),
   ],
   path: [
-    new THREE.Color('#d7ccc8'),
+    new THREE.Color('#c8b68e'),
     new THREE.Color('#bcaaa4'),
-    new THREE.Color('#c8b8ac'),
+    new THREE.Color('#d4c49a'),
+    new THREE.Color('#a89070'),
   ],
   water: [
-    new THREE.Color('#29b6f6'),
-    new THREE.Color('#039be5'),
-    new THREE.Color('#4fc3f7'),
+    new THREE.Color('#1e88e5'),
+    new THREE.Color('#2196f3'),
+    new THREE.Color('#42a5f5'),
+    new THREE.Color('#1565c0'),
   ],
   dirt: [
-    new THREE.Color('#bcaaa4'),
+    new THREE.Color('#8d6e4c'),
     new THREE.Color('#a1887f'),
+    new THREE.Color('#795548'),
   ],
   sand: [
+    new THREE.Color('#e8d56a'),
     new THREE.Color('#f0e68c'),
-    new THREE.Color('#e6d66a'),
+    new THREE.Color('#dbc07c'),
   ],
 };
 
@@ -202,7 +208,7 @@ function GroundInstancedMesh({
       args={[geo, undefined, count]}
       frustumCulled={false}
     >
-      <meshBasicMaterial vertexColors toneMapped={false} />
+      <meshBasicMaterial toneMapped={false} />
     </instancedMesh>
   );
 }
@@ -221,7 +227,7 @@ function BaseGround({ mapData }: { mapData: GameMap }) {
       receiveShadow={false}
     >
       <planeGeometry args={[width, height]} />
-      <meshBasicMaterial color="#4caf50" side={THREE.DoubleSide} />
+      <meshBasicMaterial color="#3d8b37" side={THREE.DoubleSide} />
     </mesh>
   );
 }

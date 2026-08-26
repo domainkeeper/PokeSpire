@@ -44,6 +44,7 @@ export function OverworldScene() {
     <>
       <color attach="background" args={['#87ceeb']} />
       <ambientLight intensity={1} />
+      <fog attach="fog" args={['#c8e6ff', 8, 22]} />
 
       <SkyBackground type={mapData.backgroundType} />
       <MapRenderer mapData={mapData} />
