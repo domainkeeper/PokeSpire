@@ -24,13 +24,21 @@ export function SkyBackground({ type }: SkyBackgroundProps) {
   }, [tex]);
 
   useFrame(() => {
-    // reserved for future cloud parallax
+    if (meshRef.current) {
+      meshRef.current.rotation.y = 0;
+    }
   });
 
   return (
-    <mesh ref={meshRef} position={[0, 8, -20]} renderOrder={-1000}>
-      <planeGeometry args={[50, 15]} />
-      <primitive object={mat} attach="material" />
-    </mesh>
+    <group>
+      <mesh ref={meshRef} position={[0, 10, -15]} renderOrder={-1000}>
+        <planeGeometry args={[60, 20]} />
+        <primitive object={mat} attach="material" />
+      </mesh>
+      <mesh position={[0, 10, 30]} renderOrder={-1000}>
+        <planeGeometry args={[60, 20]} />
+        <primitive object={mat.clone()} attach="material" />
+      </mesh>
+    </group>
   );
 }

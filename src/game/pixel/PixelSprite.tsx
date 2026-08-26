@@ -25,6 +25,7 @@ export function PixelSprite({
 }: PixelSpriteProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const phase = useRef(Math.random() * Math.PI * 2);
+  const baseY = useRef(position[1] + height * anchorY);
 
   const mat = useMemo(() => {
     return new THREE.MeshBasicMaterial({
@@ -32,7 +33,7 @@ export function PixelSprite({
       transparent: true,
       alphaTest: 0.1,
       side: THREE.DoubleSide,
-      depthWrite: false,
+      depthWrite: true,
     });
   }, [texture]);
 
@@ -41,24 +42,26 @@ export function PixelSprite({
     const t = state.clock.elapsedTime;
 
     if (animScale) {
-      const s = 1 + Math.sin(t * 1.5 + phase.current) * 0.06;
+      const s = 1 + Math.sin(t * 1.5 + phase.current) * 0.08;
       meshRef.current.scale.set(s, s, s);
     }
 
     if (animSway) {
-      meshRef.current.rotation.z = Math.sin(t * 0.8 + phase.current) * 0.03;
+      meshRef.current.rotation.z = Math.sin(t * 0.8 + phase.current) * 0.04;
+      meshRef.current.rotation.y = Math.sin(t * 0.5 + phase.current * 0.7) * 0.03;
     }
 
     if (animWater) {
-      meshRef.current.position.y = position[1] + height * anchorY + Math.sin(t * 0.6 + phase.current) * 0.04;
+      meshRef.current.position.y = baseY.current + Math.sin(t * 0.6 + phase.current) * 0.04;
     }
   });
 
   return (
     <mesh
       ref={meshRef}
-      position={[position[0], position[1] + height * anchorY, position[2]]}
+      position={[position[0], baseY.current, position[2]]}
       material={mat}
+      renderOrder={position[2] * 10}
     >
       <planeGeometry args={[width, height]} />
     </mesh>

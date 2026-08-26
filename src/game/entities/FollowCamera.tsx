@@ -7,35 +7,32 @@ import { CAMERA_LERP } from '../../utils/constants';
 
 export function FollowCamera() {
   const { camera } = useThree();
-  const currentPos = useRef(new THREE.Vector3());
-  const lookTarget = useRef(new THREE.Vector3());
+  const targetPos = useRef(new THREE.Vector3());
+  const targetLook = useRef(new THREE.Vector3());
   const initialized = useRef(false);
 
   useFrame((_, delta) => {
     const player = useGameStore.getState().player;
     const wp = gridToWorld(player.x, player.y);
 
-    // Camera: behind and above player, looking down at ~45 degrees
-    // wp[0] = world X of player, wp[2] = world Z of player
-    const targetPos = new THREE.Vector3(wp[0], 10, wp[2] + 8);
-    const targetLook = new THREE.Vector3(wp[0], 0, wp[2]);
+    const desiredPos = new THREE.Vector3(wp[0], 10, wp[2] + 8);
+    const desiredLook = new THREE.Vector3(wp[0], 0, wp[2]);
 
     if (!initialized.current) {
-      currentPos.current.copy(targetPos);
-      lookTarget.current.copy(targetLook);
+      targetPos.current.copy(desiredPos);
+      targetLook.current.copy(desiredLook);
+      camera.position.copy(desiredPos);
+      camera.lookAt(desiredLook);
       initialized.current = true;
-      // Snap camera immediately on first frame
-      camera.position.copy(currentPos.current);
-      camera.lookAt(lookTarget.current);
       return;
     }
 
     const lerp = Math.min(1, CAMERA_LERP * delta);
-    currentPos.current.lerp(targetPos, lerp);
-    lookTarget.current.lerp(targetLook, lerp);
+    targetPos.current.lerp(desiredPos, lerp);
+    targetLook.current.lerp(desiredLook, lerp);
 
-    camera.position.copy(currentPos.current);
-    camera.lookAt(lookTarget.current);
+    camera.position.copy(targetPos.current);
+    camera.lookAt(targetLook.current);
   });
 
   return null;

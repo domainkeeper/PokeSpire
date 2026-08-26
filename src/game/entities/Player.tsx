@@ -44,7 +44,7 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
       transparent: true,
       alphaTest: 0.1,
       side: THREE.DoubleSide,
-      depthWrite: false,
+      depthWrite: true,
     }),
   );
 
@@ -77,8 +77,15 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
   );
 
   useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => keysDown.current.add(e.key.toLowerCase());
-    const onKeyUp = (e: KeyboardEvent) => keysDown.current.delete(e.key.toLowerCase());
+    const onKeyDown = (e: KeyboardEvent) => {
+      const k = e.key.toLowerCase();
+      if (['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k)) {
+        keysDown.current.add(k);
+      }
+    };
+    const onKeyUp = (e: KeyboardEvent) => {
+      keysDown.current.delete(e.key.toLowerCase());
+    };
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
     return () => {
@@ -106,7 +113,6 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
       dz /= len;
     }
 
-    // Determine facing from input
     if (isMoving) {
       if (Math.abs(dx) > Math.abs(dz)) {
         lastFacing.current = dx > 0 ? 'right' : 'left';
@@ -126,7 +132,6 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
     const newX = pos.x + vel.x * delta;
     const newZ = pos.z + vel.z * delta;
 
-    // Check collision with sliding
     const canMoveX = !checkCollision(newX, pos.z);
     const canMoveZ = !checkCollision(pos.x, newZ);
 
@@ -141,47 +146,41 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
       vel.z = 0;
     }
 
-    // Update grid position in store
     const gx = Math.round(pos.x / TILE_SIZE);
     const gz = Math.round(pos.z / TILE_SIZE);
     if (gx !== player.x || gz !== player.y || lastFacing.current !== player.facing) {
       setPlayerPosition(gx, gz, lastFacing.current, mapData.name);
     }
 
-    // Check exits
     checkExit(pos.x, pos.z, lastFacing.current);
 
-    // Walk animation
-    if (isMoving && (Math.abs(vel.x) > 0.1 || Math.abs(vel.z) > 0.1)) {
-      walkPhase.current += delta * 10;
+    const speed = Math.sqrt(vel.x * vel.x + vel.z * vel.z);
+    if (speed > 0.05) {
+      walkPhase.current += delta * 8;
       walkCycle.current = Math.floor(walkPhase.current) % 4;
     } else {
       walkPhase.current = 0;
       walkCycle.current = 0;
     }
 
-    // Idle bob
-    const bobAmount = isMoving ? Math.sin(walkPhase.current * 2) * 0.03 : Math.sin(Date.now() * 0.002) * 0.015;
-    meshRef.current.position.y = bobAmount;
+    const bobAmount = speed > 0.05
+      ? Math.sin(walkPhase.current * 2) * 0.02
+      : Math.sin(Date.now() * 0.0015) * 0.01;
+    meshRef.current.position.y = PLAYER_SPRITE_H * 0.15 + bobAmount;
 
-    // Update sprite texture with walk frame
     const newTex = makePlayerSprite(lastFacing.current, walkCycle.current as 0 | 1 | 2 | 3);
     mat.current.map = newTex;
     mat.current.needsUpdate = true;
 
-    // Flip sprite for left/right
-    if (lastFacing.current === 'left') {
-      meshRef.current.scale.x = -1;
-    } else {
-      meshRef.current.scale.x = 1;
-    }
+    meshRef.current.scale.x = lastFacing.current === 'left' ? -1 : 1;
   });
 
   return (
     <mesh
       ref={meshRef}
-      position={[wp[0], 0, wp[2]]}
+      position={[wp[0], PLAYER_SPRITE_H * 0.15, wp[2]]}
       material={mat.current}
+      renderOrder={9999}
     >
       <planeGeometry args={[PLAYER_SPRITE_W, PLAYER_SPRITE_H]} />
     </mesh>
