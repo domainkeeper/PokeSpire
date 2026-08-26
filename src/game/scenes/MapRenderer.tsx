@@ -219,8 +219,8 @@ export function MapRenderer({ mapData }: MapRendererProps) {
             <PixelSprite
               texture={makeNpcSprite('down' as Dir8, 'idle', 0, variant)}
               position={[wx, 0, wz]}
-              width={0.8}
-              height={1.2}
+              width={1.8}
+              height={2.8}
               anchorY={0.15}
             />
           </group>

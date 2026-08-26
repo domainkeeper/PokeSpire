@@ -14,5 +14,5 @@ export const CAMERA_LERP = 3;
 export const FOG_NEAR = 20;
 export const FOG_FAR = 35;
 
-export const PLAYER_SPRITE_W = 0.8;
-export const PLAYER_SPRITE_H = 1.2;
+export const PLAYER_SPRITE_W = 2.0;
+export const PLAYER_SPRITE_H = 3.0;
