@@ -1,6 +1,26 @@
 import { create } from 'zustand';
 import type { SaveGame, PartyMember, Direction } from '../types/game';
 import { loadSave, saveGame as persistSave } from './persistence';
+import { getMap } from '../data/maps';
+
+const START_MAP_ID = 'town';
+
+/**
+ * Derive the starting position from the map's own spawn marker instead of
+ * hardcoding it. The previous hardcoded (60, 76) sat in the middle of the
+ * residential pond and ignored `townMap.spawn` entirely.
+ */
+function startingPlayerState(): SaveGame['player'] {
+  const map = getMap(START_MAP_ID);
+  const spawn = map?.spawn ?? { x: 0, y: 0, facing: 'down' as Direction };
+  return {
+    name: 'Player',
+    x: spawn.x,
+    y: spawn.y,
+    mapId: START_MAP_ID,
+    facing: spawn.facing,
+  };
+}
 
 interface GameStore extends SaveGame {
   setPlayerPosition: (x: number, y: number, facing: Direction, mapId: string) => void;
@@ -21,13 +41,7 @@ interface GameStore extends SaveGame {
 
 const defaultSave: SaveGame = {
   version: 1,
-  player: {
-    name: 'Player',
-    x: 60,
-    y: 76,
-    mapId: 'town',
-    facing: 'down',
-  },
+  player: startingPlayerState(),
   party: [],
   pokedex: {},
   inventory: [],

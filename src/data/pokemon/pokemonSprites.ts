@@ -1,129 +1,50 @@
+import { registerPokemonSprite } from '../../assets/registry';
+
+/**
+ * Species visual data.
+ *
+ * NOTE the deliberate lack of a `Record<string, ...>` annotation: that annotation
+ * used to collapse `keyof typeof POKEMON_SPRITES` to plain `string`, so
+ * PokemonSpeciesKey provided zero type safety and a typo in map data compiled
+ * fine then threw at runtime. `satisfies` keeps the literal key union.
+ */
 export interface PokemonSpriteData {
   id: number;
   name: string;
-  animated: string;
-  front: string;
-  spriteWidth: number;
-  spriteHeight: number;
+  /** File name inside public/assets/pokemon, resolved via the asset registry. */
+  file: string;
+  /** Rendered size in world units. Source art is square, so one value. */
+  size: number;
 }
 
-export const POKEMON_SPRITES: Record<string, PokemonSpriteData> = {
-  pikachu: {
-    id: 25,
-    name: 'Pikachu',
-    animated: '/assets/pokemon/pikachu.gif',
-    front: '/assets/pokemon/pikachu-front.png',
-    spriteWidth: 1.0,
-    spriteHeight: 1.0,
-  },
-  eevee: {
-    id: 133,
-    name: 'Eevee',
-    animated: '/assets/pokemon/eevee.gif',
-    front: '/assets/pokemon/eevee-front.png',
-    spriteWidth: 0.9,
-    spriteHeight: 0.9,
-  },
-  bulbasaur: {
-    id: 1,
-    name: 'Bulbasaur',
-    animated: '/assets/pokemon/bulbasaur.gif',
-    front: '/assets/pokemon/bulbasaur-front.png',
-    spriteWidth: 1.0,
-    spriteHeight: 0.9,
-  },
-  charmander: {
-    id: 4,
-    name: 'Charmander',
-    animated: '/assets/pokemon/charmander.gif',
-    front: '/assets/pokemon/charmander-front.png',
-    spriteWidth: 0.9,
-    spriteHeight: 0.9,
-  },
-  squirtle: {
-    id: 7,
-    name: 'Squirtle',
-    animated: '/assets/pokemon/squirtle.gif',
-    front: '/assets/pokemon/squirtle-front.png',
-    spriteWidth: 0.9,
-    spriteHeight: 0.9,
-  },
-  pidgey: {
-    id: 16,
-    name: 'Pidgey',
-    animated: '/assets/pokemon/pidgey.gif',
-    front: '/assets/pokemon/pidgey-front.png',
-    spriteWidth: 0.7,
-    spriteHeight: 0.7,
-  },
-  rattata: {
-    id: 19,
-    name: 'Rattata',
-    animated: '/assets/pokemon/rattata.gif',
-    front: '/assets/pokemon/rattata-front.png',
-    spriteWidth: 0.8,
-    spriteHeight: 0.7,
-  },
-  caterpie: {
-    id: 10,
-    name: 'Caterpie',
-    animated: '/assets/pokemon/caterpie.gif',
-    front: '/assets/pokemon/caterpie-front.png',
-    spriteWidth: 0.8,
-    spriteHeight: 0.6,
-  },
-  oddish: {
-    id: 43,
-    name: 'Oddish',
-    animated: '/assets/pokemon/oddish.gif',
-    front: '/assets/pokemon/oddish-front.png',
-    spriteWidth: 0.7,
-    spriteHeight: 0.8,
-  },
-  bellsprout: {
-    id: 69,
-    name: 'Bellsprout',
-    animated: '/assets/pokemon/bellsprout.gif',
-    front: '/assets/pokemon/bellsprout-front.png',
-    spriteWidth: 0.7,
-    spriteHeight: 0.9,
-  },
-  jigglypuff: {
-    id: 39,
-    name: 'Jigglypuff',
-    animated: '/assets/pokemon/jigglypuff.gif',
-    front: '/assets/pokemon/jigglypuff-front.png',
-    spriteWidth: 0.8,
-    spriteHeight: 0.8,
-  },
-  mankey: {
-    id: 56,
-    name: 'Mankey',
-    animated: '/assets/pokemon/mankey.gif',
-    front: '/assets/pokemon/mankey-front.png',
-    spriteWidth: 0.8,
-    spriteHeight: 0.9,
-  },
-  nidoran_m: {
-    id: 32,
-    name: 'Nidoran♂',
-    animated: '/assets/pokemon/nidoran-m.gif',
-    front: '/assets/pokemon/nidoran-m-front.png',
-    spriteWidth: 0.7,
-    spriteHeight: 0.8,
-  },
-  nidoran_f: {
-    id: 29,
-    name: 'Nidoran♀',
-    animated: '/assets/pokemon/nidoran-f.gif',
-    front: '/assets/pokemon/nidoran-f-front.png',
-    spriteWidth: 0.7,
-    spriteHeight: 0.8,
-  },
-};
+export const POKEMON_SPRITES = {
+  pikachu:    { id: 25,  name: 'Pikachu',    file: 'pikachu-front.png',    size: 0.62 },
+  eevee:      { id: 133, name: 'Eevee',      file: 'eevee-front.png',      size: 0.6  },
+  bulbasaur:  { id: 1,   name: 'Bulbasaur',  file: 'bulbasaur-front.png',  size: 0.6  },
+  charmander: { id: 4,   name: 'Charmander', file: 'charmander-front.png', size: 0.6  },
+  squirtle:   { id: 7,   name: 'Squirtle',   file: 'squirtle-front.png',   size: 0.58 },
+  pidgey:     { id: 16,  name: 'Pidgey',     file: 'pidgey-front.png',     size: 0.5  },
+  rattata:    { id: 19,  name: 'Rattata',    file: 'rattata-front.png',    size: 0.5  },
+  caterpie:   { id: 10,  name: 'Caterpie',   file: 'caterpie-front.png',   size: 0.48 },
+} satisfies Record<string, PokemonSpriteData>;
 
+/**
+ * Species keys with real literal types. A typo in map data is now a COMPILE
+ * error instead of a runtime crash.
+ */
 export type PokemonSpeciesKey = keyof typeof POKEMON_SPRITES;
+
+export const ALL_SPECIES = Object.keys(POKEMON_SPRITES) as PokemonSpeciesKey[];
+
+// Register every species with the asset registry so nothing else builds paths.
+for (const key of ALL_SPECIES) {
+  registerPokemonSprite(key, POKEMON_SPRITES[key].file);
+}
 
 export function getPokemonSprite(species: PokemonSpeciesKey): PokemonSpriteData {
   return POKEMON_SPRITES[species];
+}
+
+export function pokemonAssetId(species: PokemonSpeciesKey): string {
+  return `mon.${species}.front`;
 }

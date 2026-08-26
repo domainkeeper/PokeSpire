@@ -1,4 +1,15 @@
-import type { GameMap, TileType, MapObject } from './mapTypes';
+import type { GameMap, MapObject, TileType } from './mapTypes';
+import {
+  place,
+  line,
+  border,
+  scatter,
+  treeWall,
+  makeElevation,
+  terraceEllipse,
+  flattenRect,
+  elevateRect,
+} from './maps/authoring';
 
 const G: TileType = 'grass';
 const P: TileType = 'path';
@@ -6,379 +17,367 @@ const W: TileType = 'water';
 const D: TileType = 'dirt';
 const S: TileType = 'sand';
 
+const WIDTH = 300;
+const HEIGHT = 300;
+
+/** Main north-south road corridor. Also the Route 1 exit corridor. */
+const MAIN_ROAD_X0 = 144;
+const MAIN_ROAD_X1 = 156;
+/** Main east-west road corridor. */
+const MAIN_ROAD_Y0 = 144;
+const MAIN_ROAD_Y1 = 156;
+
+/**
+ * Gap left in the southern border-tree wall so the Route 1 exit is reachable.
+ * Border trees are 6x6 on an 8-tile pitch, which otherwise walls the corridor off.
+ */
+const SOUTH_GATE = { from: MAIN_ROAD_X0 - 4, to: MAIN_ROAD_X1 + 4, axis: 'x' as const };
+
+/* ---------------------------------------------------------------- ground --- */
+
 function makeGround(): TileType[][] {
-  const W2 = 300;
-  const H2 = 300;
-  const grid: TileType[][] = Array.from({ length: H2 }, () =>
-    Array.from({ length: W2 }, () => G),
+  const grid: TileType[][] = Array.from({ length: HEIGHT }, () =>
+    Array.from({ length: WIDTH }, () => G),
   );
 
-  // === MAIN ROADS ===
-  // Main horizontal road (middle)
-  for (let x = 4; x <= W2 - 4; x++) {
-    for (let y = 144; y <= 156; y++) grid[y][x] = P;
-  }
-  // Main vertical road (center)
-  for (let y = 4; y <= H2 - 4; y++) {
-    for (let x = 144; x <= 156; x++) grid[y][x] = P;
-  }
-
-  // === TOWN CENTER ===
-  // Central plaza paths
-  for (let x = 120; x <= 180; x++) {
-    for (let y = 120; y <= 180; y++) grid[y][x] = P;
-  }
-  // Plaza inner circle-ish dirt
-  for (let x = 130; x <= 170; x++) {
-    for (let y = 130; y <= 170; y++) grid[y][x] = D;
-  }
-
-  // === RESIDENTIAL DISTRICT (top-left) ===
-  // Streets grid
-  for (let x = 20; x <= 120; x++) { for (let y = 20; y <= 28; y++) grid[y][x] = P; }
-  for (let x = 20; x <= 120; x++) { for (let y = 56; y <= 64; y++) grid[y][x] = P; }
-  for (let x = 20; x <= 120; x++) { for (let y = 92; y <= 100; y++) grid[y][x] = P; }
-  for (let y = 20; y <= 100; y++) { for (let x = 20; x <= 28; x++) grid[y][x] = P; }
-  for (let y = 20; y <= 100; y++) { for (let x = 68; x <= 76; x++) grid[y][x] = P; }
-  for (let y = 20; y <= 100; y++) { for (let x = 116; x <= 124; x++) grid[y][x] = P; }
-
-  // === COMMERCIAL DISTRICT (top-right) ===
-  for (let x = 180; x <= 280; x++) { for (let y = 20; y <= 28; y++) grid[y][x] = P; }
-  for (let x = 180; x <= 280; x++) { for (let y = 56; y <= 64; y++) grid[y][x] = P; }
-  for (let x = 180; x <= 280; x++) { for (let y = 92; y <= 100; y++) grid[y][x] = P; }
-  for (let y = 20; y <= 100; y++) { for (let x = 180; x <= 188; x++) grid[y][x] = P; }
-  for (let y = 20; y <= 100; y++) { for (let x = 228; x <= 236; x++) grid[y][x] = P; }
-  for (let y = 20; y <= 100; y++) { for (let x = 276; x <= 284; x++) grid[y][x] = P; }
-
-  // === PARK DISTRICT (bottom-left) ===
-  for (let x = 20; x <= 120; x++) { for (let y = 200; y <= 208; y++) grid[y][x] = P; }
-  for (let x = 20; x <= 120; x++) { for (let y = 248; y <= 256; y++) grid[y][x] = P; }
-  for (let y = 200; y <= 256; y++) { for (let x = 20; x <= 28; x++) grid[y][x] = P; }
-  for (let y = 200; y <= 256; y++) { for (let x = 116; x <= 124; x++) grid[y][x] = P; }
-
-  // === DOCK AREA (bottom-right) ===
-  for (let x = 200; x <= 280; x++) { for (let y = 230; y <= 238; y++) grid[y][x] = P; }
-  for (let y = 200; y <= 260; y++) { for (let x = 200; x <= 208; x++) grid[y][x] = P; }
-  for (let y = 200; y <= 260; y++) { for (let x = 276; x <= 284; x++) grid[y][x] = P; }
-
-  // === DIRT PATCHES ===
-  // Player house area
-  for (let x = 30; x <= 56; x++) { for (let y = 30; y <= 52; y++) grid[y][x] = D; }
-  // Professor lab area
-  for (let x = 200; x <= 232; x++) { for (let y = 30; y <= 52; y++) grid[y][x] = D; }
-  // Gym area
-  for (let x = 196; x <= 228; x++) { for (let y = 126; y <= 154; y++) grid[y][x] = D; }
-  // Market area
-  for (let x = 30; x <= 60; x++) { for (let y = 126; y <= 154; y++) grid[y][x] = D; }
-
-  // === LARGE LAKE (top-center) ===
-  for (let y = 66; y <= 96; y++) {
-    for (let x = 130; x <= 170; x++) {
-      const cx = 150, cy = 81;
-      const rx = 22, ry = 16;
-      const dx = (x - cx) / rx, dy = (y - cy) / ry;
-      if (dx * dx + dy * dy <= 1) grid[y][x] = W;
+  const rect = (x0: number, y0: number, x1: number, y1: number, t: TileType) => {
+    for (let y = Math.max(0, y0); y <= Math.min(HEIGHT - 1, y1); y++) {
+      for (let x = Math.max(0, x0); x <= Math.min(WIDTH - 1, x1); x++) grid[y][x] = t;
     }
-  }
-  // Lake shore sand
-  for (let y = 64; y <= 98; y++) {
-    for (let x = 128; x <= 172; x++) {
-      if (grid[y][x] === G) {
-        const cx = 150, cy = 81;
-        const rx = 24, ry = 18;
-        const dx = (x - cx) / rx, dy = (y - cy) / ry;
-        if (dx * dx + dy * dy <= 1) grid[y][x] = S;
+  };
+
+  const ellipse = (cx: number, cy: number, rx: number, ry: number, t: TileType, only?: TileType) => {
+    for (let y = Math.floor(cy - ry); y <= Math.ceil(cy + ry); y++) {
+      if (y < 0 || y >= HEIGHT) continue;
+      for (let x = Math.floor(cx - rx); x <= Math.ceil(cx + rx); x++) {
+        if (x < 0 || x >= WIDTH) continue;
+        const dx = (x - cx) / rx;
+        const dy = (y - cy) / ry;
+        if (dx * dx + dy * dy > 1) continue;
+        if (only && grid[y][x] !== only) continue;
+        grid[y][x] = t;
       }
     }
-  }
+  };
 
-  // === POND (residential) ===
-  for (let y = 72; y <= 88; y++) {
-    for (let x = 40; x <= 60; x++) {
-      const cx = 50, cy = 80;
-      const rx = 11, ry = 9;
-      const dx = (x - cx) / rx, dy = (y - cy) / ry;
-      if (dx * dx + dy * dy <= 1) grid[y][x] = W;
-    }
-  }
+  // === MAIN ROADS ===
+  rect(4, MAIN_ROAD_Y0, WIDTH - 4, MAIN_ROAD_Y1, P);
+  rect(MAIN_ROAD_X0, 4, MAIN_ROAD_X1, HEIGHT - 4, P);
 
-  // === RIVER (bottom, horizontal) ===
-  for (let x = 4; x <= W2 - 4; x++) {
-    for (let y = 268; y <= 280; y++) grid[y][x] = W;
-  }
-  for (let x = 4; x <= W2 - 4; x++) {
-    if (grid[266]?.[x] === G) grid[266][x] = S;
-    if (grid[282]?.[x] === G) grid[282][x] = S;
-  }
+  // === TOWN CENTRE PLAZA ===
+  rect(118, 118, 182, 182, P);
+  rect(128, 128, 172, 172, D);
 
-  // === SMALL POND (park) ===
-  for (let y = 216; y <= 232; y++) {
-    for (let x = 56; x <= 80; x++) {
-      const cx = 68, cy = 224;
-      const rx = 13, ry = 9;
-      const dx = (x - cx) / rx, dy = (y - cy) / ry;
-      if (dx * dx + dy * dy <= 1) grid[y][x] = W;
-    }
+  // === DISTRICT STREETS ===
+  for (const y of [20, 56, 92]) {
+    rect(20, y, 120, y + 8, P);
+    rect(180, y, 280, y + 8, P);
   }
+  for (const x of [20, 68, 116]) rect(x, 20, x + 8, 100, P);
+  for (const x of [180, 228, 276]) rect(x, 20, x + 8, 100, P);
+  for (const y of [200, 248]) rect(20, y, 120, y + 8, P);
+  for (const x of [20, 116]) rect(x, 200, x + 8, 256, P);
+  rect(200, 230, 280, 238, P);
+  for (const x of [200, 276]) rect(x, 200, x + 8, 260, P);
 
-  // === POND (commercial) ===
-  for (let y = 70; y <= 86; y++) {
-    for (let x = 240; x <= 264; x++) {
-      const cx = 252, cy = 78;
-      const rx = 13, ry = 9;
-      const dx = (x - cx) / rx, dy = (y - cy) / ry;
-      if (dx * dx + dy * dy <= 1) grid[y][x] = W;
-    }
-  }
+  // === YARDS ===
+  rect(30, 30, 56, 52, D);
+  rect(200, 30, 232, 52, D);
+  rect(196, 126, 228, 154, D);
+  rect(30, 126, 60, 154, D);
+
+  // === WATER ===
+  ellipse(150, 81, 22, 16, W);
+  ellipse(150, 81, 25, 19, S, G);
+  ellipse(50, 80, 11, 9, W);
+  ellipse(50, 80, 14, 12, S, G);
+  ellipse(252, 78, 13, 9, W);
+  ellipse(252, 78, 16, 12, S, G);
+  ellipse(68, 224, 13, 9, W);
+  ellipse(68, 224, 16, 12, S, G);
+
+  // River across the south.
+  rect(4, 268, WIDTH - 4, 280, W);
+  rect(4, 264, WIDTH - 4, 267, S);
+  rect(4, 281, WIDTH - 4, 284, S);
+
+  // === BRIDGES / CAUSEWAYS ===
+  // Water is painted after the roads, so it severs the main north-south road in
+  // two places. Now that water blocks movement, those cuts would strand the
+  // whole southern half of town - and therefore the Route 1 exit. Re-assert the
+  // road across both crossings.
+  rect(MAIN_ROAD_X0, 262, MAIN_ROAD_X1, 286, P);
+  rect(MAIN_ROAD_X0, 60, MAIN_ROAD_X1, 102, P);
 
   return grid;
 }
 
-function tree(gx: number, gy: number): MapObject {
-  return { type: 'tree', gx, gy, footprintW: 3, footprintH: 3, collision: true, spriteW: 2, spriteH: 3, animSway: true };
+const ground = makeGround();
+
+const isType = (gx: number, gy: number, t: TileType): boolean =>
+  ground[gy]?.[gx] === t;
+const isGrass = (gx: number, gy: number): boolean => isType(gx, gy, G);
+
+/* ------------------------------------------------------------- elevation --- */
+
+/**
+ * Elevation is authored as concentric 1-step terraces. Adjacent levels differ by
+ * exactly one step, which is within MAX_CLIMB_STEPS, so hills read as real
+ * multi-level terrain while staying fully walkable. Road corridors are flattened
+ * last so authored relief can never sever a route.
+ */
+function makeElevationLayer(): number[][] {
+  const elev = makeElevation(WIDTH, HEIGHT, 0);
+
+  // Terraced highland behind the commercial district.
+  terraceEllipse(elev, 248, 58, 46, 40, 0, 3);
+  // Park rise in the south-west.
+  terraceEllipse(elev, 70, 226, 44, 34, 0, 2);
+  // Western bluff.
+  terraceEllipse(elev, 46, 150, 28, 24, 0, 2);
+  // Gentle mound south-east of the plaza.
+  terraceEllipse(elev, 200, 196, 24, 20, 0, 1);
+  // Raised lakeside lawn on the north shore.
+  elevateRect(elev, { x: 120, y: 52, w: 60, h: 8 }, 1);
+
+  // Roads and plaza stay level; this also cuts readable banks where a road
+  // passes through a terrace.
+  flattenRect(elev, { x: 0, y: MAIN_ROAD_Y0, w: WIDTH, h: MAIN_ROAD_Y1 - MAIN_ROAD_Y0 + 1 }, 0);
+  flattenRect(elev, { x: MAIN_ROAD_X0, y: 0, w: MAIN_ROAD_X1 - MAIN_ROAD_X0 + 1, h: HEIGHT }, 0);
+  flattenRect(elev, { x: 118, y: 118, w: 65, h: 65 }, 0);
+  // Keep the water basins and their shores level so shorelines read cleanly.
+  flattenRect(elev, { x: 0, y: 260, w: WIDTH, h: 40 }, 0);
+  flattenRect(elev, { x: 124, y: 58, w: 54, h: 46 }, 0);
+
+  return elev;
 }
-function sTree(gx: number, gy: number): MapObject {
-  return { type: 'small_tree', gx, gy, footprintW: 2, footprintH: 2, collision: true, spriteW: 1.2, spriteH: 2, animSway: true };
-}
-function bush(gx: number, gy: number): MapObject {
-  return { type: 'bush', gx, gy, footprintW: 2, footprintH: 2, collision: true, spriteW: 0.8, spriteH: 0.6, animSway: true };
-}
-function rock(gx: number, gy: number): MapObject {
-  return { type: 'rock', gx, gy, footprintW: 2, footprintH: 2, collision: true, spriteW: 1, spriteH: 0.7 };
-}
-function flower(gx: number, gy: number): MapObject {
-  return { type: 'flower', gx, gy, footprintW: 1, footprintH: 1, collision: false, spriteW: 0.4, spriteH: 0.5, animScale: true };
-}
-function fenceH(gx: number, gy: number, w: number): MapObject {
-  return { type: 'fence', gx, gy, footprintW: w, footprintH: 2, collision: true, spriteW: w * 0.2, spriteH: 0.5 };
-}
-function fenceV(gx: number, gy: number, h: number): MapObject {
-  return { type: 'fence', gx, gy, footprintW: 2, footprintH: h, collision: true, spriteW: 0.5, spriteH: h * 0.2 };
-}
-function building(gx: number, gy: number, w: number, h: number, sw: number, sh: number): MapObject {
-  return { type: 'building', gx, gy, footprintW: w, footprintH: h, collision: true, spriteW: sw, spriteH: sh };
-}
-function building2(gx: number, gy: number, w: number, h: number, sw: number, sh: number): MapObject {
-  return { type: 'building2', gx, gy, footprintW: w, footprintH: h, collision: true, spriteW: sw, spriteH: sh };
-}
-function sign(gx: number, gy: number): MapObject {
-  return { type: 'sign', gx, gy, footprintW: 2, footprintH: 2, collision: true, spriteW: 0.6, spriteH: 1 };
-}
+
+/* ----------------------------------------------------------------- props --- */
+
+const WOODLAND = [
+  { id: 'tree_oak' as const, weight: 42 },
+  { id: 'tree_small' as const, weight: 22 },
+  { id: 'tree_pine' as const, weight: 14 },
+  { id: 'bush' as const, weight: 26 },
+  { id: 'bush_berry' as const, weight: 8 },
+  { id: 'rock_small' as const, weight: 14 },
+  { id: 'rock_large' as const, weight: 6 },
+  { id: 'stump' as const, weight: 5 },
+  { id: 'log' as const, weight: 4 },
+  { id: 'grass_tuft' as const, weight: 34 },
+  { id: 'flower' as const, weight: 26 },
+  { id: 'mushroom' as const, weight: 7 },
+];
+
+const GARDEN = [
+  { id: 'flower' as const, weight: 60 },
+  { id: 'bush' as const, weight: 20 },
+  { id: 'grass_tuft' as const, weight: 22 },
+  { id: 'tree_small' as const, weight: 10 },
+  { id: 'bench' as const, weight: 5 },
+  { id: 'mushroom' as const, weight: 6 },
+];
+
+const SHORE = [
+  { id: 'reed' as const, weight: 46 },
+  { id: 'rock_small' as const, weight: 20 },
+  { id: 'grass_tuft' as const, weight: 24 },
+  { id: 'tree_palm' as const, weight: 10 },
+  { id: 'log' as const, weight: 5 },
+];
 
 const objects: MapObject[] = [
-  // === DENSE FOREST BORDER ===
-  // Top
-  ...Array.from({ length: 75 }, (_, i) => tree(i * 4, 0)),
-  ...Array.from({ length: 75 }, (_, i) => tree(i * 4, 4)),
-  // Bottom (above river)
-  ...Array.from({ length: 75 }, (_, i) => tree(i * 4, 292)),
-  ...Array.from({ length: 75 }, (_, i) => tree(i * 4, 288)),
-  // Left
-  ...Array.from({ length: 75 }, (_, i) => tree(0, i * 4)),
-  ...Array.from({ length: 75 }, (_, i) => tree(4, i * 4)),
-  // Right
-  ...Array.from({ length: 75 }, (_, i) => tree(292, i * 4)),
-  ...Array.from({ length: 75 }, (_, i) => tree(288, i * 4)),
+  /* ---- forest border, gated at the southern exit ---- */
+  ...treeWall(38, (i) => [i, 0], 8, 6),
+  ...treeWall(38, (i) => [i, 7], 8, 6),
+  ...treeWall(38, (i) => [i, 288], 8, 6, SOUTH_GATE),
+  ...treeWall(38, (i) => [i, 281], 8, 6, SOUTH_GATE),
+  ...treeWall(38, (i) => [0, i], 8, 6),
+  ...treeWall(38, (i) => [7, i], 8, 6),
+  ...treeWall(38, (i) => [288, i], 8, 6),
+  ...treeWall(38, (i) => [281, i], 8, 6),
 
-  // === RESIDENTIAL BUILDINGS (top-left) ===
-  // Player's house
-  building(32, 32, 14, 12, 4.5, 5),
-  // Neighbor houses
-  building(72, 32, 12, 10, 4, 4.5),
-  building(32, 68, 12, 10, 4, 4.5),
-  building(72, 68, 12, 10, 4, 4.5),
-  building(32, 104, 12, 10, 4, 4.5),
-  building(72, 104, 12, 10, 4, 4.5),
+  /* ---- residential district ---- */
+  place('house_large', 32, 32),
+  place('house_small', 72, 32, { variant: 1 }),
+  place('house_small', 32, 68),
+  place('house_small', 72, 68, { variant: 1 }),
+  place('house_small', 32, 104, { variant: 1 }),
+  place('house_small', 72, 104),
+  place('well', 58, 58),
+  ...border('fence_wood', { x: 28, y: 28, w: 22, h: 20 }, 5),
 
-  // === COMMERCIAL BUILDINGS (top-right) ===
-  // Professor's Lab
-  building2(202, 32, 16, 12, 5, 5.5),
-  // Poké Center
-  building2(244, 32, 14, 12, 4.5, 5),
-  // Shop
-  building(202, 68, 12, 10, 4, 4.5),
-  // Museum
-  building2(244, 68, 14, 12, 4.5, 5),
-  // More shops
-  building(202, 104, 10, 8, 3.5, 4),
-  building(244, 104, 10, 8, 3.5, 4),
+  /* ---- commercial district, on the terraced rise ---- */
+  place('shop', 200, 30),
+  place('shop', 240, 30, { variant: 1 }),
+  place('house_small', 200, 68, { variant: 1 }),
+  place('house_large', 240, 66),
+  place('house_small', 200, 104),
+  place('house_small', 240, 104, { variant: 1 }),
+  ...line('lamp_post', [184, 26], [278, 26], 22),
+  ...line('lamp_post', [184, 62], [278, 62], 22),
+  place('crate', 236, 44),
+  place('crate', 239, 46),
+  place('barrel', 233, 45),
 
-  // === GYM (center-right) ===
-  building2(200, 128, 20, 16, 6, 6.5),
-  // Gym garden
-  fenceH(196, 124, 28),
-  fenceH(196, 148, 28),
-  fenceV(196, 124, 26),
-  fenceV(218, 124, 26),
-  flower(200, 130), flower(204, 130), flower(208, 130), flower(212, 130),
-  flower(200, 144), flower(204, 144), flower(208, 144), flower(212, 144),
+  /* ---- civic centre ---- */
+  place('house_large', 198, 128, { variant: 1 }),
+  ...border('fence_stone', { x: 194, y: 124, w: 30, h: 28 }, 5),
+  place('house_large', 32, 128),
+  place('shop', 56, 128, { variant: 1 }),
+  place('well', 148, 136),
+  ...line('bench', [130, 176], [170, 176], 14),
+  ...line('lamp_post', [124, 124], [176, 124], 26),
+  ...line('lamp_post', [124, 178], [176, 178], 26),
 
-  // === MARKET (center-left) ===
-  building(32, 128, 14, 12, 4.5, 5),
-  building(56, 128, 10, 10, 3.5, 4),
-  building(32, 148, 10, 8, 3.5, 4),
+  /* ---- park ---- */
+  place('sign', 24, 196),
+  ...line('bench', [40, 210], [104, 210], 22),
+  ...line('bench', [40, 244], [104, 244], 22),
+  ...line('lamp_post', [30, 204], [110, 204], 26),
 
-  // === PARK (bottom-left) ===
-  // Park entrance arch
-  sign(24, 198),
-  // Flower gardens in park
-  ...Array.from({ length: 8 }, (_, i) => flower(40 + i * 2, 210)),
-  ...Array.from({ length: 8 }, (_, i) => flower(40 + i * 2, 214)),
-  ...Array.from({ length: 8 }, (_, i) => flower(40 + i * 2, 240)),
-  ...Array.from({ length: 8 }, (_, i) => flower(40 + i * 2, 244)),
-  ...Array.from({ length: 6 }, (_, i) => flower(30, 220 + i * 2)),
-  ...Array.from({ length: 6 }, (_, i) => flower(106, 220 + i * 2)),
+  /* ---- dock ---- */
+  place('sign', 200, 196),
+  place('crate', 210, 240),
+  place('crate', 213, 242),
+  place('barrel', 218, 241),
+  place('barrel', 222, 243),
 
-  // === DOCK (bottom-right) ===
-  sign(200, 198),
+  /* ---- wayfinding ---- */
+  place('sign', 158, 18),
+  place('sign', 158, 276),
+  place('sign', 18, 148),
+  place('sign', 278, 148),
+  place('sign', 148, 116),
 
-  // === FENCES around building areas ===
-  // Player house yard
-  fenceH(28, 28, 20), fenceH(28, 46, 20), fenceV(28, 28, 20), fenceV(48, 28, 20),
-  // Lab yard
-  fenceH(198, 28, 24), fenceH(198, 46, 24), fenceV(198, 28, 20), fenceV(222, 28, 20),
-  // Shop yard
-  fenceH(28, 124, 18), fenceH(28, 142, 18), fenceV(28, 124, 20), fenceV(46, 124, 20),
-
-  // === SCATTERED TREES (residential) ===
-  tree(8, 16), tree(16, 8), tree(8, 52), tree(16, 56),
-  tree(8, 88), tree(16, 92), tree(8, 120), tree(16, 124),
-  tree(100, 16), tree(108, 8), tree(100, 52), tree(108, 56),
-  tree(100, 88), tree(108, 92), tree(100, 120), tree(108, 124),
-
-  // === SCATTERED TREES (commercial) ===
-  tree(180, 16), tree(188, 8), tree(180, 52), tree(188, 56),
-  tree(270, 16), tree(278, 8), tree(270, 52), tree(278, 56),
-  tree(270, 88), tree(278, 92), tree(270, 120), tree(278, 124),
-
-  // === SCATTERED TREES (park) ===
-  tree(12, 210), tree(12, 230), tree(12, 250),
-  tree(112, 210), tree(112, 230), tree(112, 250),
-  tree(30, 260), tree(50, 262), tree(70, 260), tree(90, 262),
-
-  // === SMALL TREES scattered ===
-  sTree(14, 38), sTree(58, 14), sTree(96, 38), sTree(14, 78),
-  sTree(58, 78), sTree(96, 78), sTree(14, 114), sTree(58, 114), sTree(96, 114),
-  sTree(186, 38), sTree(230, 14), sTree(268, 38), sTree(186, 78),
-  sTree(268, 78), sTree(186, 114), sTree(268, 114),
-  sTree(40, 200), sTree(60, 200), sTree(80, 200), sTree(100, 200),
-  sTree(40, 254), sTree(60, 254), sTree(80, 254), sTree(100, 254),
-
-  // === BUSHES (many, throughout) ===
-  // Residential
-  bush(26, 42), bush(28, 44), bush(60, 30), bush(62, 32),
-  bush(26, 80), bush(28, 82), bush(60, 80), bush(62, 82),
-  bush(110, 30), bush(112, 32), bush(110, 70), bush(112, 72),
-  bush(26, 110), bush(60, 110), bush(110, 110),
-  // Commercial
-  bush(196, 42), bush(226, 30), bush(264, 42),
-  bush(196, 82), bush(226, 70), bush(264, 82),
-  bush(196, 118), bush(264, 118),
-  // Park
-  bush(34, 206), bush(50, 206), bush(86, 206), bush(106, 206),
-  bush(34, 250), bush(50, 250), bush(86, 250), bush(106, 250),
-  bush(24, 226), bush(24, 238), bush(114, 226), bush(114, 238),
-  // Near lake
-  bush(126, 66), bush(174, 66), bush(126, 96), bush(174, 96),
-  bush(128, 72), bush(172, 72), bush(128, 90), bush(172, 90),
-
-  // === ROCKS (scattered) ===
-  rock(44, 48), rock(84, 48), rock(44, 84), rock(84, 84),
-  rock(210, 48), rock(250, 48), rock(210, 84), rock(250, 84),
-  rock(50, 236), rock(86, 236), rock(50, 260), rock(86, 260),
-  rock(130, 160), rock(170, 160), rock(130, 200), rock(170, 200),
-  rock(220, 200), rock(260, 200),
-
-  // === FLOWERS (many patches) ===
-  // Garden near player house
-  flower(34, 48), flower(36, 48), flower(38, 48), flower(40, 48),
-  flower(34, 50), flower(36, 50), flower(38, 50), flower(40, 50),
-  // Garden near lab
-  flower(206, 48), flower(208, 48), flower(210, 48), flower(212, 48),
-  flower(206, 50), flower(208, 50), flower(210, 50), flower(212, 50),
-  // Along main road
-  flower(10, 146), flower(10, 154), flower(286, 146), flower(286, 154),
-  flower(146, 10), flower(154, 10), flower(146, 286), flower(154, 286),
-  // Near pond
-  flower(38, 68), flower(62, 68), flower(38, 92), flower(62, 92),
-  // Scattered
-  flower(20, 160), flower(40, 170), flower(60, 160), flower(80, 170),
-  flower(200, 160), flower(220, 170), flower(240, 160), flower(260, 170),
-  flower(120, 200), flower(140, 210), flower(160, 200), flower(180, 210),
-
-  // === SIGNS ===
-  sign(158, 18),   // North entrance
-  sign(158, 278),  // South (river) entrance
-  sign(18, 148),   // West entrance
-  sign(278, 148),  // East entrance
-  sign(148, 118),  // Center plaza
+  /* ---- scattered nature ---- */
+  ...scatter({
+    table: WOODLAND,
+    area: { x: 10, y: 10, w: 280, h: 110 },
+    pitch: 7,
+    density: 0.3,
+    seed: 101,
+    allow: isGrass,
+  }),
+  ...scatter({
+    table: WOODLAND,
+    area: { x: 10, y: 186, w: 280, h: 74 },
+    pitch: 7,
+    density: 0.34,
+    seed: 102,
+    allow: isGrass,
+  }),
+  ...scatter({
+    table: GARDEN,
+    area: { x: 22, y: 200, w: 100, h: 58 },
+    pitch: 5,
+    density: 0.34,
+    seed: 103,
+    allow: isGrass,
+  }),
+  ...scatter({
+    table: GARDEN,
+    area: { x: 120, y: 118, w: 64, h: 64 },
+    pitch: 6,
+    density: 0.2,
+    seed: 104,
+    allow: (x, y) => isGrass(x, y) || isType(x, y, D),
+  }),
+  ...scatter({
+    table: SHORE,
+    area: { x: 122, y: 58, w: 58, h: 48 },
+    pitch: 4,
+    density: 0.36,
+    seed: 105,
+    allow: (x, y) => isType(x, y, S),
+  }),
+  ...scatter({
+    table: SHORE,
+    area: { x: 4, y: 258, w: 292, h: 30 },
+    pitch: 5,
+    density: 0.32,
+    seed: 106,
+    allow: (x, y) => isType(x, y, S),
+  }),
+  ...scatter({
+    table: SHORE,
+    area: { x: 32, y: 62, w: 40, h: 40 },
+    pitch: 4,
+    density: 0.3,
+    seed: 107,
+    allow: (x, y) => isType(x, y, S),
+  }),
+  ...scatter({
+    table: SHORE,
+    area: { x: 232, y: 60, w: 44, h: 40 },
+    pitch: 4,
+    density: 0.3,
+    seed: 108,
+    allow: (x, y) => isType(x, y, S),
+  }),
+  ...scatter({
+    table: SHORE,
+    area: { x: 48, y: 206, w: 44, h: 40 },
+    pitch: 4,
+    density: 0.3,
+    seed: 109,
+    allow: (x, y) => isType(x, y, S),
+  }),
 ];
 
 export const townMap: GameMap = {
   name: 'town',
-  width: 300,
-  height: 300,
-  ground: makeGround(),
+  themeId: 'coastal-day',
+  width: WIDTH,
+  height: HEIGHT,
+  ground,
+  elevation: makeElevationLayer(),
   objects,
   spawn: { x: 150, y: 150, facing: 'down' },
   exits: [
-    { x: 144, y: 296, w: 12, h: 2, toMap: 'route1', spawnX: 200, spawnY: 6, facing: 'down' },
+    // Southern gate through the forest border, on the main road.
+    { x: MAIN_ROAD_X0, y: 296, w: 12, h: 2, toMap: 'route1', spawnX: 200, spawnY: 14, facing: 'down' },
   ],
   npcPositions: [
-    { x: 50, y: 56, name: 'Professor', dialogue: 'Welcome to PokéSpire! Choose your partner wisely.', color: '#42a5f5' },
-    { x: 220, y: 56, name: 'Resident', dialogue: 'This town has been here for generations.', color: '#ab47bc' },
-    { x: 40, y: 148, name: 'Gardener', dialogue: 'I love flowers! They make the town so beautiful.', color: '#66bb6a' },
-    { x: 210, y: 140, name: 'Gym Leader', dialogue: 'Think you can beat my Pokémon? Let\'s battle!', color: '#f44336' },
-    { x: 150, y: 130, name: 'Elder', dialogue: 'This plaza was built 500 years ago.', color: '#795548' },
-    { x: 70, y: 220, name: 'Fisherman', dialogue: 'The fish in this pond are wonderful.', color: '#2196f3' },
-    { x: 260, y: 148, name: 'Merchant', dialogue: 'Best deals in town, guaranteed!', color: '#ff9800' },
-    { x: 100, y: 240, name: 'Ranger', dialogue: 'The park is a safe haven for Pokémon.', color: '#4caf50' },
-    { x: 230, y: 80, name: 'Scientist', dialogue: 'I\'m studying the lake\'s ecosystem.', color: '#00bcd4' },
-    { x: 80, y: 36, name: 'Resident', dialogue: 'Nice neighborhood, quiet and peaceful.', color: '#9c27b0' },
-    { x: 260, y: 36, name: 'Nurse', dialogue: 'Need healing? Poké Center is right here!', color: '#e91e63' },
-    { x: 150, y: 270, name: 'Sailor', dialogue: 'The river connects to the southern routes.', color: '#3f51b5' },
+    { x: 50, y: 56, name: 'Professor', dialogue: 'Welcome to PokeSpire! Choose your partner wisely.' },
+    { x: 220, y: 56, name: 'Resident', dialogue: 'This town has been here for generations.' },
+    { x: 40, y: 148, name: 'Gardener', dialogue: 'I love flowers! They make the town so beautiful.' },
+    { x: 210, y: 140, name: 'Gym Leader', dialogue: "Think you can beat my Pokemon? Let's battle!" },
+    { x: 150, y: 130, name: 'Elder', dialogue: 'This plaza was built 500 years ago.' },
+    { x: 70, y: 214, name: 'Fisherman', dialogue: 'The fish in this pond are wonderful.' },
+    { x: 260, y: 148, name: 'Merchant', dialogue: 'Best deals in town, guaranteed!' },
+    { x: 100, y: 240, name: 'Ranger', dialogue: 'The park is a safe haven for Pokemon.' },
+    { x: 230, y: 100, name: 'Scientist', dialogue: "I'm studying the lake's ecosystem." },
+    { x: 80, y: 36, name: 'Resident', dialogue: 'Nice neighborhood, quiet and peaceful.' },
+    { x: 260, y: 36, name: 'Nurse', dialogue: 'Need healing? Poke Center is right here!' },
+    { x: 150, y: 262, name: 'Sailor', dialogue: 'The river connects to the southern routes.' },
   ],
   pokemon: [
-    // Lake pokemon
-    { species: 'squirtle', gx: 140, gy: 76 },
-    { species: 'squirtle', gx: 160, gy: 86 },
-    { species: 'bulbasaur', gx: 146, gy: 72 },
-    { species: 'bulbasaur', gx: 154, gy: 90 },
-    { species: 'pikachu', gx: 148, gy: 82 },
-    { species: 'charmander', gx: 156, gy: 78 },
-    // Pond pokemon
-    { species: 'pidgey', gx: 48, gy: 78 },
-    { species: 'rattata', gx: 54, gy: 82 },
-    // River pokemon
-    { species: 'squirtle', gx: 100, gy: 274 },
-    { species: 'bulbasaur', gx: 180, gy: 274 },
-    { species: 'eevee', gx: 250, gy: 276 },
-    // Town wandering pokemon (near spawn)
-    { species: 'pikachu', gx: 148, gy: 158 },
-    { species: 'pikachu', gx: 152, gy: 162 },
-    { species: 'eevee', gx: 146, gy: 164 },
-    { species: 'eevee', gx: 154, gy: 156 },
-    { species: 'pidgey', gx: 140, gy: 150 },
-    { species: 'pidgey', gx: 160, gy: 150 },
-    { species: 'rattata', gx: 140, gy: 170 },
-    { species: 'rattata', gx: 160, gy: 170 },
-    { species: 'charmander', gx: 130, gy: 160 },
-    { species: 'charmander', gx: 170, gy: 160 },
-    { species: 'bulbasaur', gx: 130, gy: 150 },
-    { species: 'bulbasaur', gx: 170, gy: 150 },
-    { species: 'squirtle', gx: 130, gy: 170 },
-    { species: 'squirtle', gx: 170, gy: 170 },
-    { species: 'caterpie', gx: 142, gy: 155 },
-    { species: 'caterpie', gx: 158, gy: 165 },
-    // More spread out
-    { species: 'pikachu', gx: 60, gy: 60 },
-    { species: 'eevee', gx: 220, gy: 60 },
-    { species: 'charmander', gx: 40, gy: 130 },
-    { species: 'bulbasaur', gx: 210, gy: 130 },
-    { species: 'pidgey', gx: 80, gy: 220 },
-    { species: 'rattata', gx: 100, gy: 240 },
+    { species: 'squirtle', gx: 132, gy: 76 },
+    { species: 'squirtle', gx: 168, gy: 86 },
+    { species: 'bulbasaur', gx: 138, gy: 106 },
+    { species: 'pikachu', gx: 176, gy: 96 },
+    { species: 'charmander', gx: 124, gy: 96 },
+    { species: 'pidgey', gx: 40, gy: 70 },
+    { species: 'rattata', gx: 62, gy: 92 },
+    { species: 'squirtle', gx: 100, gy: 262 },
+    { species: 'bulbasaur', gx: 180, gy: 262 },
+    { species: 'eevee', gx: 250, gy: 262 },
+    { species: 'pikachu', gx: 138, gy: 190 },
+    { species: 'eevee', gx: 164, gy: 188 },
+    { species: 'pidgey', gx: 128, gy: 168 },
+    { species: 'pidgey', gx: 174, gy: 166 },
+    { species: 'rattata', gx: 132, gy: 196 },
+    { species: 'rattata', gx: 170, gy: 198 },
+    { species: 'caterpie', gx: 122, gy: 186 },
+    { species: 'caterpie', gx: 180, gy: 180 },
+    { species: 'pikachu', gx: 60, gy: 62 },
+    { species: 'eevee', gx: 218, gy: 62 },
+    { species: 'charmander', gx: 40, gy: 132 },
+    { species: 'bulbasaur', gx: 212, gy: 132 },
+    { species: 'pidgey', gx: 84, gy: 218 },
+    { species: 'rattata', gx: 104, gy: 238 },
     { species: 'caterpie', gx: 200, gy: 240 },
-    { species: 'squirtle', gx: 260, gy: 220 },
+    { species: 'squirtle', gx: 262, gy: 220 },
   ],
-  backgroundType: 'town',
 };

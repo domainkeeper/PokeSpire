@@ -1,38 +1,38 @@
 import { useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { useGameStore } from '../../state/gameStore';
-import { gridToWorld } from '../../utils/gridUtils';
-import { CAMERA_LERP } from '../../utils/constants';
+import { CAMERA_HEIGHT, CAMERA_DISTANCE, CAMERA_LERP } from '../../utils/constants';
+import { playerTransform } from '../playerTransform';
 
 export function FollowCamera() {
   const { camera } = useThree();
-  const targetPos = useRef(new THREE.Vector3());
-  const targetLook = useRef(new THREE.Vector3());
-  const initialized = useRef(false);
+  const smoothed = useRef(new THREE.Vector3());
+  const desiredPos = useRef(new THREE.Vector3());
+  const lookAt = useRef(new THREE.Vector3());
+  const initializedFor = useRef<string | null>(null);
 
   useFrame((_, delta) => {
-    const player = useGameStore.getState().player;
-    const wp = gridToWorld(player.x, player.y);
+    // Read the continuous world position, not the grid cell from the store.
+    // Following the rounded grid cell made the camera judder one tile at a time.
+    if (!playerTransform.ready) return;
 
-    const desiredPos = new THREE.Vector3(wp[0], 4.5, wp[2] + 4.0);
-    const desiredLook = new THREE.Vector3(wp[0], 0, wp[2] - 0.2);
+    const { x, z, mapId } = playerTransform;
+    desiredPos.current.set(x, CAMERA_HEIGHT, z + CAMERA_DISTANCE);
 
-    if (!initialized.current) {
-      targetPos.current.copy(desiredPos);
-      targetLook.current.copy(desiredLook);
-      camera.position.copy(desiredPos);
-      camera.lookAt(desiredLook);
-      initialized.current = true;
-      return;
+    // Snap (no lerp) on first frame and across map transitions, otherwise the
+    // camera would sail across the whole world.
+    if (initializedFor.current !== mapId) {
+      initializedFor.current = mapId;
+      smoothed.current.copy(desiredPos.current);
+    } else {
+      // Frame-rate independent exponential smoothing.
+      const alpha = 1 - Math.exp(-CAMERA_LERP * delta);
+      smoothed.current.lerp(desiredPos.current, alpha);
     }
 
-    const lerp = Math.min(1, CAMERA_LERP * delta);
-    targetPos.current.lerp(desiredPos, lerp);
-    targetLook.current.lerp(desiredLook, lerp);
-
-    camera.position.copy(targetPos.current);
-    camera.lookAt(targetLook.current);
+    camera.position.copy(smoothed.current);
+    lookAt.current.set(smoothed.current.x, 0, smoothed.current.z - CAMERA_DISTANCE);
+    camera.lookAt(lookAt.current);
   });
 
   return null;
