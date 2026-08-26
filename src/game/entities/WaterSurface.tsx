@@ -12,6 +12,7 @@ export function WaterSurface({
   height: number;
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
+  const timeRef = useRef(0);
 
   const tex = useMemo(() => {
     const c = document.createElement('canvas');
@@ -23,19 +24,26 @@ export function WaterSurface({
     for (let y = 0; y < 64; y++) {
       for (let x = 0; x < 64; x++) {
         const band = Math.floor(y / 8) % 4;
-        const colors = ['#1976d2', '#2196f3', '#1976d2', '#1565c0'];
+        const colors = ['#1565c0', '#1976d2', '#1e88e5', '#1976d2'];
         ctx.fillStyle = colors[band];
         ctx.fillRect(x, y, 1, 1);
 
-        if (band === 1 || band === 3) {
-          const px = (x + band * 7) % 16;
-          if (px < 8) {
+        if (band === 1) {
+          const px = (x + 3) % 16;
+          if (px < 6) {
             ctx.fillStyle = '#42a5f5';
             ctx.fillRect(x, y, 1, 1);
           }
         }
+        if (band === 3) {
+          const px = (x + 11) % 16;
+          if (px < 4) {
+            ctx.fillStyle = '#64b5f6';
+            ctx.fillRect(x, y, 1, 1);
+          }
+        }
 
-        const sparkle = ((x * 13 + y * 7) % 37);
+        const sparkle = ((x * 13 + y * 7) % 41);
         if (sparkle === 0) {
           ctx.fillStyle = '#bbdefb';
           ctx.fillRect(x, y, 1, 1);
@@ -57,13 +65,14 @@ export function WaterSurface({
     return t;
   }, [width, height]);
 
-  useFrame((state) => {
+  useFrame((_, delta) => {
+    timeRef.current += delta;
     if (meshRef.current) {
       const mat = meshRef.current.material as THREE.MeshBasicMaterial;
       if (mat.map) {
-        mat.map.offset.x = Math.sin(state.clock.elapsedTime * 0.15) * 0.05;
-        mat.map.offset.y = state.clock.elapsedTime * 0.03;
-        mat.map.needsUpdate = true;
+        mat.map.offset.x = Math.sin(timeRef.current * 0.2) * 0.06;
+        mat.map.offset.y = timeRef.current * 0.04;
+        mat.map.needsUpdate = false;
       }
     }
   });
@@ -71,38 +80,30 @@ export function WaterSurface({
   return (
     <group>
       <mesh
-        ref={meshRef}
-        position={[position[0], position[1] - 0.08, position[2]]}
+        position={[position[0], -0.1, position[2]]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        renderOrder={position[2] - 0.2}
+      >
+        <planeGeometry args={[width, height]} />
+        <meshBasicMaterial map={tex} transparent opacity={0.9} />
+      </mesh>
+
+      <mesh
+        position={[position[0], -0.06, position[2]]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        renderOrder={position[2] - 0.15}
+      >
+        <planeGeometry args={[width + 0.2, height + 0.2]} />
+        <meshBasicMaterial color="#8d6e4c" transparent opacity={0.5} />
+      </mesh>
+
+      <mesh
+        position={[position[0], -0.04, position[2]]}
         rotation={[-Math.PI / 2, 0, 0]}
         renderOrder={position[2] - 0.1}
       >
-        <planeGeometry args={[width, height]} />
-        <meshBasicMaterial map={tex} transparent opacity={0.85} />
-      </mesh>
-
-      {[-0.04, -0.02].map((dy, i) => (
-        <mesh
-          key={i}
-          position={[position[0], position[1] + dy, position[2]]}
-          rotation={[-Math.PI / 2, 0, 0]}
-          renderOrder={position[2] + dy}
-        >
-          <planeGeometry args={[width + 0.1, height + 0.1]} />
-          <meshBasicMaterial
-            color={i === 0 ? '#8d6e4c' : '#a1887f'}
-            transparent
-            opacity={0.6}
-          />
-        </mesh>
-      ))}
-
-      <mesh
-        position={[position[0], position[1] - 0.06, position[2]]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        renderOrder={position[2] - 0.05}
-      >
-        <planeGeometry args={[width + 0.3, height + 0.3]} />
-        <meshBasicMaterial color="#c4b088" transparent opacity={0.4} />
+        <planeGeometry args={[width + 0.4, height + 0.4]} />
+        <meshBasicMaterial color="#a1887f" transparent opacity={0.3} />
       </mesh>
     </group>
   );

@@ -8,6 +8,7 @@ import type { PokemonSpeciesKey } from '../../data/pokemon/pokemonSprites';
 
 import { makeBushSprite, makeRockSprite, makeFlowerSprite, makeFenceSprite, makeSignSprite } from '../pixel/sprites/envSprites';
 import { makeNpcSprite } from '../pixel/sprites/characterSprites';
+import type { Dir8 } from '../pixel/sprites/characterSprites';
 import { PixelSprite } from '../pixel/PixelSprite';
 import { makeGroundTexture, getShadowTexture } from '../pixel/groundTexture';
 import { Tree, SmallTree, Building } from '../entities/Mesh3D';
@@ -209,14 +210,17 @@ export function MapRenderer({ mapData }: MapRendererProps) {
 
       {mapData.npcPositions.map((npc, i) => {
         const [wx, , wz] = gridToWorld(npc.x, npc.y);
+        const variant = npc.name?.toLowerCase().includes('professor') ? 'professor'
+          : npc.name?.toLowerCase().includes('garden') ? 'gardener'
+          : 'resident';
         return (
           <group key={`npc-${i}`}>
-            <GroundShadow position={[wx + 0.35, 0, wz + 0.35]} size={0.8} />
+            <GroundShadow position={[wx + 0.4, 0, wz + 0.4]} size={0.9} />
             <PixelSprite
-              texture={makeNpcSprite(npc.color || '#7b1fa2')}
+              texture={makeNpcSprite('down' as Dir8, 'idle', 0, variant)}
               position={[wx, 0, wz]}
-              width={0.7}
-              height={1.1}
+              width={0.8}
+              height={1.2}
               anchorY={0.15}
             />
           </group>

@@ -12,7 +12,7 @@ import {
   TILE_SIZE,
 } from '../../utils/constants';
 import { makePlayerSprite } from '../pixel/sprites/characterSprites';
-import type { Direction } from '../../types/game';
+import type { Dir8, WalkFrame } from '../pixel/sprites/characterSprites';
 import type { GameMap } from '../../data/mapTypes';
 
 interface PlayerProps {
@@ -20,13 +20,27 @@ interface PlayerProps {
   onExitCheck?: (gx: number, gy: number) => void;
 }
 
+function computeDir8(dx: number, dz: number): Dir8 {
+  if (dx === 0 && dz === 0) return 'down';
+  const angle = Math.atan2(dx, -dz) * (180 / Math.PI);
+  if (angle >= -22.5 && angle < 22.5) return 'down';
+  if (angle >= 22.5 && angle < 67.5) return 'down_right';
+  if (angle >= 67.5 && angle < 112.5) return 'right';
+  if (angle >= 112.5 && angle < 157.5) return 'up_right';
+  if (angle >= 157.5 || angle < -157.5) return 'up';
+  if (angle >= -157.5 && angle < -112.5) return 'up_left';
+  if (angle >= -112.5 && angle < -67.5) return 'left';
+  if (angle >= -67.5 && angle < -22.5) return 'down_left';
+  return 'down';
+}
+
 export function Player({ mapData, onExitCheck }: PlayerProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const velocity = useRef(new THREE.Vector3());
   const walkPhase = useRef(0);
-  const walkCycle = useRef(0);
   const keysDown = useRef(new Set<string>());
-  const lastFacing = useRef<Direction>('down');
+  const currentDir = useRef<Dir8>('down');
+  const currentFrame = useRef<WalkFrame>(0);
 
   const player = useGameStore((s) => s.player);
   const setPlayerPosition = useGameStore((s) => s.setPlayerPosition);
@@ -40,7 +54,7 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
 
   const mat = useRef<THREE.MeshBasicMaterial>(
     new THREE.MeshBasicMaterial({
-      map: makePlayerSprite('down', 0),
+      map: makePlayerSprite('down', 'idle', 0),
       transparent: true,
       alphaTest: 0.1,
       side: THREE.DoubleSide,
@@ -59,11 +73,12 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
   );
 
   const checkExit = useCallback(
-    (wx: number, wz: number, dir: Direction) => {
+    (wx: number, wz: number, dir: Dir8) => {
       const gx = Math.round(wx / TILE_SIZE);
       const gz = Math.round(wz / TILE_SIZE);
       if (gx < 0 || gx >= mapData.width || gz < 0 || gz >= mapData.height) return;
-      setPlayerPosition(gx, gz, dir, mapData.name);
+      const facing4 = dir.includes('up') ? 'up' : dir.includes('down') ? 'down' : dir.includes('left') ? 'left' : 'right';
+      setPlayerPosition(gx, gz, facing4 as 'up' | 'down' | 'left' | 'right', mapData.name);
       if (onExitCheck) {
         const exit = mapData.exits.find(
           (e) => gx >= e.x && gx < e.x + e.w && gz >= e.y && gz < e.y + e.h,
@@ -114,11 +129,7 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
     }
 
     if (isMoving) {
-      if (Math.abs(dx) > Math.abs(dz)) {
-        lastFacing.current = dx > 0 ? 'right' : 'left';
-      } else {
-        lastFacing.current = dz > 0 ? 'down' : 'up';
-      }
+      currentDir.current = computeDir8(dx, dz);
     }
 
     const vel = velocity.current;
@@ -148,31 +159,34 @@ export function Player({ mapData, onExitCheck }: PlayerProps) {
 
     const gx = Math.round(pos.x / TILE_SIZE);
     const gz = Math.round(pos.z / TILE_SIZE);
-    if (gx !== player.x || gz !== player.y || lastFacing.current !== player.facing) {
-      setPlayerPosition(gx, gz, lastFacing.current, mapData.name);
+    const facing4 = currentDir.current.includes('up') ? 'up' : currentDir.current.includes('down') ? 'down' : currentDir.current.includes('left') ? 'left' : 'right';
+    if (gx !== player.x || gz !== player.y || facing4 !== player.facing) {
+      setPlayerPosition(gx, gz, facing4 as 'up' | 'down' | 'left' | 'right', mapData.name);
     }
 
-    checkExit(pos.x, pos.z, lastFacing.current);
+    checkExit(pos.x, pos.z, currentDir.current);
 
     const speed = Math.sqrt(vel.x * vel.x + vel.z * vel.z);
-    if (speed > 0.05) {
+    const animState: 'idle' | 'walk' = speed > 0.05 ? 'walk' : 'idle';
+
+    if (animState === 'walk') {
       walkPhase.current += delta * 8;
-      walkCycle.current = Math.floor(walkPhase.current) % 4;
+      currentFrame.current = Math.floor(walkPhase.current) % 4 as WalkFrame;
     } else {
       walkPhase.current = 0;
-      walkCycle.current = 0;
+      currentFrame.current = 0;
     }
 
-    const bobAmount = speed > 0.05
+    const bobAmount = animState === 'walk'
       ? Math.sin(walkPhase.current * 2) * 0.02
       : Math.sin(Date.now() * 0.0015) * 0.01;
-    meshRef.current.position.y = PLAYER_SPRITE_H * 0.15 + bobAmount;
+    pos.y = PLAYER_SPRITE_H * 0.15 + bobAmount;
 
-    const newTex = makePlayerSprite(lastFacing.current, walkCycle.current as 0 | 1 | 2 | 3);
+    const newTex = makePlayerSprite(currentDir.current, animState, currentFrame.current);
     mat.current.map = newTex;
     mat.current.needsUpdate = true;
 
-    meshRef.current.scale.x = lastFacing.current === 'left' ? -1 : 1;
+    meshRef.current.scale.x = 1;
   });
 
   return (
