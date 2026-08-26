@@ -6,10 +6,12 @@ import type { GameMap } from '../../data/mapTypes';
 import { getPokemonSprite } from '../../data/pokemon/pokemonSprites';
 import type { PokemonSpeciesKey } from '../../data/pokemon/pokemonSprites';
 
-import { makeTreeSprite, makeSmallTreeSprite, makeBushSprite, makeRockSprite, makeFlowerSprite, makeFenceSprite, makeSignSprite, makeWaterSprite, makeBuildingSprite } from '../pixel/sprites/envSprites';
+import { makeBushSprite, makeRockSprite, makeFlowerSprite, makeFenceSprite, makeSignSprite } from '../pixel/sprites/envSprites';
 import { makeNpcSprite } from '../pixel/sprites/characterSprites';
 import { PixelSprite } from '../pixel/PixelSprite';
 import { makeGroundTexture, getShadowTexture } from '../pixel/groundTexture';
+import { Tree, SmallTree, Building } from '../entities/Mesh3D';
+import { WaterSurface } from '../entities/WaterSurface';
 
 const SPRITE_MAP: Record<string, THREE.Texture> = {};
 
@@ -17,16 +19,11 @@ function getSprite(type: string): THREE.Texture {
   if (SPRITE_MAP[type]) return SPRITE_MAP[type];
   let tex: THREE.Texture;
   switch (type) {
-    case 'tree': tex = makeTreeSprite(); break;
-    case 'small_tree': tex = makeSmallTreeSprite(); break;
     case 'bush': tex = makeBushSprite(); break;
     case 'rock': tex = makeRockSprite(); break;
     case 'flower': tex = makeFlowerSprite(); break;
     case 'fence': tex = makeFenceSprite(); break;
     case 'sign': tex = makeSignSprite(); break;
-    case 'water': tex = makeWaterSprite(); break;
-    case 'building': tex = makeBuildingSprite('red'); break;
-    case 'building2': tex = makeBuildingSprite('blue'); break;
     default: tex = makeBushSprite(); break;
   }
   SPRITE_MAP[type] = tex;
@@ -103,7 +100,7 @@ function GroundShadow({ position, size }: { position: [number, number, number]; 
   const tex = useMemo(() => getShadowTexture(), []);
   return (
     <mesh
-      position={[position[0], 0.02, position[2]]}
+      position={[position[0], 0.01, position[2]]}
       rotation={[-Math.PI / 2, 0, 0]}
       renderOrder={position[2] - 0.01}
     >
@@ -114,15 +111,10 @@ function GroundShadow({ position, size }: { position: [number, number, number]; 
 }
 
 const SHADOW_SIZES: Record<string, number> = {
-  tree: 2.5,
-  small_tree: 1.5,
-  building: 5,
-  building2: 5.5,
   bush: 1.0,
   rock: 1.2,
   fence: 2.0,
   sign: 0.6,
-  water: 3.0,
   flower: 0.3,
 };
 
@@ -131,17 +123,77 @@ export function MapRenderer({ mapData }: MapRendererProps) {
     return [...mapData.objects].sort((a, b) => a.gy - b.gy);
   }, [mapData]);
 
+  const waterObjects = useMemo(() => {
+    return mapData.objects.filter((o) => o.type === 'water');
+  }, [mapData]);
+
   return (
     <group>
       <CanvasGround mapData={mapData} />
 
+      {waterObjects.map((obj, i) => {
+        const [wx, , wz] = gridToWorld(obj.gx, obj.gy);
+        const wWU = obj.spriteW || obj.footprintW * TILE_SIZE;
+        const wHU = obj.spriteH || obj.footprintH * TILE_SIZE;
+        return (
+          <WaterSurface
+            key={`water-${i}`}
+            position={[wx + wWU / 2, 0, wz + wHU / 2]}
+            width={wWU}
+            height={wHU}
+          />
+        );
+      })}
+
       {sortedObjects.map((obj, i) => {
         const [wx, , wz] = gridToWorld(obj.gx, obj.gy);
-        const shadowSize = SHADOW_SIZES[obj.type] || 1.0;
+        const centerX = wx + obj.spriteW / 2;
+        const centerZ = wz + obj.spriteW / 2;
 
+        if (obj.type === 'water') return null;
+
+        if (obj.type === 'tree') {
+          return (
+            <group key={`obj-${i}`}>
+              <GroundShadow position={[centerX, 0, centerZ]} size={2.5} />
+              <Tree position={[centerX, 0, centerZ]} scale={1} />
+            </group>
+          );
+        }
+
+        if (obj.type === 'small_tree') {
+          return (
+            <group key={`obj-${i}`}>
+              <GroundShadow position={[centerX, 0, centerZ]} size={1.5} />
+              <SmallTree position={[centerX, 0, centerZ]} scale={1} />
+            </group>
+          );
+        }
+
+        if (obj.type === 'building') {
+          return (
+            <group key={`obj-${i}`}>
+              <GroundShadow position={[centerX, 0, centerZ]} size={5} />
+              <Building position={[centerX, 0, centerZ]} variant="red" scale={1} />
+            </group>
+          );
+        }
+
+        if (obj.type === 'building2') {
+          return (
+            <group key={`obj-${i}`}>
+              <GroundShadow position={[centerX, 0, centerZ]} size={5.5} />
+              <Building position={[centerX, 0, centerZ]} variant="blue" scale={1} />
+            </group>
+          );
+        }
+
+        const shadowSize = SHADOW_SIZES[obj.type] || 1.0;
         return (
           <group key={`obj-${i}`}>
-            <GroundShadow position={[wx + obj.spriteW * 0.5, 0, wz + obj.spriteW * 0.5]} size={shadowSize} />
+            {shadowSize > 0 && (
+              <GroundShadow position={[centerX, 0, centerZ]} size={shadowSize} />
+            )}
             <PixelSprite
               texture={getSprite(obj.type)}
               position={[wx, 0, wz]}
@@ -150,7 +202,6 @@ export function MapRenderer({ mapData }: MapRendererProps) {
               anchorY={0.15}
               animScale={obj.type === 'flower'}
               animSway={obj.animSway}
-              animWater={obj.type === 'water'}
             />
           </group>
         );

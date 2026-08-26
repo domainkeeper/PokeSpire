@@ -7,135 +7,185 @@ const PPT = 4;
 function hash(x: number, y: number): number {
   let h = (x * 374761393 + y * 668265263) | 0;
   h = ((h ^ (h >> 13)) * 1274126177) | 0;
-  return ((h ^ (h >> 16)) >>> 0) % 1000;
+  return ((h ^ (h >> 16)) >>> 0);
 }
 
-const GRASS_BASES = ['#3a7d32', '#3d8b37', '#43a047', '#358030', '#2e7d32'];
-const GRASS_DARK = ['#1b5e20', '#2e7d32', '#1a5c1a', '#256b25'];
-const GRASS_LIGHT = ['#66bb6a', '#81c784', '#5aad52', '#73c46e'];
-const GRASS_BLADE = ['#2d6e27', '#348232', '#2a6424'];
-
-const PATH_BASES = ['#c8b68e', '#bca87a', '#b8a270', '#c4b088'];
-const PATH_DARK = ['#a08860', '#9a8058', '#8e7650'];
-const PATH_LIGHT = ['#d8cca0', '#d4c898', '#cec090'];
-const PATH_STONE = ['#b0a070', '#a89868'];
-
-const WATER_BASES = ['#1976d2', '#1e88e5', '#1565c0'];
-const WATER_MID = ['#2196f3', '#42a5f5', '#2196f3'];
-const WATER_LIGHT = ['#64b5f6', '#90caf9', '#bbdefb'];
-const WATER_DARK = ['#0d47a1', '#1565c0'];
-
-const DIRT_BASES = ['#8d6e4c', '#7d6040', '#9a7a58', '#846545'];
-const DIRT_DARK = ['#6d5030', '#5d4428', '#644a2e'];
-const DIRT_LIGHT = ['#a88a60', '#b09468'];
-
-function pick<T>(arr: T[], h: number): T {
-  return arr[h % arr.length];
+function pseudoRand(x: number, y: number, seed: number): number {
+  return ((hash(x, y) ^ (seed * 99991)) >>> 0) % 100;
 }
 
-function paintGrass(ctx: CanvasRenderingContext2D, cx: number, cy: number, tx: number, ty: number) {
-  const h = hash(tx, ty);
-  const base = pick(GRASS_BASES, h);
+const G = {
+  dark1: '#2d6b27', dark2: '#1f5a1a',
+  base1: '#3a8c32', base2: '#3d8b37', base3: '#43a047', base4: '#358030',
+  light1: '#5aad52', light2: '#66bb6a',
+  highlight: '#81c784',
+};
 
-  for (let py = 0; py < PPT; py++) {
-    for (let px = 0; px < PPT; px++) {
-      const ph = hash(tx * 137 + px, ty * 251 + py);
-      let color = base;
+const P = {
+  dark: '#8a7550', mid: '#a89068', base: '#c4b088', light: '#d8cca0',
+};
 
-      if (ph % 18 === 0) color = pick(GRASS_DARK, ph);
-      else if (ph % 22 === 0) color = pick(GRASS_BLADE, ph);
-      else if (ph % 25 === 0) color = pick(GRASS_LIGHT, ph);
-      else if (ph % 60 === 0) color = '#f48fb1';
-      else if (ph % 70 === 0) color = '#fff176';
-      else if (ph % 80 === 0) color = '#ce93d8';
+const W = {
+  deep: '#0d47a1', dark: '#1565c0', base: '#1976d2', mid: '#2196f3',
+  light: '#42a5f5', sparkle: '#bbdefb', foam: '#e3f2fd',
+};
 
-      ctx.fillStyle = color;
-      ctx.fillRect(cx + px, cy + py, 1, 1);
+const D = {
+  dark: '#5d4428', mid: '#7d6040', base: '#8d6e4c', light: '#a88a60',
+};
+
+function paintGrass(ctx: CanvasRenderingContext2D, ox: number, oy: number, tx: number, ty: number) {
+  const p = (dx: number, dy: number, color: string) => {
+    ctx.fillStyle = color;
+    ctx.fillRect(ox + dx, oy + dy, 1, 1);
+  };
+
+  const v = (hash(tx, ty) % 4);
+  const bases = [G.base1, G.base2, G.base3, G.base4];
+  const base = bases[v];
+
+  for (let dy = 0; dy < PPT; dy++) {
+    for (let dx = 0; dx < PPT; dx++) {
+      p(dx, dy, base);
     }
+  }
+
+  const r = pseudoRand(tx, ty, 1);
+  if (r < 12) {
+    const bx = r % PPT;
+    const by = (r >> 2) % PPT;
+    p(bx, by, G.dark1);
+    if (by + 1 < PPT) p(bx, by + 1, G.dark2);
+  }
+
+  const r2 = pseudoRand(tx, ty, 2);
+  if (r2 < 8) {
+    const bx = r2 % PPT;
+    const by = (r2 >> 2) % PPT;
+    p(bx, by, G.light1);
+  }
+
+  const r3 = pseudoRand(tx, ty, 3);
+  if (r3 < 3) {
+    const bx = r3 % PPT;
+    p(bx, 0, '#f48fb1');
+    p(bx, 1, '#e91e63');
+  } else if (r3 < 5) {
+    const bx = r3 % PPT;
+    p(bx, 0, '#fff176');
+    p(bx, 1, '#fdd835');
+  }
+
+  const r4 = pseudoRand(tx, ty, 5);
+  if (r4 < 2) {
+    p(0, r4 % PPT, G.highlight);
   }
 }
 
-function paintPath(ctx: CanvasRenderingContext2D, cx: number, cy: number, tx: number, ty: number) {
-  const h = hash(tx, ty);
-  const base = pick(PATH_BASES, h);
+function paintPath(ctx: CanvasRenderingContext2D, ox: number, oy: number, tx: number, ty: number) {
+  const p = (dx: number, dy: number, color: string) => {
+    ctx.fillStyle = color;
+    ctx.fillRect(ox + dx, oy + dy, 1, 1);
+  };
 
-  for (let py = 0; py < PPT; py++) {
-    for (let px = 0; px < PPT; px++) {
-      const ph = hash(tx * 97 + px, ty * 193 + py);
-      let color = base;
-
-      if ((px === 0 || py === 0) && ph % 3 === 0) color = pick(PATH_DARK, ph);
-      else if (px === 2 && py === 2 && ph % 2 === 0) color = pick(PATH_LIGHT, ph);
-      else if (ph % 12 === 0) color = pick(PATH_STONE, ph);
-      else if (ph % 30 === 0) color = pick(PATH_DARK, ph);
-
-      ctx.fillStyle = color;
-      ctx.fillRect(cx + px, cy + py, 1, 1);
+  for (let dy = 0; dy < PPT; dy++) {
+    for (let dx = 0; dx < PPT; dx++) {
+      p(dx, dy, P.base);
     }
+  }
+
+  p(0, 0, P.dark); p(3, 0, P.dark);
+  p(0, 3, P.dark); p(3, 3, P.dark);
+
+  const r = pseudoRand(tx, ty, 10);
+  if (r < 30) {
+    p(1, 1, P.light);
+    p(2, 2, P.light);
+  }
+
+  const r2 = pseudoRand(tx, ty, 11);
+  if (r2 < 20) {
+    p(r2 % 3 + 1, (r2 >> 2) % 3 + 1, P.mid);
   }
 }
 
-function paintWater(ctx: CanvasRenderingContext2D, cx: number, cy: number, tx: number, ty: number) {
-  const h = hash(tx, ty);
-  const base = pick(WATER_BASES, h);
+function paintWater(ctx: CanvasRenderingContext2D, ox: number, oy: number, tx: number, ty: number) {
+  const p = (dx: number, dy: number, color: string) => {
+    ctx.fillStyle = color;
+    ctx.fillRect(ox + dx, oy + dy, 1, 1);
+  };
 
-  for (let py = 0; py < PPT; py++) {
-    for (let px = 0; px < PPT; px++) {
-      const ph = hash(tx * 53 + px, ty * 101 + py);
-      let color = base;
+  const waveRow = (ty % 4);
+  const baseColors = [W.base, W.mid, W.base, W.dark];
+  const base = baseColors[waveRow];
 
-      if (py === 1 || py === 3) {
-        if (ph % 3 === 0) color = pick(WATER_MID, ph);
-        else if (ph % 5 === 0) color = pick(WATER_LIGHT, ph);
-      } else if (py === 0 && ph % 4 === 0) {
-        color = pick(WATER_LIGHT, ph);
-      } else if (py === 2 && ph % 6 === 0) {
-        color = pick(WATER_DARK, ph);
-      }
-
-      ctx.fillStyle = color;
-      ctx.fillRect(cx + px, cy + py, 1, 1);
+  for (let dy = 0; dy < PPT; dy++) {
+    for (let dx = 0; dx < PPT; dx++) {
+      p(dx, dy, base);
     }
+  }
+
+  if (waveRow === 1 || waveRow === 3) {
+    p(0, 1, W.light); p(1, 1, W.light);
+    p(2, 1, W.light); p(3, 1, W.light);
+  }
+
+  const r = pseudoRand(tx, ty, 20);
+  if (r < 10) {
+    p(r % PPT, (r >> 2) % PPT, W.sparkle);
+  }
+
+  if ((tx + ty) % 8 === 0) {
+    p(1, 2, W.foam); p(2, 2, W.foam);
   }
 }
 
-function paintDirt(ctx: CanvasRenderingContext2D, cx: number, cy: number, tx: number, ty: number) {
-  const h = hash(tx, ty);
-  const base = pick(DIRT_BASES, h);
+function paintDirt(ctx: CanvasRenderingContext2D, ox: number, oy: number, tx: number, ty: number) {
+  const p = (dx: number, dy: number, color: string) => {
+    ctx.fillStyle = color;
+    ctx.fillRect(ox + dx, oy + dy, 1, 1);
+  };
 
-  for (let py = 0; py < PPT; py++) {
-    for (let px = 0; px < PPT; px++) {
-      const ph = hash(tx * 83 + px, ty * 167 + py);
-      let color = base;
+  const v = hash(tx, ty) % 3;
+  const bases = [D.base, D.mid, D.base];
+  const base = bases[v];
 
-      if (ph % 8 === 0) color = pick(DIRT_DARK, ph);
-      else if (ph % 15 === 0) color = pick(DIRT_LIGHT, ph);
-
-      ctx.fillStyle = color;
-      ctx.fillRect(cx + px, cy + py, 1, 1);
+  for (let dy = 0; dy < PPT; dy++) {
+    for (let dx = 0; dx < PPT; dx++) {
+      p(dx, dy, base);
     }
+  }
+
+  const r = pseudoRand(tx, ty, 30);
+  if (r < 15) {
+    p(r % PPT, (r >> 2) % PPT, D.dark);
+  }
+
+  const r2 = pseudoRand(tx, ty, 31);
+  if (r2 < 8) {
+    p(r2 % PPT, (r2 >> 2) % PPT, D.light);
   }
 }
 
-function paintSand(ctx: CanvasRenderingContext2D, cx: number, cy: number, tx: number, ty: number) {
-  const h = hash(tx, ty);
-  const bases = ['#dbc07c', '#e0c880', '#d4b870'];
+function paintSand(ctx: CanvasRenderingContext2D, ox: number, oy: number, tx: number, ty: number) {
+  const p = (dx: number, dy: number, color: string) => {
+    ctx.fillStyle = color;
+    ctx.fillRect(ox + dx, oy + dy, 1, 1);
+  };
 
-  for (let py = 0; py < PPT; py++) {
-    for (let px = 0; px < PPT; px++) {
-      const ph = hash(tx * 113 + px, ty * 211 + py);
-      let color = pick(bases, h);
+  const base = hash(tx, ty) % 2 === 0 ? '#dbc07c' : '#d4b870';
 
-      if (ph % 10 === 0) color = '#c8a860';
-      else if (ph % 14 === 0) color = '#e8d898';
-
-      ctx.fillStyle = color;
-      ctx.fillRect(cx + px, cy + py, 1, 1);
+  for (let dy = 0; dy < PPT; dy++) {
+    for (let dx = 0; dx < PPT; dx++) {
+      p(dx, dy, base);
     }
   }
+
+  const r = pseudoRand(tx, ty, 40);
+  if (r < 10) p(r % PPT, (r >> 2) % PPT, '#c8a860');
 }
 
-const painters: Record<TileType, (ctx: CanvasRenderingContext2D, cx: number, cy: number, tx: number, ty: number) => void> = {
+const painters: Record<TileType, (ctx: CanvasRenderingContext2D, ox: number, oy: number, tx: number, ty: number) => void> = {
   grass: paintGrass,
   path: paintPath,
   water: paintWater,
@@ -197,4 +247,25 @@ export function getShadowTexture(): THREE.CanvasTexture {
   shadowTex.minFilter = THREE.NearestFilter;
   shadowTex.generateMipmaps = false;
   return shadowTex;
+}
+
+let shoreTex: THREE.CanvasTexture | null = null;
+export function getShoreTexture(): THREE.CanvasTexture {
+  if (shoreTex) return shoreTex;
+  const c = document.createElement('canvas');
+  c.width = 8;
+  c.height = 8;
+  const ctx = c.getContext('2d')!;
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = '#8d6e4c';
+  ctx.fillRect(0, 0, 8, 8);
+  ctx.fillStyle = '#a1887f';
+  ctx.fillRect(1, 1, 6, 6);
+  ctx.fillStyle = '#c4b088';
+  ctx.fillRect(2, 2, 4, 4);
+  shoreTex = new THREE.CanvasTexture(c);
+  shoreTex.magFilter = THREE.NearestFilter;
+  shoreTex.minFilter = THREE.NearestFilter;
+  shoreTex.generateMipmaps = false;
+  return shoreTex;
 }
