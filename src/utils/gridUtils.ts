@@ -18,3 +18,26 @@ export function isWalkable(
   if (gx < 0 || gx >= mapWidth || gy < 0 || gy >= mapHeight) return false;
   return !mapBlocked[gy]?.[gx];
 }
+
+export function buildBlockedGrid(
+  width: number,
+  height: number,
+  objects: { gx: number; gy: number; footprintW: number; footprintH: number; collision: boolean }[],
+): boolean[][] {
+  const grid: boolean[][] = Array.from({ length: height }, () =>
+    Array.from({ length: width }, () => false),
+  );
+  for (const obj of objects) {
+    if (!obj.collision) continue;
+    for (let dy = 0; dy < obj.footprintH; dy++) {
+      for (let dx = 0; dx < obj.footprintW; dx++) {
+        const gx = obj.gx + dx;
+        const gy = obj.gy + dy;
+        if (gx >= 0 && gx < width && gy >= 0 && gy < height) {
+          grid[gy][gx] = true;
+        }
+      }
+    }
+  }
+  return grid;
+}

@@ -23,8 +23,8 @@ const defaultSave: SaveGame = {
   version: 1,
   player: {
     name: 'Player',
-    x: 7,
-    y: 12,
+    x: 30,
+    y: 38,
     mapId: 'town',
     facing: 'down',
   },

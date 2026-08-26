@@ -1,19 +1,22 @@
 import { Canvas } from '@react-three/fiber';
 import { OverworldScene } from './scenes/OverworldScene';
-import { Postprocessing } from './fx/Postprocessing';
 import { TransitionOverlay } from './fx/TransitionOverlay';
 
 export function GameCanvas() {
   return (
-    <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
+    <div style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
       <Canvas
-        shadows
-        camera={{ position: [0, 10, 10], fov: 50 }}
-        gl={{ antialias: true, toneMapping: 3 }}
-        style={{ background: '#87ceeb' }}
+        orthographic
+        camera={{
+          zoom: 60,
+          position: [0, 12, 10],
+          near: 0.1,
+          far: 100,
+        }}
+        gl={{ antialias: false, alpha: false }}
+        style={{ background: '#87ceeb', imageRendering: 'pixelated' }}
       >
         <OverworldScene />
-        <Postprocessing />
       </Canvas>
       <TransitionOverlay />
     </div>

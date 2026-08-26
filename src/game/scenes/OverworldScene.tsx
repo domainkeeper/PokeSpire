@@ -18,7 +18,13 @@ export function OverworldScene() {
     (_gx: number, _gy: number) => {
       if (!mapData || transitioning) return;
       const playerState = useGameStore.getState().player;
-      const exit = mapData.exits.find((e) => e.x === playerState.x && e.y === playerState.y);
+      const exit = mapData.exits.find(
+        (e) =>
+          playerState.x >= e.x &&
+          playerState.x < e.x + e.w &&
+          playerState.y >= e.y &&
+          playerState.y < e.y + e.h,
+      );
       if (!exit) return;
 
       setTransitioning(true);
@@ -36,27 +42,14 @@ export function OverworldScene() {
 
   return (
     <>
-      <ambientLight intensity={0.6} color="#b3e5fc" />
-      <directionalLight
-        position={[8, 15, 8]}
-        intensity={1.8}
-        color="#fff8e1"
-        castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        shadow-camera-far={40}
-        shadow-camera-left={-15}
-        shadow-camera-right={15}
-        shadow-camera-top={15}
-        shadow-camera-bottom={-15}
-      />
-      <hemisphereLight args={['#87ceeb', '#4caf50', 0.4]} />
+      <color attach="background" args={['#87ceeb']} />
+      <ambientLight intensity={1} />
+      <directionalLight position={[5, 10, 5]} intensity={0.6} />
+      <fog attach="fog" args={['#87ceeb', FOG_NEAR, FOG_FAR]} />
 
       <MapRenderer mapData={mapData} />
       <Player mapData={mapData} onExitCheck={handleExitCheck} />
       <FollowCamera />
-
-      <fog attach="fog" args={['#87ceeb', FOG_NEAR, FOG_FAR]} />
     </>
   );
 }

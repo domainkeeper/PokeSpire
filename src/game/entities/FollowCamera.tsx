@@ -3,22 +3,31 @@ import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useGameStore } from '../../state/gameStore';
 import { gridToWorld } from '../../utils/gridUtils';
-import { CAMERA_OFFSET_Y, CAMERA_OFFSET_Z } from '../../utils/constants';
+import { CAMERA_HEIGHT, CAMERA_DISTANCE, CAMERA_LERP } from '../../utils/constants';
 
 export function FollowCamera() {
   const { camera } = useThree();
-  const target = useRef(new THREE.Vector3());
   const currentPos = useRef(new THREE.Vector3());
-
-  const player = useGameStore((s) => s.player);
-  const wp = gridToWorld(player.x, player.y);
-  target.current.set(wp[0] * 0.3, CAMERA_OFFSET_Y, wp[2] * 0.3 + CAMERA_OFFSET_Z);
+  const lookTarget = useRef(new THREE.Vector3());
 
   useFrame((_, delta) => {
-    const lerpFactor = Math.min(1, 3 * delta);
-    currentPos.current.lerp(target.current, lerpFactor);
+    const player = useGameStore.getState().player;
+    const wp = gridToWorld(player.x, player.y);
+
+    const targetPos = new THREE.Vector3(
+      wp[0] * 0.6,
+      CAMERA_HEIGHT,
+      wp[2] * 0.6 + CAMERA_DISTANCE,
+    );
+
+    const targetLook = new THREE.Vector3(wp[0] * 0.7, 0, wp[2] * 0.7);
+
+    const lerp = Math.min(1, CAMERA_LERP * delta);
+    currentPos.current.lerp(targetPos, lerp);
+    lookTarget.current.lerp(targetLook, lerp);
+
     camera.position.copy(currentPos.current);
-    camera.lookAt(new THREE.Vector3(wp[0] * 0.5, 0, wp[2] * 0.5));
+    camera.lookAt(lookTarget.current);
   });
 
   return null;

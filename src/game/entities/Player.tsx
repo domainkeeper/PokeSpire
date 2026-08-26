@@ -1,77 +1,84 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useGameStore } from '../../state/gameStore';
-import { gridToWorld, isWalkable } from '../../utils/gridUtils';
+import { gridToWorld, buildBlockedGrid } from '../../utils/gridUtils';
 import { PLAYER_SPEED } from '../../utils/constants';
-import { PLAYER_GRADIENT, SKIN_GRADIENT } from '../../utils/toonMaterials';
+import { makePlayerSprite } from '../pixel/sprites/characterSprites';
 import type { Direction } from '../../types/game';
 import type { GameMap } from '../../data/mapTypes';
 
 interface PlayerProps {
   mapData: GameMap;
-  onMove?: () => void;
   onExitCheck?: (gx: number, gy: number) => void;
 }
 
-const DIR_TO_ANGLE: Record<Direction, number> = {
-  down: 0,
-  up: Math.PI,
-  left: Math.PI / 2,
-  right: -Math.PI / 2,
-};
+const DIR_DX: Record<Direction, number> = { down: 0, up: 0, left: -1, right: 1 };
+const DIR_DY: Record<Direction, number> = { down: 1, up: -1, left: 0, right: 0 };
 
-export function Player({ mapData, onMove, onExitCheck }: PlayerProps) {
-  const groupRef = useRef<THREE.Group>(null);
-  const targetPos = useRef(new THREE.Vector3());
+export function Player({ mapData, onExitCheck }: PlayerProps) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const targetWorld = useRef(new THREE.Vector3());
   const isMoving = useRef(false);
   const bobPhase = useRef(0);
   const keysDown = useRef(new Set<string>());
 
-  const { x: gx, y: gy, facing } = useGameStore((s) => s.player);
+  const player = useGameStore((s) => s.player);
   const setPlayerPosition = useGameStore((s) => s.setPlayerPosition);
 
-  const worldPos = gridToWorld(gx, gy);
-  targetPos.current.set(worldPos[0], worldPos[1], worldPos[2]);
+  const blocked = useMemo(
+    () => buildBlockedGrid(mapData.width, mapData.height, mapData.objects),
+    [mapData],
+  );
+
+  const wp = gridToWorld(player.x, player.y);
+  targetWorld.current.set(wp[0], 0, wp[2]);
+
+  const mat = useRef<THREE.MeshBasicMaterial>(
+    new THREE.MeshBasicMaterial({
+      map: makePlayerSprite('down'),
+      transparent: true,
+      alphaTest: 0.1,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    }),
+  );
 
   const tryMove = useCallback(
     (dir: Direction) => {
       if (isMoving.current) return;
 
-      const dx = dir === 'left' ? -1 : dir === 'right' ? 1 : 0;
-      const dy = dir === 'up' ? -1 : dir === 'down' ? 1 : 0;
-      const nx = gx + dx;
-      const ny = gy + dy;
+      const dx = DIR_DX[dir];
+      const dy = DIR_DY[dir];
+      const nx = player.x + dx;
+      const ny = player.y + dy;
 
-      setPlayerPosition(gx, gy, dir, mapData.name);
+      setPlayerPosition(player.x, player.y, dir, mapData.name);
 
-      if (!isWalkable(mapData.blocked, nx, ny, mapData.width, mapData.height)) {
+      if (!isWalkable(blocked, nx, ny, mapData.width, mapData.height)) {
         return;
       }
 
       setPlayerPosition(nx, ny, dir, mapData.name);
-      const wp = gridToWorld(nx, ny);
-      targetPos.current.set(wp[0], wp[1], wp[2]);
+      const newWp = gridToWorld(nx, ny);
+      targetWorld.current.set(newWp[0], 0, newWp[2]);
       isMoving.current = true;
-      onMove?.();
 
       if (onExitCheck) {
-        const exit = mapData.exits.find((e) => e.x === nx && e.y === ny);
+        const exit = mapData.exits.find(
+          (e) => nx >= e.x && nx < e.x + e.w && ny >= e.y && ny < e.y + e.h,
+        );
         if (exit) {
-          setTimeout(() => onExitCheck(nx, ny), 150);
+          setTimeout(() => onExitCheck(nx, ny), 100);
         }
       }
     },
-    [gx, gy, mapData, setPlayerPosition, onMove, onExitCheck],
+    [player.x, player.y, mapData, setPlayerPosition, onExitCheck, blocked],
   );
 
   useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      keysDown.current.add(e.key.toLowerCase());
-    };
-    const onKeyUp = (e: KeyboardEvent) => {
-      keysDown.current.delete(e.key.toLowerCase());
-    };
+    const onKeyDown = (e: KeyboardEvent) => keysDown.current.add(e.key.toLowerCase());
+    const onKeyUp = (e: KeyboardEvent) => keysDown.current.delete(e.key.toLowerCase());
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
     return () => {
@@ -81,7 +88,7 @@ export function Player({ mapData, onMove, onExitCheck }: PlayerProps) {
   }, []);
 
   useFrame((_, delta) => {
-    if (!groupRef.current) return;
+    if (!meshRef.current) return;
 
     const keys = keysDown.current;
     let dir: Direction | null = null;
@@ -95,51 +102,77 @@ export function Player({ mapData, onMove, onExitCheck }: PlayerProps) {
       tryMove(dir);
     }
 
-    const pos = groupRef.current.position;
-    const target = targetPos.current;
+    const pos = meshRef.current.position;
+    const target = targetWorld.current;
 
     if (isMoving.current) {
-      const dist = pos.distanceTo(target);
-      if (dist < 0.05) {
-        pos.copy(target);
+      const ddx = target.x - pos.x;
+      const ddz = target.z - pos.z;
+      const dist = Math.sqrt(ddx * ddx + ddz * ddz);
+
+      if (dist < 0.02) {
+        pos.x = target.x;
+        pos.z = target.z;
         isMoving.current = false;
+
+        // continue moving if key held
+        const keys2 = keysDown.current;
+        let nextDir: Direction | null = null;
+        if (keys2.has('w') || keys2.has('arrowup')) nextDir = 'up';
+        else if (keys2.has('s') || keys2.has('arrowdown')) nextDir = 'down';
+        else if (keys2.has('a') || keys2.has('arrowleft')) nextDir = 'left';
+        else if (keys2.has('d') || keys2.has('arrowright')) nextDir = 'right';
+        if (nextDir) tryMove(nextDir);
       } else {
-        pos.lerp(target, Math.min(1, PLAYER_SPEED * delta));
+        const step = PLAYER_SPEED * delta;
+        if (step >= dist) {
+          pos.x = target.x;
+          pos.z = target.z;
+        } else {
+          pos.x += (ddx / dist) * step;
+          pos.z += (ddz / dist) * step;
+        }
       }
-      bobPhase.current += delta * 12;
-      groupRef.current.position.y = Math.sin(bobPhase.current) * 0.06;
+
+      bobPhase.current += delta * 10;
+      meshRef.current.position.y = Math.sin(bobPhase.current) * 0.03;
     } else {
       bobPhase.current += delta * 2;
-      groupRef.current.position.y = Math.sin(bobPhase.current) * 0.03;
+      meshRef.current.position.y = Math.sin(bobPhase.current) * 0.015;
     }
 
-    const targetAngle = DIR_TO_ANGLE[facing];
-    const mesh = groupRef.current.children[0];
-    if (mesh) {
-      const current = mesh.rotation.y;
-      let diff = targetAngle - current;
-      while (diff > Math.PI) diff -= Math.PI * 2;
-      while (diff < -Math.PI) diff += Math.PI * 2;
-      mesh.rotation.y += diff * Math.min(1, 10 * delta);
+    // update sprite facing
+    const facing = useGameStore.getState().player.facing;
+    const newTex = makePlayerSprite(facing);
+    mat.current.map = newTex;
+    mat.current.needsUpdate = true;
+
+    if (facing === 'left') {
+      meshRef.current.scale.x = -1;
+    } else if (facing === 'right') {
+      meshRef.current.scale.x = 1;
     }
   });
 
   return (
-    <group ref={groupRef} position={[worldPos[0], 0, worldPos[2]]}>
-      <group>
-        <mesh position={[0, 0.4, 0]} castShadow>
-          <capsuleGeometry args={[0.25, 0.4, 8, 16]} />
-          <meshToonMaterial color="#42a5f5" gradientMap={PLAYER_GRADIENT} />
-        </mesh>
-        <mesh position={[0, 0.95, 0]} castShadow>
-          <sphereGeometry args={[0.22, 12, 12]} />
-          <meshToonMaterial color="#ffcc80" gradientMap={SKIN_GRADIENT} />
-        </mesh>
-        <mesh position={[0, 1.2, 0]} castShadow>
-          <sphereGeometry args={[0.24, 12, 12]} />
-          <meshToonMaterial color="#5d4037" gradientMap={PLAYER_GRADIENT} />
-        </mesh>
-      </group>
-    </group>
+    <mesh
+      ref={meshRef}
+      position={[wp[0], 0, wp[2]]}
+      material={mat.current}
+      renderOrder={100}
+    >
+      <planeGeometry args={[0.8, 1.2]} />
+    </mesh>
   );
+}
+
+function isWalkable(
+  blocked: boolean[][],
+  gx: number,
+  gy: number,
+  mapWidth: number,
+  mapHeight: number,
+): boolean {
+  if (gx < 0 || gx >= mapWidth || gy < 0 || gy >= mapHeight) return false;
+  return !blocked[gy]?.[gx];
 }
