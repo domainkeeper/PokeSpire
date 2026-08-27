@@ -1,4 +1,4 @@
-import { registerPokemonSprite } from '../../assets/registry';
+import { registerPokemonSprite } from '@/assets/registry';
 
 /**
  * Species visual data.

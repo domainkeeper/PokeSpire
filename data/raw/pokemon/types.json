@@ -1,6 +1,7 @@
 {
   "types": [
     {
+      "id": 13,
       "name": "bug",
       "damageTaken": {
         "bug": 0,
@@ -24,6 +25,7 @@
       }
     },
     {
+      "id": 16,
       "name": "dark",
       "damageTaken": {
         "bug": 1,
@@ -47,6 +49,7 @@
       }
     },
     {
+      "id": 15,
       "name": "dragon",
       "damageTaken": {
         "bug": 0,
@@ -70,6 +73,7 @@
       }
     },
     {
+      "id": 4,
       "name": "electric",
       "damageTaken": {
         "bug": 0,
@@ -93,6 +97,7 @@
       }
     },
     {
+      "id": 18,
       "name": "fairy",
       "damageTaken": {
         "bug": 2,
@@ -116,6 +121,7 @@
       }
     },
     {
+      "id": 7,
       "name": "fighting",
       "damageTaken": {
         "bug": 2,
@@ -139,6 +145,7 @@
       }
     },
     {
+      "id": 2,
       "name": "fire",
       "damageTaken": {
         "bug": 2,
@@ -162,6 +169,7 @@
       }
     },
     {
+      "id": 10,
       "name": "flying",
       "damageTaken": {
         "bug": 2,
@@ -185,6 +193,7 @@
       }
     },
     {
+      "id": 14,
       "name": "ghost",
       "damageTaken": {
         "bug": 2,
@@ -208,6 +217,7 @@
       }
     },
     {
+      "id": 5,
       "name": "grass",
       "damageTaken": {
         "bug": 1,
@@ -231,6 +241,7 @@
       }
     },
     {
+      "id": 9,
       "name": "ground",
       "damageTaken": {
         "bug": 0,
@@ -254,6 +265,7 @@
       }
     },
     {
+      "id": 6,
       "name": "ice",
       "damageTaken": {
         "bug": 0,
@@ -277,6 +289,7 @@
       }
     },
     {
+      "id": 1,
       "name": "normal",
       "damageTaken": {
         "bug": 0,
@@ -300,6 +313,7 @@
       }
     },
     {
+      "id": 8,
       "name": "poison",
       "damageTaken": {
         "bug": 2,
@@ -323,6 +337,7 @@
       }
     },
     {
+      "id": 11,
       "name": "psychic",
       "damageTaken": {
         "bug": 1,
@@ -346,6 +361,7 @@
       }
     },
     {
+      "id": 12,
       "name": "rock",
       "damageTaken": {
         "bug": 0,
@@ -369,6 +385,7 @@
       }
     },
     {
+      "id": 17,
       "name": "steel",
       "damageTaken": {
         "bug": 2,
@@ -392,29 +409,7 @@
       }
     },
     {
-      "name": "stellar",
-      "damageTaken": {
-        "bug": 0,
-        "dark": 0,
-        "dragon": 0,
-        "electric": 0,
-        "fairy": 0,
-        "fighting": 0,
-        "fire": 0,
-        "flying": 0,
-        "ghost": 0,
-        "grass": 0,
-        "ground": 0,
-        "ice": 0,
-        "normal": 0,
-        "poison": 0,
-        "psychic": 0,
-        "rock": 0,
-        "steel": 0,
-        "water": 0
-      }
-    },
-    {
+      "id": 3,
       "name": "water",
       "damageTaken": {
         "bug": 0,

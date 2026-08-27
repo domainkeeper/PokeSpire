@@ -1,14 +1,14 @@
 {
-  "timestamp": "2026-08-27T09:07:52.305Z",
+  "timestamp": "2026-08-27T10:12:35.735Z",
   "sources": {
     "pkmnDex": {
       "version": "@pkmn/dex",
       "speciesCount": 1025,
-      "moveCount": 0,
-      "abilityCount": 0,
-      "itemCount": 0,
-      "typeCount": 0,
-      "evolutionCount": 0
+      "moveCount": 892,
+      "abilityCount": 311,
+      "itemCount": 533,
+      "typeCount": 18,
+      "evolutionCount": 529
     },
     "sprites": {
       "success": 0,
@@ -16,7 +16,7 @@
       "skipped": 0
     },
     "cries": {
-      "success": 1025,
+      "success": 0,
       "failed": 0,
       "skipped": 0
     }

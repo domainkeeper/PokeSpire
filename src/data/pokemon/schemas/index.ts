@@ -78,8 +78,8 @@ export interface MoveData {
     volatileStatus?: string;
   } | null;
   critRatio: number;
-  maxMove: { basePower: number } | null;
-  zMove: { basePower: number } | null;
+  maxMove: { basePower?: number } | null;
+  zMove: { basePower?: number } | null;
 }
 
 export interface AbilityData {
@@ -102,9 +102,14 @@ export interface ItemData {
 export interface BerryData {
   id: number;
   name: string;
-  naturalGift: { type: string; power: number };
-  size: number;
   firmness: string;
+  growthTime: number;
+  maxHarvest: number;
+  naturalGiftPower: number;
+  naturalGiftType: string;
+  size: number;
+  smoothness: number;
+  soilDryness: number;
   flavors: {
     spicy: number;
     dry: number;
@@ -112,6 +117,7 @@ export interface BerryData {
     bitter: number;
     sour: number;
   };
+  spritePath: string;
 }
 
 export interface EvolutionData {
@@ -137,9 +143,23 @@ export interface EvolutionData {
 }
 
 export interface MegaEvolutionData {
-  species: string;
+  baseSpecies: string;
   megaForme: string;
   megaStone: string;
+  types: string[];
+  abilities: { regular: string[]; hidden: string[] };
+  baseStats: { hp: number; atk: number; def: number; spa: number; spd: number; spe: number };
+  spritePath: string;
+}
+
+export interface MegaStoneData {
+  id: number;
+  name: string;
+  desc: string;
+  shortDesc: string;
+  generation: number;
+  targetSpecies: string;
+  spritePath: string;
 }
 
 export interface PokemonAssets {

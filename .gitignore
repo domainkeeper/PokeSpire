@@ -4,3 +4,7 @@ dist/
 .DS_Store
 .env
 .env.local
+
+# Data pipeline (generated, not committed)
+data/raw/
+data/normalized/

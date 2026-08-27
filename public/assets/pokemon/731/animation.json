@@ -1,0 +1,24 @@
+{
+  "id": 731,
+  "frameWidth": 38,
+  "frameHeight": 56,
+  "totalFrames": 14,
+  "durations": [
+    300,
+    300,
+    300,
+    300,
+    300,
+    300,
+    300,
+    300,
+    300,
+    300,
+    300,
+    300,
+    300,
+    300
+  ],
+  "totalDuration": 4200,
+  "spriteSheet": "sprite-sheet.png"
+}
