@@ -13,7 +13,8 @@
     "data:validate": "node scripts/poke-validate.mjs",
     "data:sprites": "node scripts/poke-data-sync.mjs --sprites-only",
     "data:animate": "node scripts/poke-extract-frames.mjs",
-    "data:animate:force": "node scripts/poke-extract-frames.mjs --force"
+    "data:animate:force": "node scripts/poke-extract-frames.mjs --force",
+    "vfx:sheets": "node scripts/vfx-generate-sheets.mjs"
   },
   "dependencies": {
     "@pkmn/data": "^0.10.11",

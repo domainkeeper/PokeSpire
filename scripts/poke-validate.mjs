@@ -62,6 +62,9 @@ try {
   const itemsData = JSON.parse(readFileSync(join(DATA_RAW, 'pokemon', 'items.json'), 'utf-8'));
   const typesData = JSON.parse(readFileSync(join(DATA_RAW, 'pokemon', 'types.json'), 'utf-8'));
   const evolutionsData = JSON.parse(readFileSync(join(DATA_RAW, 'pokemon', 'evolutions.json'), 'utf-8'));
+  const berriesData = JSON.parse(readFileSync(join(DATA_RAW, 'pokemon', 'berries.json'), 'utf-8'));
+  const megaEvoData = JSON.parse(readFileSync(join(DATA_RAW, 'pokemon', 'megaEvolutions.json'), 'utf-8'));
+  const megaStoneData = JSON.parse(readFileSync(join(DATA_RAW, 'pokemon', 'megaStones.json'), 'utf-8'));
 
   const species = speciesData.species;
   const moves = movesData.moves;
@@ -69,6 +72,9 @@ try {
   const items = itemsData.items;
   const types = typesData.types;
   const evolutions = evolutionsData.evolutions;
+  const berries = berriesData.berries;
+  const megaEvolutions = megaEvoData;
+  const megaStones = megaStoneData;
 
   // Build lookup sets
   const speciesIds = new Set(species.map(s => s.id));
@@ -152,20 +158,52 @@ try {
   console.log('--- Evolutions ---');
   for (const e of evolutions) {
     // Strip regional form suffixes for base species lookup
-    const baseSource = e.species.replace(/-(Alola|Galar|Hisui|Paldea|Male|Female|Red|Blue|Yellow|Green|Glowing|Antique|Small|Large|Super|Dusk|Midnight|Low-Key|Rapid-Strike|White-Striped|Three-Segment|Masterpiece|Artisan|Fancy|Trash|Sandy)$/i, '');
-    const baseTarget = e.targetSpecies.replace(/-(Alola|Galar|Hisui|Paldea|Male|Female|Red|Blue|Yellow|Green|Glowing|Antique|Small|Large|Super|Dusk|Midnight|Low-Key|Rapid-Strike|White-Striped|Three-Segment|Masterpiece|Artisan|Fancy|Trash|Sandy)$/i, '');
-    check(`Evolution: source "${e.species}" base "${baseSource}" exists`, speciesNames.has(baseSource.toLowerCase()), `source=${e.species}`);
-    check(`Evolution: target "${e.targetSpecies}" base "${baseTarget}" exists`, speciesNames.has(baseTarget.toLowerCase()), `target=${e.targetSpecies}`);
+    const baseSource = e.species.replace(/-(Alola|Galar|Hisui|Paldea|Male|Female|Red|Blue|Yellow|Green|Glowing|Antique|Small|Large|Super|Dusk|Midnight|Low-Key|Rapid-Strike|White-Striped|Three-Segment|Masterpiece|Artisan|Fancy|Trash|Sandy|F|Four)$/i, '');
+    const baseTarget = e.targetSpecies.replace(/-(Alola|Galar|Hisui|Paldea|Male|Female|Red|Blue|Yellow|Green|Glowing|Antique|Small|Large|Super|Dusk|Midnight|Low-Key|Rapid-Strike|White-Striped|Three-Segment|Masterpiece|Artisan|Fancy|Trash|Sandy|F|Four)$/i, '');
+    const sourceExists = speciesNames.has(baseSource.toLowerCase()) || speciesNames.has(e.species.toLowerCase()) || speciesNames.has(e.species.toLowerCase().replace('-f', '-female'));
+    const targetExists = speciesNames.has(baseTarget.toLowerCase()) || speciesNames.has(e.targetSpecies.toLowerCase()) || speciesNames.has(e.targetSpecies.toLowerCase().replace('-f', '-female'));
+    check(`Evolution: source "${e.species}" base "${baseSource}" exists`, sourceExists, `source=${e.species}`);
+    check(`Evolution: target "${e.targetSpecies}" base "${baseTarget}" exists`, targetExists, `target=${e.targetSpecies}`);
   }
   console.log(`  Evolutions checked: ${evolutions.length}\n`);
 
   // --- Items validation ---
   console.log('--- Items ---');
   for (const i of items) {
-    check(`Item ${i.name} has id`, i.id, `id=${i.id}`);
+    check(`Item ${i.name} has id`, i.id !== undefined && i.id !== null, `id=${i.id}`);
     check(`Item ${i.name} has name`, i.name, `id=${i.id}`);
   }
   console.log(`  Items checked: ${items.length}\n`);
+
+  // --- Berries validation ---
+  console.log('--- Berries ---');
+  const berryIds = new Set();
+  for (const b of berries) {
+    check(`Berry ${b.name} has id`, b.id, `id=${b.id}`);
+    check(`Berry ${b.name} has name`, b.name, `id=${b.id}`);
+    if (!b.firmness) warn(`Berry ${b.name} missing firmness`, `id=${b.id}`);
+    check(`Berry ${b.name} has flavors`, b.flavors, `id=${b.id}`);
+    if (berryIds.has(b.id)) errors.push(`DUPLICATE: Berry ID ${b.id} (${b.name})`);
+    berryIds.add(b.id);
+  }
+  console.log(`  Berries checked: ${berries.length}\n`);
+
+  // --- Mega Evolution validation ---
+  console.log('--- Mega Evolutions ---');
+  for (const m of megaEvolutions) {
+    check(`Mega: ${m.baseSpecies} → ${m.megaForme} has base species`, speciesNames.has(m.baseSpecies.toLowerCase()), `base=${m.baseSpecies}`);
+    check(`Mega: ${m.baseSpecies} → ${m.megaForme} has types`, m.types?.length > 0, `types=${m.types}`);
+    check(`Mega: ${m.baseSpecies} → ${m.megaForme} has baseStats`, m.baseStats, `base=${m.baseSpecies}`);
+  }
+  console.log(`  Mega evolutions checked: ${megaEvolutions.length}\n`);
+
+  // --- Mega Stones validation ---
+  console.log('--- Mega Stones ---');
+  for (const s of megaStones) {
+    check(`Mega stone ${s.name} has id`, s.id, `id=${s.id}`);
+    check(`Mega stone ${s.name} has target species`, s.targetSpecies, `target=${s.targetSpecies}`);
+  }
+  console.log(`  Mega stones checked: ${megaStones.length}\n`);
 
   // --- Summary ---
   console.log('=== Results ===');

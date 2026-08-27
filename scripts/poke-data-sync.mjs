@@ -419,7 +419,7 @@ function generateMegaData(Dex) {
     'Absolite': 'Absol', 'Latiasite': 'Latias', 'Latiosite': 'Latios',
     'Groudonite': 'Groudon', 'Kyogrite': 'Kyogre', 'Rayquazite': 'Rayquaza',
     'Lopunnite': 'Lopunny', 'Garchompite': 'Garchomp', 'Lucarionite': 'Lucario',
-    'Abomasite': 'Abomasone', 'Audinite': 'Audino', 'Diancite': 'Diancie',
+    'Abomasite': 'Abomasnow', 'Audinite': 'Audino', 'Diancite': 'Diancie',
     'Sableye-Mega': 'Sableye', 'Banettite': 'Banette',
   };
 
