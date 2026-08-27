@@ -2,6 +2,10 @@ import { useSyncExternalStore } from 'react';
 import type { Theme } from './types';
 import { coastalDay } from './themes/coastalDay';
 import { duskCity } from './themes/duskCity';
+import { forestDay } from './themes/forestDay';
+import { duskOutskirts } from './themes/duskOutskirts';
+import type { GameMap } from '../data/mapTypes';
+import { resolveThemeId } from '../data/mapTypes';
 
 export type { Theme, ThemePalette, Ramp, ThemeLighting, ThemeSky, ThemeFog } from './types';
 export { rampBand, RAMP_KEYS } from './types';
@@ -25,6 +29,8 @@ export function registerTheme(theme: Theme): void {
 
 registerTheme(coastalDay);
 registerTheme(duskCity);
+registerTheme(forestDay);
+registerTheme(duskOutskirts);
 
 export const DEFAULT_THEME_ID = coastalDay.id;
 
@@ -82,4 +88,29 @@ export function useTheme(): Theme {
 
 export function useActiveThemeId(): string {
   return useSyncExternalStore(subscribe, getActiveThemeId, getActiveThemeId);
+}
+
+/* ------------------------------------------------------------------ map override ---- */
+
+function isObj(v: unknown): v is Record<string, unknown> {
+  return typeof v === 'object' && v !== null && !Array.isArray(v);
+}
+function deepMerge<T>(base: T, patch: unknown): T {
+  if (!isObj(patch)) return base;
+  const out: Record<string, unknown> = Array.isArray(base) ? [...(base as unknown[])] as never : { ...(base as object) } as never;
+  for (const k of Object.keys(patch)) {
+    const bv = (out as Record<string, unknown>)[k];
+    const pv = (patch as Record<string, unknown>)[k];
+    out[k] = isObj(bv) && isObj(pv) ? deepMerge(bv, pv) : pv;   // arrays replaced wholesale
+  }
+  return out as T;
+}
+
+/** Full theme for a map: base (by id/region) + optional deep-merged override. */
+export function resolveMapTheme(map: GameMap, playerX?: number): Theme {
+  const base = getTheme(resolveThemeId(map, playerX));
+  if (!map.themeOverride) return base;
+  const merged = deepMerge(base, map.themeOverride);
+  merged.id = `${base.id}#${map.name}`; // unique id so id-keyed caches don't collide
+  return merged;
 }

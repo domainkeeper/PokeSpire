@@ -205,17 +205,19 @@ export function buildTerrain(mapData: GameMap): TerrainData {
         if (nyRaw >= y - 1e-6) continue;
         // At the map edge drop a generous skirt so no gap shows under the world.
         const bottom = nyRaw === -Infinity ? minY - ELEVATION_STEP * 4 : nyRaw;
+        // Winding order: topA -> topB -> bottomB -> bottomA
+        // This makes the geometric front face point outward, matching the
+        // attribute normal (e.n). With FrontSide culling this renders the
+        // visible cliff face correctly and lighting works properly.
         pushQuad(
           [
             [e.a[0], y, e.a[1]],
-            [e.a[0], bottom, e.a[1]],
-            [e.b[0], bottom, e.b[1]],
             [e.b[0], y, e.b[1]],
+            [e.b[0], bottom, e.b[1]],
+            [e.a[0], bottom, e.a[1]],
           ],
           e.n,
-          // Cliff faces sample the ground texture at their top edge; the
-          // material tints them via faceKind so they read as rock, not grass.
-          [uvAt(e.a[0], e.a[1]), uvAt(e.a[0], e.a[1]), uvAt(e.b[0], e.b[1]), uvAt(e.b[0], e.b[1])],
+          [uvAt(e.a[0], e.a[1]), uvAt(e.b[0], e.b[1]), uvAt(e.b[0], e.b[1]), uvAt(e.a[0], e.a[1])],
           1,
         );
       }
@@ -247,4 +249,8 @@ export function elevationAt(mapData: GameMap, gx: number, gy: number): number {
   if (!mapData.elevation) return 0;
   if (gx < 0 || gy < 0 || gx >= mapData.width || gy >= mapData.height) return 0;
   return mapData.elevation[gy]?.[gx] ?? 0;
+}
+
+export function disposeTerrain(name: string): void {
+  const t = cache.get(name); if (t) { t.geometry.dispose(); cache.delete(name); }
 }

@@ -9,7 +9,8 @@ import { FollowCamera } from '../entities/FollowCamera';
 import { SkyDome } from '../pixel/SkyDome';
 import { eventBus, GameEvents } from '../eventBus';
 import { playerTransform } from '../playerTransform';
-import { getTheme } from '../../theme';
+import { getTheme, resolveMapTheme } from '../../theme';
+import { disposeNonNeighbors } from '../../data/world/mapRegistry';
 import type { Theme } from '../../theme/types';
 
 /** Half-extent of the shadow frustum, world units, centred on the player. */
@@ -73,12 +74,12 @@ function SunLight({ theme }: { theme: Theme }) {
 
 export function OverworldScene() {
   const currentMapId = useGameStore((s) => s.player.mapId);
+  const playerX = useGameStore((s) => s.player.x);
   const setPlayerPosition = useGameStore((s) => s.setPlayerPosition);
   const [transitioning, setTransitioning] = useState(false);
 
   const mapData = getMap(currentMapId);
-  // Each map declares its own theme; unknown/absent falls back to the default.
-  const theme = getTheme(mapData?.themeId);
+  const theme = mapData ? resolveMapTheme(mapData, playerX) : getTheme(undefined);
 
   const handleExitCheck = useCallback(
     (gx: number, gy: number) => {
@@ -93,7 +94,10 @@ export function OverworldScene() {
 
       setTimeout(() => {
         setPlayerPosition(exit.spawnX, exit.spawnY, exit.facing, exit.toMap);
-        setTimeout(() => setTransitioning(false), 300);
+        setTimeout(() => {
+          setTransitioning(false);
+          disposeNonNeighbors(exit.toMap);
+        }, 300);
       }, 400);
     },
     [mapData, currentMapId, setPlayerPosition, transitioning],

@@ -13,7 +13,7 @@ import { getPropParts } from '../entities/propFactory';
 import { SpriteActor } from '../entities/SpriteActor';
 import { WaterPlane } from '../entities/WaterPlane';
 import { buildTerrain } from '../terrain/heightfield';
-import { makeGroundTexture, hasWater } from '../terrain/groundTexture';
+import { makeGroundTexture, hasWater, groundPixelSize } from '../terrain/groundTexture';
 import { createTerrainMaterial } from '../terrain/terrainMaterial';
 import { getSingleSprite, getIdleTexture, PLAYER_MANIFEST } from '../pixel/sprites/characterSprites';
 
@@ -33,7 +33,7 @@ function Terrain({ mapData, theme }: { mapData: GameMap; theme: Theme }) {
   const terrain = useMemo(() => buildTerrain(mapData), [mapData]);
   const material = useMemo(() => {
     const tex = makeGroundTexture(mapData, theme);
-    return createTerrainMaterial(tex, theme);
+    return createTerrainMaterial(tex, theme, groundPixelSize(mapData));
   }, [mapData, theme]);
 
   return <mesh geometry={terrain.geometry} material={material} receiveShadow />;

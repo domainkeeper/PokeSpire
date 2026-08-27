@@ -4,9 +4,6 @@ export const PLAYER_SPEED = 0.6;
 export const PLAYER_ACCELERATION = 10;
 export const PLAYER_DECELERATION = 16;
 
-export const MAP_TOWN = 'town';
-export const MAP_ROUTE1 = 'route1';
-
 // Camera rig. These are now the single source of truth for FollowCamera; they
 // previously existed but were unused while FollowCamera hardcoded 4.5 / 4.0.
 // Values below preserve the framing that was actually shipping.

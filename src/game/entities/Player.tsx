@@ -74,6 +74,7 @@ export function Player({ mapData, theme, onExitCheck }: PlayerProps) {
   const groupRef = useRef<THREE.Group>(null);
   const velocity = useRef(new THREE.Vector3());
   const keysDown = useRef(new Set<string>());
+  const joystickDir = useRef({ dx: 0, dz: 0 });
   const currentDir = useRef<Dir8>('down');
   const walkFrame = useRef(0);
   const walkTimer = useRef(0);
@@ -135,13 +136,22 @@ export function Player({ mapData, theme, onExitCheck }: PlayerProps) {
     // Without this, held keys stick forever when the window loses focus.
     const onBlur = () => keysDown.current.clear();
 
+    const onJoystickMove = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail) {
+        joystickDir.current = { dx: detail.dx, dz: detail.dz };
+      }
+    };
+
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
     window.addEventListener('blur', onBlur);
+    window.addEventListener('joystick-move', onJoystickMove as EventListener);
     return () => {
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('blur', onBlur);
+      window.removeEventListener('joystick-move', onJoystickMove as EventListener);
     };
   }, []);
 
@@ -172,6 +182,13 @@ export function Player({ mapData, theme, onExitCheck }: PlayerProps) {
     if (keys.has('s') || keys.has('arrowdown')) dz += 1;
     if (keys.has('a') || keys.has('arrowleft')) dx -= 1;
     if (keys.has('d') || keys.has('arrowright')) dx += 1;
+
+    // Blend in virtual joystick input
+    const joy = joystickDir.current;
+    if (joy.dx !== 0 || joy.dz !== 0) {
+      dx += joy.dx;
+      dz += joy.dz;
+    }
 
     const isMoving = dx !== 0 || dz !== 0;
     const len = Math.hypot(dx, dz);

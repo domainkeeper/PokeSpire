@@ -1,9 +1,15 @@
 import * as THREE from 'three';
 import type { GameMap, TileType } from '../../data/mapTypes';
 import type { Theme, Ramp } from '../../theme/types';
+import { TILE_SIZE } from '../../utils/constants';
 
-/** Ground texture pixels per micro-tile. */
-const PPT = 8;
+/** Ground texture pixels per micro-tile. Updated per-map inside makeGroundTexture. */
+let PPT = 8;
+
+/** World size of one ground-texture pixel for a given map. */
+export function groundPixelSize(mapData: GameMap): number {
+  return TILE_SIZE / (mapData.pixelsPerTile ?? 8);
+}
 
 /*
  * Theme-driven ground texture.
@@ -167,6 +173,7 @@ const FLOWER_PROB = 0.035;
 const cache = new Map<string, THREE.CanvasTexture>();
 
 export function makeGroundTexture(mapData: GameMap, theme: Theme): THREE.CanvasTexture {
+  PPT = mapData.pixelsPerTile ?? 8;
   const key = `${theme.id}|${mapData.name}`;
   const hit = cache.get(key);
   if (hit) return hit;
@@ -286,4 +293,12 @@ export function hasWater(mapData: GameMap): boolean {
     for (let tx = 0; tx < mapData.width; tx++) if (row[tx] === 'water') return true;
   }
   return false;
+}
+
+export function disposeGroundTexture(name: string): void {
+  for (const [k, v] of cache) if (k.endsWith('|' + name)) { v.dispose(); cache.delete(k); }
+}
+
+export function disposeWaterMask(name: string): void {
+  const t = maskCache.get(name); if (t) { t.dispose(); maskCache.delete(name); }
 }

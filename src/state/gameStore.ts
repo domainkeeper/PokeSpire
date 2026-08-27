@@ -3,7 +3,7 @@ import type { SaveGame, PartyMember, Direction } from '../types/game';
 import { loadSave, saveGame as persistSave } from './persistence';
 import { getMap } from '../data/maps';
 
-const START_MAP_ID = 'town';
+const START_MAP_ID = 'coastal-city';
 
 /**
  * Derive the starting position from the map's own spawn marker instead of

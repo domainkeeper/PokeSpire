@@ -1,16 +1,10 @@
-import { townMap } from './townMap';
-import { route1Map } from './route1Map';
 import type { GameMap } from './mapTypes';
-
-const maps: Record<string, GameMap> = {
-  town: townMap,
-  route1: route1Map,
-};
+import { loadMap, allMapIds } from './world/mapRegistry';
+import './world/registerAll'; // side-effect: registers every MapModule
 
 export function getMap(name: string): GameMap | undefined {
-  return maps[name];
+  return loadMap(name);
 }
-
 export function getMapNames(): string[] {
-  return Object.keys(maps);
+  return allMapIds();
 }

@@ -8,7 +8,7 @@ import { buildWaterMask } from '../terrain/groundTexture';
 import { makeCanvas, toPixelTexture } from '../pixel/textureLib';
 
 /** World units covered by one repetition of the 16px water texture. */
-const WATER_TEX_SCALE = 1.5;
+const WATER_TEX_SCALE = 0.7;
 const FRAME_COUNT = 4;
 const FPS = 2.5;
 
@@ -21,32 +21,50 @@ function makeWaterFrame(ramp: Ramp, frame: number): THREE.CanvasTexture {
   const [c, ctx] = makeCanvas(16, 16);
   const bands = [ramp.darkest, ramp.dark, ramp.base, ramp.light, ramp.lightest];
 
-  const wave = (x: number, y: number, t: number) => ((x * 7 + y * 13 + t * 5) % 11) / 11;
-
   for (let y = 0; y < 16; y++) {
     for (let x = 0; x < 16; x++) {
-      const wx = x + frame * 3;
-      const wy = y + Math.floor(Math.sin((wx * 0.4 + y * 0.2) * 0.5) * 1.5);
-      const n = wave(wx, wy, frame);
-      const idx = n < 0.25 ? 0 : n < 0.5 ? 1 : n < 0.72 ? 2 : n < 0.9 ? 3 : 4;
+      // Diagonal ripple pattern - smoother, higher frequency, directional
+      const fx = x + frame * 2;
+      const fy = y + frame * 1.5;
+
+      // Primary ripple: sine wave along diagonal
+      const ripple1 = Math.sin((fx * 0.8 + fy * 0.8) * 0.9 + frame * 0.3);
+      // Secondary ripple: perpendicular direction for cross-hatching
+      const ripple2 = Math.sin((fx * 0.6 - fy * 0.6) * 0.7 + frame * 0.2);
+      // Combine for organic variation
+      const combined = (ripple1 * 0.6 + ripple2 * 0.4) * 0.5 + 0.5;
+
+      // Bias toward lighter bands: use darkest/dark only for narrow shadow accents
+      // combined ~0.15-0.85 range → map to bands: [darkest(0), dark(1), base(2), light(3), lightest(4)]
+      // Wider center range for base/light, narrow edges for dark/lightest
+      let idx: number;
+      if (combined < 0.12) idx = 0;           // darkest - thin shadow lines only
+      else if (combined < 0.22) idx = 1;      // dark - thin shadow accents
+      else if (combined < 0.65) idx = 2;      // base - main water color
+      else if (combined < 0.88) idx = 3;      // light - highlight areas
+      else idx = 4;                           // lightest - bright specular spots
+
       ctx.fillStyle = bands[idx];
       ctx.fillRect(x, y, 1, 1);
     }
   }
 
-  // Drifting wave crests.
+  // Drifting wave crests - thinner, softer highlights
   ctx.fillStyle = ramp.lightest;
-  for (let row = 0; row < 4; row++) {
-    const baseY = (row * 4 + frame * 2) % 16;
+  for (let row = 0; row < 3; row++) {
+    const baseY = (row * 5 + frame * 2) % 16;
     for (let x = 0; x < 16; x++) {
-      const wy = baseY + Math.round(Math.sin((x + frame * 3) * 0.6) * 1.2);
+      const wy = baseY + Math.round(Math.sin((x + frame * 2) * 0.5) * 0.8);
       if (wy >= 0 && wy < 16) ctx.fillRect(x, wy, 1, 1);
     }
   }
 
-  if (frame % 2 === 0) {
+  // Occasional bright sparkles (single pixel, less frequent)
+  if (frame % 3 === 0) {
     ctx.fillStyle = ramp.lightest;
-    ctx.fillRect(((frame * 7 + 3) % 14) + 1, ((frame * 11 + 5) % 14) + 1, 1, 1);
+    const sx = ((frame * 5 + 2) % 14) + 1;
+    const sy = ((frame * 7 + 3) % 14) + 1;
+    ctx.fillRect(sx, sy, 1, 1);
   }
 
   const tex = toPixelTexture(c);
