@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-08-27T07:43:35.144Z",
+  "sources": {
+    "pkmnDex": {
+      "version": "@pkmn/dex",
+      "speciesCount": 1025,
+      "moveCount": 892,
+      "abilityCount": 311,
+      "itemCount": 533,
+      "typeCount": 19,
+      "evolutionCount": 529
+    },
+    "sprites": {
+      "success": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    "cries": {
+      "success": 0,
+      "failed": 0,
+      "skipped": 0
+    }
+  }
+}

@@ -1,0 +1,4268 @@
+{
+  "items": [
+    {
+      "id": 1881,
+      "name": "Ability Shield",
+      "desc": "Holder's Ability cannot be changed, suppressed, or ignored by any effect.",
+      "shortDesc": "Holder's Ability cannot be changed, suppressed, or ignored by any effect.",
+      "generation": 9,
+      "spritePath": "/assets/items/icons/ability-shield.png"
+    },
+    {
+      "id": 674,
+      "name": "Abomasite",
+      "desc": "If held by an Abomasnow, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by an Abomasnow, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/abomasite.png"
+    },
+    {
+      "id": 677,
+      "name": "Absolite",
+      "desc": "If held by an Absol, this item allows it to Mega Evolve into Mega Absol in battle.",
+      "shortDesc": "If held by an Absol, this item allows it to Mega Evolve into Mega Absol in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/absolite.png"
+    },
+    {
+      "id": 545,
+      "name": "Absorb Bulb",
+      "desc": "Raises holder's Sp. Atk by 1 stage if hit by a Water-type attack. Single use.",
+      "shortDesc": "Raises holder's Sp. Atk by 1 stage if hit by a Water-type attack. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/absorb-bulb.png"
+    },
+    {
+      "id": 1777,
+      "name": "Adamant Crystal",
+      "desc": "If held by a Dialga, its Steel- and Dragon-type attacks have 1.2x power.",
+      "shortDesc": "If held by a Dialga, its Steel- and Dragon-type attacks have 1.2x power.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/adamant-crystal.png"
+    },
+    {
+      "id": 135,
+      "name": "Adamant Orb",
+      "desc": "If held by a Dialga, its Steel- and Dragon-type attacks have 1.2x power.",
+      "shortDesc": "If held by a Dialga, its Steel- and Dragon-type attacks have 1.2x power.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/adamant-orb.png"
+    },
+    {
+      "id": 846,
+      "name": "Adrenaline Orb",
+      "desc": "Raises holder's Speed by 1 stage if it gets affected by Intimidate. Single use.",
+      "shortDesc": "Raises holder's Speed by 1 stage if it gets affected by Intimidate. Single use.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/adrenaline-orb.png"
+    },
+    {
+      "id": 672,
+      "name": "Aerodactylite",
+      "desc": "If held by an Aerodactyl, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by an Aerodactyl, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/aerodactylite.png"
+    },
+    {
+      "id": 667,
+      "name": "Aggronite",
+      "desc": "If held by an Aggron, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by an Aggron, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/aggronite.png"
+    },
+    {
+      "id": 162,
+      "name": "Aguav Berry",
+      "desc": "Restores 1/3 max HP at 1/4 max HP or less; confuses if -SpD Nature. Single use.",
+      "shortDesc": "Restores 1/3 max HP at 1/4 max HP or less; confuses if -SpD Nature. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/aguav-berry.png"
+    },
+    {
+      "id": 541,
+      "name": "Air Balloon",
+      "desc": "Holder is immune to Ground-type attacks. Pops when holder is hit.",
+      "shortDesc": "Holder is immune to Ground-type attacks. Pops when holder is hit.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/air-balloon.png"
+    },
+    {
+      "id": 679,
+      "name": "Alakazite",
+      "desc": "If held by an Alakazam, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by an Alakazam, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/alakazite.png"
+    },
+    {
+      "id": 803,
+      "name": "Aloraichium Z",
+      "desc": "If held by an Alolan Raichu with Thunderbolt, it can use Stoked Sparksurfer.",
+      "shortDesc": "If held by an Alolan Raichu with Thunderbolt, it can use Stoked Sparksurfer.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/aloraichium-z.png"
+    },
+    {
+      "id": 755,
+      "name": "Altarianite",
+      "desc": "If held by an Altaria, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by an Altaria, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/altarianite.png"
+    },
+    {
+      "id": 658,
+      "name": "Ampharosite",
+      "desc": "If held by an Ampharos, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by an Ampharos, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/ampharosite.png"
+    },
+    {
+      "id": 205,
+      "name": "Apicot Berry",
+      "desc": "Raises holder's Sp. Def by 1 stage when at 1/4 max HP or less. Single use.",
+      "shortDesc": "Raises holder's Sp. Def by 1 stage when at 1/4 max HP or less. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/apicot-berry.png"
+    },
+    {
+      "id": 104,
+      "name": "Armor Fossil",
+      "desc": "Can be revived into Shieldon.",
+      "shortDesc": "Can be revived into Shieldon.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/armor-fossil.png"
+    },
+    {
+      "id": 153,
+      "name": "Aspear Berry",
+      "desc": "Holder is cured if it is frozen. Single use.",
+      "shortDesc": "Holder is cured if it is frozen. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/aspear-berry.png"
+    },
+    {
+      "id": 640,
+      "name": "Assault Vest",
+      "desc": "Holder's Sp. Def is 1.5x, but it can only select damaging moves.",
+      "shortDesc": "Holder's Sp. Def is 1.5x, but it can only select damaging moves.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/assault-vest.png"
+    },
+    {
+      "id": 757,
+      "name": "Audinite",
+      "desc": "If held by an Audino, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by an Audino, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/audinite.png"
+    },
+    {
+      "id": 2344,
+      "name": "Auspicious Armor",
+      "desc": "Evolves Charcadet into Armarouge when used.",
+      "shortDesc": "Evolves Charcadet into Armarouge when used.",
+      "generation": 9,
+      "spritePath": "/assets/items/icons/auspicious-armor.png"
+    },
+    {
+      "id": 199,
+      "name": "Babiri Berry",
+      "desc": "Halves damage taken from a supereffective Steel-type attack. Single use.",
+      "shortDesc": "Halves damage taken from a supereffective Steel-type attack. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/babiri-berry.png"
+    },
+    {
+      "id": 668,
+      "name": "Banettite",
+      "desc": "If held by a Banette, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Banette, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/banettite.png"
+    },
+    {
+      "id": 851,
+      "name": "Beast Ball",
+      "desc": "A special Poke Ball designed to catch Ultra Beasts.",
+      "shortDesc": "A special Poke Ball designed to catch Ultra Beasts.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/beast-ball.png"
+    },
+    {
+      "id": 770,
+      "name": "Beedrillite",
+      "desc": "If held by a Beedrill, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Beedrill, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/beedrillite.png"
+    },
+    {
+      "id": 183,
+      "name": "Belue Berry",
+      "desc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "shortDesc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/belue-berry.png"
+    },
+    {
+      "id": 43,
+      "name": "Berry Juice",
+      "desc": "Restores 20 HP when at 1/2 max HP or less. Single use.",
+      "shortDesc": "Restores 20 HP when at 1/2 max HP or less. Single use.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/berry-juice.png"
+    },
+    {
+      "id": 1111,
+      "name": "Berry Sweet",
+      "desc": "Evolves Milcery into Alcremie when held and spun around.",
+      "shortDesc": "Evolves Milcery into Alcremie when held and spun around.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/berry-sweet.png"
+    },
+    {
+      "id": 581,
+      "name": "Big Nugget",
+      "desc": "A big nugget of pure gold that gives off a lustrous gleam.",
+      "shortDesc": "A big nugget of pure gold that gives off a lustrous gleam.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/big-nugget.png"
+    },
+    {
+      "id": 296,
+      "name": "Big Root",
+      "desc": "Holder gains 1.3x HP from draining/Aqua Ring/Ingrain/Leech Seed/Strength Sap.",
+      "shortDesc": "Holder gains 1.3x HP from draining/Aqua Ring/Ingrain/Leech Seed/Strength Sap.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/big-root.png"
+    },
+    {
+      "id": 544,
+      "name": "Binding Band",
+      "desc": "Holder's partial-trapping moves deal 1/6 max HP per turn instead of 1/8.",
+      "shortDesc": "Holder's partial-trapping moves deal 1/6 max HP per turn instead of 1/8.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/binding-band.png"
+    },
+    {
+      "id": 241,
+      "name": "Black Belt",
+      "desc": "Holder's Fighting-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Fighting-type attacks have 1.2x power.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/black-belt.png"
+    },
+    {
+      "id": 240,
+      "name": "Black Glasses",
+      "desc": "Holder's Dark-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Dark-type attacks have 1.2x power.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/black-glasses.png"
+    },
+    {
+      "id": 281,
+      "name": "Black Sludge",
+      "desc": "Each turn, if holder is a Poison type, restores 1/16 max HP; loses 1/8 if not.",
+      "shortDesc": "Each turn, if holder is a Poison type, restores 1/16 max HP; loses 1/8 if not.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/black-sludge.png"
+    },
+    {
+      "id": 661,
+      "name": "Blastoisinite",
+      "desc": "If held by a Blastoise, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Blastoise, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/blastoisinite.png"
+    },
+    {
+      "id": 664,
+      "name": "Blazikenite",
+      "desc": "If held by a Blaziken, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Blaziken, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/blazikenite.png"
+    },
+    {
+      "id": 535,
+      "name": "Blue Orb",
+      "desc": "If held by a Kyogre, this item triggers its Primal Reversion in battle.",
+      "shortDesc": "If held by a Kyogre, this item triggers its Primal Reversion in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/blue-orb.png"
+    },
+    {
+      "id": 165,
+      "name": "Bluk Berry",
+      "desc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "shortDesc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/bluk-berry.png"
+    },
+    {
+      "id": 1121,
+      "name": "Blunder Policy",
+      "desc": "If the holder misses due to accuracy, its Speed is raised by 2 stages. Single use.",
+      "shortDesc": "If the holder misses due to accuracy, its Speed is raised by 2 stages. Single use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/blunder-policy.png"
+    },
+    {
+      "id": 1880,
+      "name": "Booster Energy",
+      "desc": "Activates the Protosynthesis or Quark Drive Abilities. Single use.",
+      "shortDesc": "Activates the Protosynthesis or Quark Drive Abilities. Single use.",
+      "generation": 9,
+      "spritePath": "/assets/items/icons/booster-energy.png"
+    },
+    {
+      "id": 795,
+      "name": "Bottle Cap",
+      "desc": "Used for Hyper Training. One of a Pokemon's stats is calculated with an IV of 31.",
+      "shortDesc": "Used for Hyper Training. One of a Pokemon's stats is calculated with an IV of 31.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/bottle-cap.png"
+    },
+    {
+      "id": 213,
+      "name": "Bright Powder",
+      "desc": "The accuracy of attacks against the holder is 0.9x.",
+      "shortDesc": "The accuracy of attacks against the holder is 0.9x.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/bright-powder.png"
+    },
+    {
+      "id": 558,
+      "name": "Bug Gem",
+      "desc": "Holder's first successful Bug-type attack will have 1.3x power. Single use.",
+      "shortDesc": "Holder's first successful Bug-type attack will have 1.3x power. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/bug-gem.png"
+    },
+    {
+      "id": 787,
+      "name": "Buginium Z",
+      "desc": "If holder has a Bug move, this item allows it to use a Bug Z-Move.",
+      "shortDesc": "If holder has a Bug move, this item allows it to use a Bug Z-Move.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/buginium-z.png"
+    },
+    {
+      "id": 909,
+      "name": "Bug Memory",
+      "desc": "Holder's Multi-Attack is Bug type.",
+      "shortDesc": "Holder's Multi-Attack is Bug type.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/bug-memory.png"
+    },
+    {
+      "id": 118,
+      "name": "Burn Drive",
+      "desc": "Holder's Techno Blast is Fire type.",
+      "shortDesc": "Holder's Techno Blast is Fire type.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/burn-drive.png"
+    },
+    {
+      "id": 767,
+      "name": "Cameruptite",
+      "desc": "If held by a Camerupt, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Camerupt, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/cameruptite.png"
+    },
+    {
+      "id": 546,
+      "name": "Cell Battery",
+      "desc": "Raises holder's Attack by 1 if hit by an Electric-type attack. Single use.",
+      "shortDesc": "Raises holder's Attack by 1 if hit by an Electric-type attack. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/cell-battery.png"
+    },
+    {
+      "id": 249,
+      "name": "Charcoal",
+      "desc": "Holder's Fire-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Fire-type attacks have 1.2x power.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/charcoal.png"
+    },
+    {
+      "id": 660,
+      "name": "Charizardite X",
+      "desc": "If held by a Charizard, this item allows it to Mega Evolve into Mega Charizard X.",
+      "shortDesc": "If held by a Charizard, this item allows it to Mega Evolve into Mega Charizard X.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/charizardite-x.png"
+    },
+    {
+      "id": 678,
+      "name": "Charizardite Y",
+      "desc": "If held by a Charizard, this item allows it to Mega Evolve into Mega Charizard Y.",
+      "shortDesc": "If held by a Charizard, this item allows it to Mega Evolve into Mega Charizard Y.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/charizardite-y.png"
+    },
+    {
+      "id": 195,
+      "name": "Charti Berry",
+      "desc": "Halves damage taken from a supereffective Rock-type attack. Single use.",
+      "shortDesc": "Halves damage taken from a supereffective Rock-type attack. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/charti-berry.png"
+    },
+    {
+      "id": 149,
+      "name": "Cheri Berry",
+      "desc": "Holder cures itself if it is paralyzed. Single use.",
+      "shortDesc": "Holder cures itself if it is paralyzed. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/cheri-berry.png"
+    },
+    {
+      "id": 150,
+      "name": "Chesto Berry",
+      "desc": "Holder wakes up if it is asleep. Single use.",
+      "shortDesc": "Holder wakes up if it is asleep. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/chesto-berry.png"
+    },
+    {
+      "id": 200,
+      "name": "Chilan Berry",
+      "desc": "Halves damage taken from a Normal-type attack. Single use.",
+      "shortDesc": "Halves damage taken from a Normal-type attack. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/chilan-berry.png"
+    },
+    {
+      "id": 119,
+      "name": "Chill Drive",
+      "desc": "Holder's Techno Blast is Ice type.",
+      "shortDesc": "Holder's Techno Blast is Ice type.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/chill-drive.png"
+    },
+    {
+      "id": 1254,
+      "name": "Chipped Pot",
+      "desc": "Evolves Sinistea-Antique into Polteageist-Antique when used.",
+      "shortDesc": "Evolves Sinistea-Antique into Polteageist-Antique when used.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/chipped-pot.png"
+    },
+    {
+      "id": 220,
+      "name": "Choice Band",
+      "desc": "Holder's Attack is 1.5x, but it can only select the first move it executes.",
+      "shortDesc": "Holder's Attack is 1.5x, but it can only select the first move it executes.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/choice-band.png"
+    },
+    {
+      "id": 287,
+      "name": "Choice Scarf",
+      "desc": "Holder's Speed is 1.5x, but it can only select the first move it executes.",
+      "shortDesc": "Holder's Speed is 1.5x, but it can only select the first move it executes.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/choice-scarf.png"
+    },
+    {
+      "id": 297,
+      "name": "Choice Specs",
+      "desc": "Holder's Sp. Atk is 1.5x, but it can only select the first move it executes.",
+      "shortDesc": "Holder's Sp. Atk is 1.5x, but it can only select the first move it executes.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/choice-specs.png"
+    },
+    {
+      "id": 189,
+      "name": "Chople Berry",
+      "desc": "Halves damage taken from a supereffective Fighting-type attack. Single use.",
+      "shortDesc": "Halves damage taken from a supereffective Fighting-type attack. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/chople-berry.png"
+    },
+    {
+      "id": 100,
+      "name": "Claw Fossil",
+      "desc": "Can be revived into Anorith.",
+      "shortDesc": "Can be revived into Anorith.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/claw-fossil.png"
+    },
+    {
+      "id": 1882,
+      "name": "Clear Amulet",
+      "desc": "Prevents other Pokemon from lowering the holder's stat stages.",
+      "shortDesc": "Prevents other Pokemon from lowering the holder's stat stages.",
+      "generation": 9,
+      "spritePath": "/assets/items/icons/clear-amulet.png"
+    },
+    {
+      "id": 1112,
+      "name": "Clover Sweet",
+      "desc": "Evolves Milcery into Alcremie when held and spun around.",
+      "shortDesc": "Evolves Milcery into Alcremie when held and spun around.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/clover-sweet.png"
+    },
+    {
+      "id": 192,
+      "name": "Coba Berry",
+      "desc": "Halves damage taken from a supereffective Flying-type attack. Single use.",
+      "shortDesc": "Halves damage taken from a supereffective Flying-type attack. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/coba-berry.png"
+    },
+    {
+      "id": 198,
+      "name": "Colbur Berry",
+      "desc": "Halves damage taken from a supereffective Dark-type attack. Single use.",
+      "shortDesc": "Halves damage taken from a supereffective Dark-type attack. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/colbur-berry.png"
+    },
+    {
+      "id": 2406,
+      "name": "Cornerstone Mask",
+      "desc": "Ogerpon-Cornerstone: 1.2x power attacks; Terastallize to gain Embody Aspect.",
+      "shortDesc": "Ogerpon-Cornerstone: 1.2x power attacks; Terastallize to gain Embody Aspect.",
+      "generation": 9,
+      "spritePath": "/assets/items/icons/cornerstone-mask.png"
+    },
+    {
+      "id": 175,
+      "name": "Cornn Berry",
+      "desc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "shortDesc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/cornn-berry.png"
+    },
+    {
+      "id": 572,
+      "name": "Cover Fossil",
+      "desc": "Can be revived into Tirtouga.",
+      "shortDesc": "Can be revived into Tirtouga.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/cover-fossil.png"
+    },
+    {
+      "id": 1885,
+      "name": "Covert Cloak",
+      "desc": "The holder is not affected by the secondary effect of another Pokemon's attack. Attacks with secondary effects that are prevented include those with a chance (even 100%) to paralyze, sleep, freeze, burn, poison, confuse, cause the holder to flinch, cause the holder's stat stages to be lowered, as well as Anchor Shot, Eerie Spell, Fling, Psychic Noise, Salt Cure, Spirit Shackle, Syrup Bomb, and Throat Chop. The effect of Sparkling Aria is prevented if the holder is the only target. Secondary effects added by King's Rock, Razor Fang, and the Poison Touch, Stench, and Toxic Chain Abilities are also prevented against the holder.",
+      "shortDesc": "Holder is not affected by the secondary effect of another Pokemon's attack.",
+      "generation": 9,
+      "spritePath": "/assets/items/icons/covert-cloak.png"
+    },
+    {
+      "id": 1253,
+      "name": "Cracked Pot",
+      "desc": "Evolves Sinistea into Polteageist when used.",
+      "shortDesc": "Evolves Sinistea into Polteageist when used.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/cracked-pot.png"
+    },
+    {
+      "id": 210,
+      "name": "Custap Berry",
+      "desc": "Holder moves first in its priority bracket when at 1/4 max HP or less. Single use.",
+      "shortDesc": "Holder moves first in its priority bracket when at 1/4 max HP or less. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/custap-berry.png"
+    },
+    {
+      "id": 285,
+      "name": "Damp Rock",
+      "desc": "Holder's use of Rain Dance lasts 8 turns instead of 5.",
+      "shortDesc": "Holder's use of Rain Dance lasts 8 turns instead of 5.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/damp-rock.png"
+    },
+    {
+      "id": 562,
+      "name": "Dark Gem",
+      "desc": "Holder's first successful Dark-type attack will have 1.3x power. Single use.",
+      "shortDesc": "Holder's first successful Dark-type attack will have 1.3x power. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/dark-gem.png"
+    },
+    {
+      "id": 791,
+      "name": "Darkinium Z",
+      "desc": "If holder has a Dark move, this item allows it to use a Dark Z-Move.",
+      "shortDesc": "If holder has a Dark move, this item allows it to use a Dark Z-Move.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/darkinium-z.png"
+    },
+    {
+      "id": 919,
+      "name": "Dark Memory",
+      "desc": "Holder's Multi-Attack is Dark type.",
+      "shortDesc": "Holder's Multi-Attack is Dark type.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/dark-memory.png"
+    },
+    {
+      "id": 109,
+      "name": "Dawn Stone",
+      "desc": "Evolves male Kirlia into Gallade and female Snorunt into Froslass when used.",
+      "shortDesc": "Evolves certain species of Pokemon when used.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/dawn-stone.png"
+    },
+    {
+      "id": 798,
+      "name": "Decidium Z",
+      "desc": "If held by a Decidueye with Spirit Shackle, it can use Sinister Arrow Raid.",
+      "shortDesc": "If held by a Decidueye with Spirit Shackle, it can use Sinister Arrow Raid.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/decidium-z.png"
+    },
+    {
+      "id": 227,
+      "name": "Deep Sea Scale",
+      "desc": "If held by a Clamperl, its Sp. Def is doubled. Evolves Clamperl into Gorebyss when traded.",
+      "shortDesc": "If held by a Clamperl, its Sp. Def is doubled.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/deep-sea-scale.png"
+    },
+    {
+      "id": 226,
+      "name": "Deep Sea Tooth",
+      "desc": "If held by a Clamperl, its Sp. Atk is doubled. Evolves Clamperl into Huntail when traded.",
+      "shortDesc": "If held by a Clamperl, its Sp. Atk is doubled.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/deep-sea-tooth.png"
+    },
+    {
+      "id": 280,
+      "name": "Destiny Knot",
+      "desc": "If holder becomes infatuated, the other Pokemon also becomes infatuated.",
+      "shortDesc": "If holder becomes infatuated, the other Pokemon also becomes infatuated.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/destiny-knot.png"
+    },
+    {
+      "id": 764,
+      "name": "Diancite",
+      "desc": "If held by a Diancie, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Diancie, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/diancite.png"
+    },
+    {
+      "id": 7,
+      "name": "Dive Ball",
+      "desc": "A Poke Ball that works especially well on Pokemon that live underwater.",
+      "shortDesc": "A Poke Ball that works especially well on Pokemon that live underwater.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/dive-ball.png"
+    },
+    {
+      "id": 102,
+      "name": "Dome Fossil",
+      "desc": "Can be revived into Kabuto.",
+      "shortDesc": "Can be revived into Kabuto.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/dome-fossil.png"
+    },
+    {
+      "id": 116,
+      "name": "Douse Drive",
+      "desc": "Holder's Techno Blast is Water type.",
+      "shortDesc": "Holder's Techno Blast is Water type.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/douse-drive.png"
+    },
+    {
+      "id": 311,
+      "name": "Draco Plate",
+      "desc": "Holder's Dragon-type attacks have 1.2x power. Judgment is Dragon type.",
+      "shortDesc": "Holder's Dragon-type attacks have 1.2x power. Judgment is Dragon type.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/draco-plate.png"
+    },
+    {
+      "id": 250,
+      "name": "Dragon Fang",
+      "desc": "Holder's Dragon-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Dragon-type attacks have 1.2x power.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/dragon-fang.png"
+    },
+    {
+      "id": 561,
+      "name": "Dragon Gem",
+      "desc": "Holder's first successful Dragon-type attack will have 1.3x power. Single use.",
+      "shortDesc": "Holder's first successful Dragon-type attack will have 1.3x power. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/dragon-gem.png"
+    },
+    {
+      "id": 790,
+      "name": "Dragonium Z",
+      "desc": "If holder has a Dragon move, this item allows it to use a Dragon Z-Move.",
+      "shortDesc": "If holder has a Dragon move, this item allows it to use a Dragon Z-Move.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/dragonium-z.png"
+    },
+    {
+      "id": 918,
+      "name": "Dragon Memory",
+      "desc": "Holder's Multi-Attack is Dragon type.",
+      "shortDesc": "Holder's Multi-Attack is Dragon type.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/dragon-memory.png"
+    },
+    {
+      "id": 235,
+      "name": "Dragon Scale",
+      "desc": "Evolves Seadra into Kingdra when traded.",
+      "shortDesc": "Evolves Seadra into Kingdra when traded.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/dragon-scale.png"
+    },
+    {
+      "id": 312,
+      "name": "Dread Plate",
+      "desc": "Holder's Dark-type attacks have 1.2x power. Judgment is Dark type.",
+      "shortDesc": "Holder's Dark-type attacks have 1.2x power. Judgment is Dark type.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/dread-plate.png"
+    },
+    {
+      "id": 576,
+      "name": "Dream Ball",
+      "desc": "A Poke Ball that makes it easier to catch wild Pokémon while they're asleep.",
+      "shortDesc": "A Poke Ball that makes it easier to catch wild Pokémon while they're asleep.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/dream-ball.png"
+    },
+    {
+      "id": 324,
+      "name": "Dubious Disc",
+      "desc": "Evolves Porygon2 into Porygon-Z when traded.",
+      "shortDesc": "Evolves Porygon2 into Porygon-Z when traded.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/dubious-disc.png"
+    },
+    {
+      "id": 182,
+      "name": "Durin Berry",
+      "desc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "shortDesc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/durin-berry.png"
+    },
+    {
+      "id": 13,
+      "name": "Dusk Ball",
+      "desc": "A Poke Ball that makes it easier to catch wild Pokemon at night or in caves.",
+      "shortDesc": "A Poke Ball that makes it easier to catch wild Pokemon at night or in caves.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/dusk-ball.png"
+    },
+    {
+      "id": 108,
+      "name": "Dusk Stone",
+      "desc": "Evolves Murkrow into Honchkrow, Misdreavus into Mismagius, Lampent into Chandelure, and Doublade into Aegislash when used.",
+      "shortDesc": "Evolves certain species of Pokemon when used.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/dusk-stone.png"
+    },
+    {
+      "id": 305,
+      "name": "Earth Plate",
+      "desc": "Holder's Ground-type attacks have 1.2x power. Judgment is Ground type.",
+      "shortDesc": "Holder's Ground-type attacks have 1.2x power. Judgment is Ground type.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/earth-plate.png"
+    },
+    {
+      "id": 805,
+      "name": "Eevium Z",
+      "desc": "If held by an Eevee with Last Resort, it can use Extreme Evoboost.",
+      "shortDesc": "If held by an Eevee with Last Resort, it can use Extreme Evoboost.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/eevium-z.png"
+    },
+    {
+      "id": 547,
+      "name": "Eject Button",
+      "desc": "If holder survives a hit, it immediately switches out to a chosen ally. Single use.",
+      "shortDesc": "If holder survives a hit, it immediately switches out to a chosen ally. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/eject-button.png"
+    },
+    {
+      "id": 1119,
+      "name": "Eject Pack",
+      "desc": "If the holder's stat stages are lowered, it switches to a chosen ally. Single use.",
+      "shortDesc": "If the holder's stat stages are lowered, it switches to a chosen ally. Single use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/eject-pack.png"
+    },
+    {
+      "id": 322,
+      "name": "Electirizer",
+      "desc": "Evolves Electabuzz into Electivire when traded.",
+      "shortDesc": "Evolves Electabuzz into Electivire when traded.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/electirizer.png"
+    },
+    {
+      "id": 550,
+      "name": "Electric Gem",
+      "desc": "Holder's first successful Electric-type attack will have 1.3x power. Single use.",
+      "shortDesc": "Holder's first successful Electric-type attack will have 1.3x power. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/electric-gem.png"
+    },
+    {
+      "id": 915,
+      "name": "Electric Memory",
+      "desc": "Holder's Multi-Attack is Electric type.",
+      "shortDesc": "Holder's Multi-Attack is Electric type.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/electric-memory.png"
+    },
+    {
+      "id": 881,
+      "name": "Electric Seed",
+      "desc": "If the terrain is Electric Terrain, raises holder's Defense by 1 stage. Single use.",
+      "shortDesc": "If the terrain is Electric Terrain, raises holder's Defense by 1 stage. Single use.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/electric-seed.png"
+    },
+    {
+      "id": 779,
+      "name": "Electrium Z",
+      "desc": "If holder has an Electric move, this item allows it to use an Electric Z-Move.",
+      "shortDesc": "If holder has an Electric move, this item allows it to use an Electric Z-Move.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/electrium-z.png"
+    },
+    {
+      "id": 208,
+      "name": "Enigma Berry",
+      "desc": "Restores 1/4 max HP after holder is hit by a supereffective move. Single use.",
+      "shortDesc": "Restores 1/4 max HP after holder is hit by a supereffective move. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/enigma-berry.png"
+    },
+    {
+      "id": 538,
+      "name": "Eviolite",
+      "desc": "If holder's species can evolve, its Defense and Sp. Def are 1.5x.",
+      "shortDesc": "If holder's species can evolve, its Defense and Sp. Def are 1.5x.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/eviolite.png"
+    },
+    {
+      "id": 268,
+      "name": "Expert Belt",
+      "desc": "Holder's attacks that are super effective against the target do 1.2x damage.",
+      "shortDesc": "Holder's attacks that are super effective against the target do 1.2x damage.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/expert-belt.png"
+    },
+    {
+      "id": 793,
+      "name": "Fairium Z",
+      "desc": "If holder has a Fairy move, this item allows it to use a Fairy Z-Move.",
+      "shortDesc": "If holder has a Fairy move, this item allows it to use a Fairy Z-Move.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/fairium-z.png"
+    },
+    {
+      "id": 2401,
+      "name": "Fairy Feather",
+      "desc": "Holder's Fairy-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Fairy-type attacks have 1.2x power.",
+      "generation": 9,
+      "spritePath": "/assets/items/icons/fairy-feather.png"
+    },
+    {
+      "id": 715,
+      "name": "Fairy Gem",
+      "desc": "Holder's first successful Fairy-type attack will have 1.3x power. Single use.",
+      "shortDesc": "Holder's first successful Fairy-type attack will have 1.3x power. Single use.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/fairy-gem.png"
+    },
+    {
+      "id": 920,
+      "name": "Fairy Memory",
+      "desc": "Holder's Multi-Attack is Fairy type.",
+      "shortDesc": "Holder's Multi-Attack is Fairy type.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/fairy-memory.png"
+    },
+    {
+      "id": 492,
+      "name": "Fast Ball",
+      "desc": "A Poke Ball that makes it easier to catch Pokemon which are quick to run away.",
+      "shortDesc": "A Poke Ball that makes it easier to catch Pokemon which are quick to run away.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/fast-ball.png"
+    },
+    {
+      "id": 553,
+      "name": "Fighting Gem",
+      "desc": "Holder's first successful Fighting-type attack will have 1.3x power. Single use.",
+      "shortDesc": "Holder's first successful Fighting-type attack will have 1.3x power. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/fighting-gem.png"
+    },
+    {
+      "id": 904,
+      "name": "Fighting Memory",
+      "desc": "Holder's Multi-Attack is Fighting type.",
+      "shortDesc": "Holder's Multi-Attack is Fighting type.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/fighting-memory.png"
+    },
+    {
+      "id": 782,
+      "name": "Fightinium Z",
+      "desc": "If holder has a Fighting move, this item allows it to use a Fighting Z-Move.",
+      "shortDesc": "If holder has a Fighting move, this item allows it to use a Fighting Z-Move.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/fightinium-z.png"
+    },
+    {
+      "id": 159,
+      "name": "Figy Berry",
+      "desc": "Restores 1/3 max HP at 1/4 max HP or less; confuses if -Atk Nature. Single use.",
+      "shortDesc": "Restores 1/3 max HP at 1/4 max HP or less; confuses if -Atk Nature. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/figy-berry.png"
+    },
+    {
+      "id": 548,
+      "name": "Fire Gem",
+      "desc": "Holder's first successful Fire-type attack will have 1.3x power. Single use.",
+      "shortDesc": "Holder's first successful Fire-type attack will have 1.3x power. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/fire-gem.png"
+    },
+    {
+      "id": 912,
+      "name": "Fire Memory",
+      "desc": "Holder's Multi-Attack is Fire type.",
+      "shortDesc": "Holder's Multi-Attack is Fire type.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/fire-memory.png"
+    },
+    {
+      "id": 82,
+      "name": "Fire Stone",
+      "desc": "Evolves Vulpix into Ninetales, Growlithe into Arcanine, Eevee into Flareon, and Pansear into Simisear when used.",
+      "shortDesc": "Evolves certain species of Pokemon when used.",
+      "generation": 1,
+      "spritePath": "/assets/items/icons/fire-stone.png"
+    },
+    {
+      "id": 777,
+      "name": "Firium Z",
+      "desc": "If holder has a Fire move, this item allows it to use a Fire Z-Move.",
+      "shortDesc": "If holder has a Fire move, this item allows it to use a Fire Z-Move.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/firium-z.png"
+    },
+    {
+      "id": 303,
+      "name": "Fist Plate",
+      "desc": "Holder's Fighting-type attacks have 1.2x power. Judgment is Fighting type.",
+      "shortDesc": "Holder's Fighting-type attacks have 1.2x power. Judgment is Fighting type.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/fist-plate.png"
+    },
+    {
+      "id": 273,
+      "name": "Flame Orb",
+      "desc": "At the end of every turn, this item attempts to burn the holder.",
+      "shortDesc": "At the end of every turn, this item attempts to burn the holder.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/flame-orb.png"
+    },
+    {
+      "id": 298,
+      "name": "Flame Plate",
+      "desc": "Holder's Fire-type attacks have 1.2x power. Judgment is Fire type.",
+      "shortDesc": "Holder's Fire-type attacks have 1.2x power. Judgment is Fire type.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/flame-plate.png"
+    },
+    {
+      "id": 539,
+      "name": "Float Stone",
+      "desc": "Holder's weight is halved.",
+      "shortDesc": "Holder's weight is halved.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/float-stone.png"
+    },
+    {
+      "id": 1113,
+      "name": "Flower Sweet",
+      "desc": "Evolves Milcery into Alcremie when held and spun around.",
+      "shortDesc": "Evolves Milcery into Alcremie when held and spun around.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/flower-sweet.png"
+    },
+    {
+      "id": 556,
+      "name": "Flying Gem",
+      "desc": "Holder's first successful Flying-type attack will have 1.3x power. Single use.",
+      "shortDesc": "Holder's first successful Flying-type attack will have 1.3x power. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/flying-gem.png"
+    },
+    {
+      "id": 905,
+      "name": "Flying Memory",
+      "desc": "Holder's Multi-Attack is Flying type.",
+      "shortDesc": "Holder's Multi-Attack is Flying type.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/flying-memory.png"
+    },
+    {
+      "id": 785,
+      "name": "Flyinium Z",
+      "desc": "If holder has a Flying move, this item allows it to use a Flying Z-Move.",
+      "shortDesc": "If holder has a Flying move, this item allows it to use a Flying Z-Move.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/flyinium-z.png"
+    },
+    {
+      "id": 230,
+      "name": "Focus Band",
+      "desc": "Holder has a 10% chance to survive an attack that would KO it with 1 HP.",
+      "shortDesc": "Holder has a 10% chance to survive an attack that would KO it with 1 HP.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/focus-band.png"
+    },
+    {
+      "id": 275,
+      "name": "Focus Sash",
+      "desc": "If holder's HP is full, will survive an attack that would KO it with 1 HP. Single use.",
+      "shortDesc": "If holder's HP is full, will survive an attack that would KO it with 1 HP. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/focus-sash.png"
+    },
+    {
+      "id": 1105,
+      "name": "Fossilized Bird",
+      "desc": "Can revive into Dracozolt with Fossilized Drake or Arctozolt with Fossilized Dino.",
+      "shortDesc": "Can revive into Dracozolt with Fossilized Drake or Arctozolt with Fossilized Dino.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/fossilized-bird.png"
+    },
+    {
+      "id": 1108,
+      "name": "Fossilized Dino",
+      "desc": "Can revive into Arctovish with Fossilized Fish or Arctozolt with Fossilized Bird.",
+      "shortDesc": "Can revive into Arctovish with Fossilized Fish or Arctozolt with Fossilized Bird.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/fossilized-dino.png"
+    },
+    {
+      "id": 1107,
+      "name": "Fossilized Drake",
+      "desc": "Can revive into Dracozolt with Fossilized Bird or Dracovish with Fossilized Fish.",
+      "shortDesc": "Can revive into Dracozolt with Fossilized Bird or Dracovish with Fossilized Fish.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/fossilized-drake.png"
+    },
+    {
+      "id": 1106,
+      "name": "Fossilized Fish",
+      "desc": "Can revive into Dracovish with Fossilized Drake or Arctovish with Fossilized Dino.",
+      "shortDesc": "Can revive into Dracovish with Fossilized Drake or Arctovish with Fossilized Dino.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/fossilized-fish.png"
+    },
+    {
+      "id": 497,
+      "name": "Friend Ball",
+      "desc": "A Poke Ball that makes caught Pokemon more friendly.",
+      "shortDesc": "A Poke Ball that makes caught Pokemon more friendly.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/friend-ball.png"
+    },
+    {
+      "id": 316,
+      "name": "Full Incense",
+      "desc": "Holder moves last in its priority bracket.",
+      "shortDesc": "Holder moves last in its priority bracket.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/full-incense.png"
+    },
+    {
+      "id": 1582,
+      "name": "Galarica Cuff",
+      "desc": "Evolves Galarian Slowpoke into Galarian Slowbro when used.",
+      "shortDesc": "Evolves Galarian Slowpoke into Galarian Slowbro when used.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/galarica-cuff.png"
+    },
+    {
+      "id": 1592,
+      "name": "Galarica Wreath",
+      "desc": "Evolves Galarian Slowpoke into Galarian Slowking when used.",
+      "shortDesc": "Evolves Galarian Slowpoke into Galarian Slowking when used.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/galarica-wreath.png"
+    },
+    {
+      "id": 756,
+      "name": "Galladite",
+      "desc": "If held by a Gallade, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Gallade, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/galladite.png"
+    },
+    {
+      "id": 202,
+      "name": "Ganlon Berry",
+      "desc": "Raises holder's Defense by 1 stage when at 1/4 max HP or less. Single use.",
+      "shortDesc": "Raises holder's Defense by 1 stage when at 1/4 max HP or less. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/ganlon-berry.png"
+    },
+    {
+      "id": 683,
+      "name": "Garchompite",
+      "desc": "If held by a Garchomp, this item allows it to Mega Evolve into Mega Garchomp.",
+      "shortDesc": "If held by a Garchomp, this item allows it to Mega Evolve into Mega Garchomp.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/garchompite.png"
+    },
+    {
+      "id": 657,
+      "name": "Gardevoirite",
+      "desc": "If held by a Gardevoir, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Gardevoir, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/gardevoirite.png"
+    },
+    {
+      "id": 656,
+      "name": "Gengarite",
+      "desc": "If held by a Gengar, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Gengar, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/gengarite.png"
+    },
+    {
+      "id": 560,
+      "name": "Ghost Gem",
+      "desc": "Holder's first successful Ghost-type attack will have 1.3x power. Single use.",
+      "shortDesc": "Holder's first successful Ghost-type attack will have 1.3x power. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/ghost-gem.png"
+    },
+    {
+      "id": 789,
+      "name": "Ghostium Z",
+      "desc": "If holder has a Ghost move, this item allows it to use a Ghost Z-Move.",
+      "shortDesc": "If holder has a Ghost move, this item allows it to use a Ghost Z-Move.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/ghostium-z.png"
+    },
+    {
+      "id": 910,
+      "name": "Ghost Memory",
+      "desc": "Holder's Multi-Attack is Ghost type.",
+      "shortDesc": "Holder's Multi-Attack is Ghost type.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/ghost-memory.png"
+    },
+    {
+      "id": 763,
+      "name": "Glalitite",
+      "desc": "If held by a Glalie, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Glalie, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/glalitite.png"
+    },
+    {
+      "id": 796,
+      "name": "Gold Bottle Cap",
+      "desc": "Used for Hyper Training. All of a Pokemon's stats are calculated with an IV of 31.",
+      "shortDesc": "Used for Hyper Training. All of a Pokemon's stats are calculated with an IV of 31.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/gold-bottle-cap.png"
+    },
+    {
+      "id": 551,
+      "name": "Grass Gem",
+      "desc": "Holder's first successful Grass-type attack will have 1.3x power. Single use.",
+      "shortDesc": "Holder's first successful Grass-type attack will have 1.3x power. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/grass-gem.png"
+    },
+    {
+      "id": 780,
+      "name": "Grassium Z",
+      "desc": "If holder has a Grass move, this item allows it to use a Grass Z-Move.",
+      "shortDesc": "If holder has a Grass move, this item allows it to use a Grass Z-Move.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/grassium-z.png"
+    },
+    {
+      "id": 914,
+      "name": "Grass Memory",
+      "desc": "Holder's Multi-Attack is Grass type.",
+      "shortDesc": "Holder's Multi-Attack is Grass type.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/grass-memory.png"
+    },
+    {
+      "id": 884,
+      "name": "Grassy Seed",
+      "desc": "If the terrain is Grassy Terrain, raises holder's Defense by 1 stage. Single use.",
+      "shortDesc": "If the terrain is Grassy Terrain, raises holder's Defense by 1 stage. Single use.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/grassy-seed.png"
+    },
+    {
+      "id": 3,
+      "name": "Great Ball",
+      "desc": "A high-performance Ball that provides a higher catch rate than a Poke Ball.",
+      "shortDesc": "A high-performance Ball that provides a higher catch rate than a Poke Ball.",
+      "generation": 1,
+      "spritePath": "/assets/items/icons/great-ball.png"
+    },
+    {
+      "id": 173,
+      "name": "Grepa Berry",
+      "desc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "shortDesc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/grepa-berry.png"
+    },
+    {
+      "id": 286,
+      "name": "Grip Claw",
+      "desc": "Holder's partial-trapping moves always last 7 turns.",
+      "shortDesc": "Holder's partial-trapping moves always last 7 turns.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/grip-claw.png"
+    },
+    {
+      "id": 1779,
+      "name": "Griseous Core",
+      "desc": "If held by a Giratina, its Ghost- and Dragon-type attacks have 1.2x power.",
+      "shortDesc": "If held by a Giratina, its Ghost- and Dragon-type attacks have 1.2x power.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/griseous-core.png"
+    },
+    {
+      "id": 112,
+      "name": "Griseous Orb",
+      "desc": "If held by a Giratina, its Ghost- and Dragon-type attacks have 1.2x power.",
+      "shortDesc": "If held by a Giratina, its Ghost- and Dragon-type attacks have 1.2x power.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/griseous-orb.png"
+    },
+    {
+      "id": 555,
+      "name": "Ground Gem",
+      "desc": "Holder's first successful Ground-type attack will have 1.3x power. Single use.",
+      "shortDesc": "Holder's first successful Ground-type attack will have 1.3x power. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/ground-gem.png"
+    },
+    {
+      "id": 784,
+      "name": "Groundium Z",
+      "desc": "If holder has a Ground move, this item allows it to use a Ground Z-Move.",
+      "shortDesc": "If holder has a Ground move, this item allows it to use a Ground Z-Move.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/groundium-z.png"
+    },
+    {
+      "id": 907,
+      "name": "Ground Memory",
+      "desc": "Holder's Multi-Attack is Ground type.",
+      "shortDesc": "Holder's Multi-Attack is Ground type.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/ground-memory.png"
+    },
+    {
+      "id": 676,
+      "name": "Gyaradosite",
+      "desc": "If held by a Gyarados, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Gyarados, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/gyaradosite.png"
+    },
+    {
+      "id": 197,
+      "name": "Haban Berry",
+      "desc": "Halves damage taken from a supereffective Dragon-type attack. Single use.",
+      "shortDesc": "Halves damage taken from a supereffective Dragon-type attack. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/haban-berry.png"
+    },
+    {
+      "id": 238,
+      "name": "Hard Stone",
+      "desc": "Holder's Rock-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Rock-type attacks have 1.2x power.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/hard-stone.png"
+    },
+    {
+      "id": 14,
+      "name": "Heal Ball",
+      "desc": "A remedial Poke Ball that restores the caught Pokemon's HP and status problem.",
+      "shortDesc": "A remedial Poke Ball that restores the caught Pokemon's HP and status problem.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/heal-ball.png"
+    },
+    {
+      "id": 2408,
+      "name": "Hearthflame Mask",
+      "desc": "Ogerpon-Hearthflame: 1.2x power attacks; Terastallize to gain Embody Aspect.",
+      "shortDesc": "Ogerpon-Hearthflame: 1.2x power attacks; Terastallize to gain Embody Aspect.",
+      "generation": 9,
+      "spritePath": "/assets/items/icons/hearthflame-mask.png"
+    },
+    {
+      "id": 284,
+      "name": "Heat Rock",
+      "desc": "Holder's use of Sunny Day lasts 8 turns instead of 5.",
+      "shortDesc": "Holder's use of Sunny Day lasts 8 turns instead of 5.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/heat-rock.png"
+    },
+    {
+      "id": 495,
+      "name": "Heavy Ball",
+      "desc": "A Poke Ball for catching very heavy Pokemon.",
+      "shortDesc": "A Poke Ball for catching very heavy Pokemon.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/heavy-ball.png"
+    },
+    {
+      "id": 1120,
+      "name": "Heavy-Duty Boots",
+      "desc": "When switching in, the holder is unaffected by hazards on its side of the field.",
+      "shortDesc": "When switching in, the holder is unaffected by hazards on its side of the field.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/heavy-duty-boots.png"
+    },
+    {
+      "id": 101,
+      "name": "Helix Fossil",
+      "desc": "Can be revived into Omanyte.",
+      "shortDesc": "Can be revived into Omanyte.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/helix-fossil.png"
+    },
+    {
+      "id": 680,
+      "name": "Heracronite",
+      "desc": "If held by a Heracross, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Heracross, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/heracronite.png"
+    },
+    {
+      "id": 172,
+      "name": "Hondew Berry",
+      "desc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "shortDesc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/hondew-berry.png"
+    },
+    {
+      "id": 666,
+      "name": "Houndoominite",
+      "desc": "If held by a Houndoom, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Houndoom, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/houndoominite.png"
+    },
+    {
+      "id": 163,
+      "name": "Iapapa Berry",
+      "desc": "Restores 1/3 max HP at 1/4 max HP or less; confuses if -Def Nature. Single use.",
+      "shortDesc": "Restores 1/3 max HP at 1/4 max HP or less; confuses if -Def Nature. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/iapapa-berry.png"
+    },
+    {
+      "id": 552,
+      "name": "Ice Gem",
+      "desc": "Holder's first successful Ice-type attack will have 1.3x power. Single use.",
+      "shortDesc": "Holder's first successful Ice-type attack will have 1.3x power. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/ice-gem.png"
+    },
+    {
+      "id": 917,
+      "name": "Ice Memory",
+      "desc": "Holder's Multi-Attack is Ice type.",
+      "shortDesc": "Holder's Multi-Attack is Ice type.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/ice-memory.png"
+    },
+    {
+      "id": 849,
+      "name": "Ice Stone",
+      "desc": "Evolves Alolan Sandshrew into Alolan Sandslash, Alolan Vulpix into Alolan Ninetales, Eevee into Glaceon, and Galarian Darumaka into Galarian Darmanitan when used.",
+      "shortDesc": "Evolves certain species of Pokemon when used.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/ice-stone.png"
+    },
+    {
+      "id": 302,
+      "name": "Icicle Plate",
+      "desc": "Holder's Ice-type attacks have 1.2x power. Judgment is Ice type.",
+      "shortDesc": "Holder's Ice-type attacks have 1.2x power. Judgment is Ice type.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/icicle-plate.png"
+    },
+    {
+      "id": 781,
+      "name": "Icium Z",
+      "desc": "If holder has an Ice move, this item allows it to use an Ice Z-Move.",
+      "shortDesc": "If holder has an Ice move, this item allows it to use an Ice Z-Move.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/icium-z.png"
+    },
+    {
+      "id": 282,
+      "name": "Icy Rock",
+      "desc": "Holder's use of Snowscape lasts 8 turns instead of 5.",
+      "shortDesc": "Holder's use of Snowscape lasts 8 turns instead of 5.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/icy-rock.png"
+    },
+    {
+      "id": 799,
+      "name": "Incinium Z",
+      "desc": "If held by an Incineroar with Darkest Lariat, it can use Malicious Moonsault.",
+      "shortDesc": "If held by an Incineroar with Darkest Lariat, it can use Malicious Moonsault.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/incinium-z.png"
+    },
+    {
+      "id": 308,
+      "name": "Insect Plate",
+      "desc": "Holder's Bug-type attacks have 1.2x power. Judgment is Bug type.",
+      "shortDesc": "Holder's Bug-type attacks have 1.2x power. Judgment is Bug type.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/insect-plate.png"
+    },
+    {
+      "id": 278,
+      "name": "Iron Ball",
+      "desc": "Holder is grounded, Speed halved. If Flying type, takes neutral Ground damage.",
+      "shortDesc": "Holder is grounded, Speed halved. If Flying type, takes neutral Ground damage.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/iron-ball.png"
+    },
+    {
+      "id": 313,
+      "name": "Iron Plate",
+      "desc": "Holder's Steel-type attacks have 1.2x power. Judgment is Steel type.",
+      "shortDesc": "Holder's Steel-type attacks have 1.2x power. Judgment is Steel type.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/iron-plate.png"
+    },
+    {
+      "id": 211,
+      "name": "Jaboca Berry",
+      "desc": "If holder is hit by a physical move, attacker loses 1/8 of its max HP. Single use.",
+      "shortDesc": "If holder is hit by a physical move, attacker loses 1/8 of its max HP. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/jaboca-berry.png"
+    },
+    {
+      "id": 710,
+      "name": "Jaw Fossil",
+      "desc": "Can be revived into Tyrunt.",
+      "shortDesc": "Can be revived into Tyrunt.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/jaw-fossil.png"
+    },
+    {
+      "id": 675,
+      "name": "Kangaskhanite",
+      "desc": "If held by a Kangaskhan, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Kangaskhan, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/kangaskhanite.png"
+    },
+    {
+      "id": 196,
+      "name": "Kasib Berry",
+      "desc": "Halves damage taken from a supereffective Ghost-type attack. Single use.",
+      "shortDesc": "Halves damage taken from a supereffective Ghost-type attack. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/kasib-berry.png"
+    },
+    {
+      "id": 190,
+      "name": "Kebia Berry",
+      "desc": "Halves damage taken from a supereffective Poison-type attack. Single use.",
+      "shortDesc": "Halves damage taken from a supereffective Poison-type attack. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/kebia-berry.png"
+    },
+    {
+      "id": 687,
+      "name": "Kee Berry",
+      "desc": "Raises holder's Defense by 1 stage after it is hit by a physical attack. Single use.",
+      "shortDesc": "Raises holder's Defense by 1 stage after it is hit by a physical attack. Single use.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/kee-berry.png"
+    },
+    {
+      "id": 170,
+      "name": "Kelpsy Berry",
+      "desc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "shortDesc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/kelpsy-berry.png"
+    },
+    {
+      "id": 221,
+      "name": "King's Rock",
+      "desc": "Holder's attacks without a chance to make the target flinch gain a 10% chance to make the target flinch. Evolves Poliwhirl into Politoed and Slowpoke into Slowking when traded.",
+      "shortDesc": "Holder's attacks without a chance to flinch gain a 10% chance to flinch.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/king-s-rock.png"
+    },
+    {
+      "id": 926,
+      "name": "Kommonium Z",
+      "desc": "If held by a Kommo-o with Clanging Scales, it can use Clangorous Soulblaze.",
+      "shortDesc": "If held by a Kommo-o with Clanging Scales, it can use Clangorous Soulblaze.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/kommonium-z.png"
+    },
+    {
+      "id": 279,
+      "name": "Lagging Tail",
+      "desc": "Holder moves last in its priority bracket.",
+      "shortDesc": "Holder moves last in its priority bracket.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/lagging-tail.png"
+    },
+    {
+      "id": 206,
+      "name": "Lansat Berry",
+      "desc": "Holder gains the Focus Energy effect when at 1/4 max HP or less. Single use.",
+      "shortDesc": "Holder gains the Focus Energy effect when at 1/4 max HP or less. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/lansat-berry.png"
+    },
+    {
+      "id": 684,
+      "name": "Latiasite",
+      "desc": "If held by a Latias, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Latias, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/latiasite.png"
+    },
+    {
+      "id": 685,
+      "name": "Latiosite",
+      "desc": "If held by a Latios, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Latios, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/latiosite.png"
+    },
+    {
+      "id": 255,
+      "name": "Lax Incense",
+      "desc": "The accuracy of attacks against the holder is 0.9x.",
+      "shortDesc": "The accuracy of attacks against the holder is 0.9x.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/lax-incense.png"
+    },
+    {
+      "id": 85,
+      "name": "Leaf Stone",
+      "desc": "Evolves Gloom into Vileplume, Weepinbell into Victreebel, Exeggcute into Exeggutor or Alolan Exeggutor, Eevee into Leafeon, Nuzleaf into Shiftry, and Pansage into Simisage when used.",
+      "shortDesc": "Evolves certain species of Pokemon when used.",
+      "generation": 1,
+      "spritePath": "/assets/items/icons/leaf-stone.png"
+    },
+    {
+      "id": 259,
+      "name": "Leek",
+      "desc": "If held by a Farfetch’d or Sirfetch’d, its critical hit ratio is raised by 2 stages.",
+      "shortDesc": "If held by a Farfetch’d or Sirfetch’d, its critical hit ratio is raised by 2 stages.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/leek.png"
+    },
+    {
+      "id": 234,
+      "name": "Leftovers",
+      "desc": "At the end of every turn, holder restores 1/16 of its max HP.",
+      "shortDesc": "At the end of every turn, holder restores 1/16 of its max HP.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/leftovers.png"
+    },
+    {
+      "id": 154,
+      "name": "Leppa Berry",
+      "desc": "Restores 10 PP to the first of the holder's moves to reach 0 PP. Single use.",
+      "shortDesc": "Restores 10 PP to the first of the holder's moves to reach 0 PP. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/leppa-berry.png"
+    },
+    {
+      "id": 493,
+      "name": "Level Ball",
+      "desc": "A Poke Ball for catching Pokemon that are a lower level than your own.",
+      "shortDesc": "A Poke Ball for catching Pokemon that are a lower level than your own.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/level-ball.png"
+    },
+    {
+      "id": 201,
+      "name": "Liechi Berry",
+      "desc": "Raises holder's Attack by 1 stage when at 1/4 max HP or less. Single use.",
+      "shortDesc": "Raises holder's Attack by 1 stage when at 1/4 max HP or less. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/liechi-berry.png"
+    },
+    {
+      "id": 270,
+      "name": "Life Orb",
+      "desc": "Holder's attacks do 1.3x damage, and it loses 1/10 its max HP after the attack.",
+      "shortDesc": "Holder's attacks do 1.3x damage, and it loses 1/10 its max HP after the attack.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/life-orb.png"
+    },
+    {
+      "id": 236,
+      "name": "Light Ball",
+      "desc": "If held by a Pikachu, its Attack and Sp. Atk are doubled.",
+      "shortDesc": "If held by a Pikachu, its Attack and Sp. Atk are doubled.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/light-ball.png"
+    },
+    {
+      "id": 269,
+      "name": "Light Clay",
+      "desc": "Holder's use of Aurora Veil, Light Screen, or Reflect lasts 8 turns instead of 5.",
+      "shortDesc": "Holder's use of Aurora Veil, Light Screen, or Reflect lasts 8 turns instead of 5.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/light-clay.png"
+    },
+    {
+      "id": 1886,
+      "name": "Loaded Dice",
+      "desc": "The holder's moves that normally hit 2 to 5 times instead hit 4 or 5 times. If the first hit is successful, the holder's use of Triple Kick or Triple Axel hits 3 times, and Population Bomb hits 4 to 10 times, at random.",
+      "shortDesc": "Holder's moves that hit 2-5 times hit 4-5 times; Population Bomb hits 4-10 times.",
+      "generation": 9,
+      "spritePath": "/assets/items/icons/loaded-dice.png"
+    },
+    {
+      "id": 768,
+      "name": "Lopunnite",
+      "desc": "If held by a Lopunny, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Lopunny, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/lopunnite.png"
+    },
+    {
+      "id": 496,
+      "name": "Love Ball",
+      "desc": "Poke Ball for catching Pokemon that are the opposite gender of your Pokemon.",
+      "shortDesc": "Poke Ball for catching Pokemon that are the opposite gender of your Pokemon.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/love-ball.png"
+    },
+    {
+      "id": 1110,
+      "name": "Love Sweet",
+      "desc": "Evolves Milcery into Alcremie when held and spun around.",
+      "shortDesc": "Evolves Milcery into Alcremie when held and spun around.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/love-sweet.png"
+    },
+    {
+      "id": 673,
+      "name": "Lucarionite",
+      "desc": "If held by a Lucario, this item allows it to Mega Evolve into Mega Lucario in battle.",
+      "shortDesc": "If held by a Lucario, this item allows it to Mega Evolve into Mega Lucario in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/lucarionite.png"
+    },
+    {
+      "id": 256,
+      "name": "Lucky Punch",
+      "desc": "If held by a Chansey, its critical hit ratio is raised by 2 stages.",
+      "shortDesc": "If held by a Chansey, its critical hit ratio is raised by 2 stages.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/lucky-punch.png"
+    },
+    {
+      "id": 157,
+      "name": "Lum Berry",
+      "desc": "Holder cures itself if it has a non-volatile status or is confused. Single use.",
+      "shortDesc": "Holder cures itself if it has a non-volatile status or is confused. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/lum-berry.png"
+    },
+    {
+      "id": 648,
+      "name": "Luminous Moss",
+      "desc": "Raises holder's Sp. Def by 1 stage if hit by a Water-type attack. Single use.",
+      "shortDesc": "Raises holder's Sp. Def by 1 stage if hit by a Water-type attack. Single use.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/luminous-moss.png"
+    },
+    {
+      "id": 922,
+      "name": "Lunalium Z",
+      "desc": "Lunala or Dawn Wings Necrozma with Moongeist Beam can use a special Z-Move.",
+      "shortDesc": "Lunala or Dawn Wings Necrozma with Moongeist Beam can use a special Z-Move.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/lunalium-z.png"
+    },
+    {
+      "id": 494,
+      "name": "Lure Ball",
+      "desc": "A Poke Ball for catching Pokemon hooked by a Rod when fishing.",
+      "shortDesc": "A Poke Ball for catching Pokemon hooked by a Rod when fishing.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/lure-ball.png"
+    },
+    {
+      "id": 1778,
+      "name": "Lustrous Globe",
+      "desc": "If held by a Palkia, its Water- and Dragon-type attacks have 1.2x power.",
+      "shortDesc": "If held by a Palkia, its Water- and Dragon-type attacks have 1.2x power.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/lustrous-globe.png"
+    },
+    {
+      "id": 136,
+      "name": "Lustrous Orb",
+      "desc": "If held by a Palkia, its Water- and Dragon-type attacks have 1.2x power.",
+      "shortDesc": "If held by a Palkia, its Water- and Dragon-type attacks have 1.2x power.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/lustrous-orb.png"
+    },
+    {
+      "id": 11,
+      "name": "Luxury Ball",
+      "desc": "A comfortable Poke Ball that makes a caught wild Pokemon quickly grow friendly.",
+      "shortDesc": "A comfortable Poke Ball that makes a caught wild Pokemon quickly grow friendly.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/luxury-ball.png"
+    },
+    {
+      "id": 925,
+      "name": "Lycanium Z",
+      "desc": "If held by a Lycanroc forme with Stone Edge, it can use Splintered Stormshards.",
+      "shortDesc": "If held by a Lycanroc forme with Stone Edge, it can use Splintered Stormshards.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/lycanium-z.png"
+    },
+    {
+      "id": 215,
+      "name": "Macho Brace",
+      "desc": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
+      "shortDesc": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/macho-brace.png"
+    },
+    {
+      "id": 323,
+      "name": "Magmarizer",
+      "desc": "Evolves Magmar into Magmortar when traded.",
+      "shortDesc": "Evolves Magmar into Magmortar when traded.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/magmarizer.png"
+    },
+    {
+      "id": 242,
+      "name": "Magnet",
+      "desc": "Holder's Electric-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Electric-type attacks have 1.2x power.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/magnet.png"
+    },
+    {
+      "id": 161,
+      "name": "Mago Berry",
+      "desc": "Restores 1/3 max HP at 1/4 max HP or less; confuses if -Spe Nature. Single use.",
+      "shortDesc": "Restores 1/3 max HP at 1/4 max HP or less; confuses if -Spe Nature. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/mago-berry.png"
+    },
+    {
+      "id": 176,
+      "name": "Magost Berry",
+      "desc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "shortDesc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/magost-berry.png"
+    },
+    {
+      "id": 137,
+      "name": "Mail",
+      "desc": "Cannot be given to or taken from a Pokemon, except by Covet/Knock Off/Thief.",
+      "shortDesc": "Cannot be given to or taken from a Pokemon, except by Covet/Knock Off/Thief.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/mail.png"
+    },
+    {
+      "id": 1861,
+      "name": "Malicious Armor",
+      "desc": "Evolves Charcadet into Ceruledge when used.",
+      "shortDesc": "Evolves Charcadet into Ceruledge when used.",
+      "generation": 9,
+      "spritePath": "/assets/items/icons/malicious-armor.png"
+    },
+    {
+      "id": 682,
+      "name": "Manectite",
+      "desc": "If held by a Manectric, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Manectric, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/manectite.png"
+    },
+    {
+      "id": 688,
+      "name": "Maranga Berry",
+      "desc": "Raises holder's Sp. Def by 1 stage after it is hit by a special attack. Single use.",
+      "shortDesc": "Raises holder's Sp. Def by 1 stage after it is hit by a special attack. Single use.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/maranga-berry.png"
+    },
+    {
+      "id": 802,
+      "name": "Marshadium Z",
+      "desc": "If held by Marshadow with Spectral Thief, it can use Soul-Stealing 7-Star Strike.",
+      "shortDesc": "If held by Marshadow with Spectral Thief, it can use Soul-Stealing 7-Star Strike.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/marshadium-z.png"
+    },
+    {
+      "id": 1,
+      "name": "Master Ball",
+      "desc": "The best Ball with the ultimate performance. It will catch any wild Pokemon.",
+      "shortDesc": "The best Ball with the ultimate performance. It will catch any wild Pokemon.",
+      "generation": 1,
+      "spritePath": "/assets/items/icons/master-ball.png"
+    },
+    {
+      "id": 2404,
+      "name": "Masterpiece Teacup",
+      "desc": "Evolves Poltchageist-Artisan into Sinistcha-Masterpiece when used.",
+      "shortDesc": "Evolves Poltchageist-Artisan into Sinistcha-Masterpiece when used.",
+      "generation": 9,
+      "spritePath": "/assets/items/icons/masterpiece-teacup.png"
+    },
+    {
+      "id": 681,
+      "name": "Mawilite",
+      "desc": "If held by a Mawile, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Mawile, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/mawilite.png"
+    },
+    {
+      "id": 301,
+      "name": "Meadow Plate",
+      "desc": "Holder's Grass-type attacks have 1.2x power. Judgment is Grass type.",
+      "shortDesc": "Holder's Grass-type attacks have 1.2x power. Judgment is Grass type.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/meadow-plate.png"
+    },
+    {
+      "id": 665,
+      "name": "Medichamite",
+      "desc": "If held by a Medicham, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Medicham, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/medichamite.png"
+    },
+    {
+      "id": 219,
+      "name": "Mental Herb",
+      "desc": "Cures holder of Attract, Disable, Encore, Heal Block, Taunt, Torment. Single use.",
+      "shortDesc": "Cures holder of Attract, Disable, Encore, Heal Block, Taunt, Torment. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/mental-herb.png"
+    },
+    {
+      "id": 758,
+      "name": "Metagrossite",
+      "desc": "If held by a Metagross, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Metagross, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/metagrossite.png"
+    },
+    {
+      "id": 2482,
+      "name": "Metal Alloy",
+      "desc": "Evolves Duraludon into Archaludon when used.",
+      "shortDesc": "Evolves Duraludon into Archaludon when used.",
+      "generation": 9,
+      "spritePath": "/assets/items/icons/metal-alloy.png"
+    },
+    {
+      "id": 233,
+      "name": "Metal Coat",
+      "desc": "Holder's Steel-type attacks have 1.2x power. Evolves Onix into Steelix and Scyther into Scizor when traded.",
+      "shortDesc": "Holder's Steel-type attacks have 1.2x power.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/metal-coat.png"
+    },
+    {
+      "id": 257,
+      "name": "Metal Powder",
+      "desc": "If held by a Ditto that hasn't Transformed, its Defense is doubled.",
+      "shortDesc": "If held by a Ditto that hasn't Transformed, its Defense is doubled.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/metal-powder.png"
+    },
+    {
+      "id": 277,
+      "name": "Metronome",
+      "desc": "Damage of moves used on consecutive turns is increased. Max 2x after 5 turns.",
+      "shortDesc": "Damage of moves used on consecutive turns is increased. Max 2x after 5 turns.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/metronome.png"
+    },
+    {
+      "id": 806,
+      "name": "Mewnium Z",
+      "desc": "If held by a Mew with Psychic, it can use Genesis Supernova.",
+      "shortDesc": "If held by a Mew with Psychic, it can use Genesis Supernova.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/mewnium-z.png"
+    },
+    {
+      "id": 662,
+      "name": "Mewtwonite X",
+      "desc": "If held by a Mewtwo, this item allows it to Mega Evolve into Mega Mewtwo X in battle.",
+      "shortDesc": "If held by a Mewtwo, this item allows it to Mega Evolve into Mega Mewtwo X in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/mewtwonite-x.png"
+    },
+    {
+      "id": 663,
+      "name": "Mewtwonite Y",
+      "desc": "If held by a Mewtwo, this item allows it to Mega Evolve into Mega Mewtwo Y in battle.",
+      "shortDesc": "If held by a Mewtwo, this item allows it to Mega Evolve into Mega Mewtwo Y in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/mewtwonite-y.png"
+    },
+    {
+      "id": 209,
+      "name": "Micle Berry",
+      "desc": "Holder's next move has 1.2x accuracy when at 1/4 max HP or less. Single use.",
+      "shortDesc": "Holder's next move has 1.2x accuracy when at 1/4 max HP or less. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/micle-berry.png"
+    },
+    {
+      "id": 924,
+      "name": "Mimikium Z",
+      "desc": "If held by a Mimikyu with Play Rough, it can use Let's Snuggle Forever.",
+      "shortDesc": "If held by a Mimikyu with Play Rough, it can use Let's Snuggle Forever.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/mimikium-z.png"
+    },
+    {
+      "id": 307,
+      "name": "Mind Plate",
+      "desc": "Holder's Psychic-type attacks have 1.2x power. Judgment is Psychic type.",
+      "shortDesc": "Holder's Psychic-type attacks have 1.2x power. Judgment is Psychic type.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/mind-plate.png"
+    },
+    {
+      "id": 239,
+      "name": "Miracle Seed",
+      "desc": "Holder's Grass-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Grass-type attacks have 1.2x power.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/miracle-seed.png"
+    },
+    {
+      "id": 1883,
+      "name": "Mirror Herb",
+      "desc": "When an opposing Pokemon raises a stat stage, the holder copies it. Single use.",
+      "shortDesc": "When an opposing Pokemon raises a stat stage, the holder copies it. Single use.",
+      "generation": 9,
+      "spritePath": "/assets/items/icons/mirror-herb.png"
+    },
+    {
+      "id": 883,
+      "name": "Misty Seed",
+      "desc": "If the terrain is Misty Terrain, raises holder's Sp. Def by 1 stage. Single use.",
+      "shortDesc": "If the terrain is Misty Terrain, raises holder's Sp. Def by 1 stage. Single use.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/misty-seed.png"
+    },
+    {
+      "id": 498,
+      "name": "Moon Ball",
+      "desc": "A Poke Ball for catching Pokemon that evolve using the Moon Stone.",
+      "shortDesc": "A Poke Ball for catching Pokemon that evolve using the Moon Stone.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/moon-ball.png"
+    },
+    {
+      "id": 81,
+      "name": "Moon Stone",
+      "desc": "Evolves Nidorina into Nidoqueen, Nidorino into Nidoking, Clefairy into Clefable, Jigglypuff into Wigglytuff, Skitty into Delcatty, and Munna into Musharna when used.",
+      "shortDesc": "Evolves certain species of Pokemon when used.",
+      "generation": 1,
+      "spritePath": "/assets/items/icons/moon-stone.png"
+    },
+    {
+      "id": 266,
+      "name": "Muscle Band",
+      "desc": "Holder's physical attacks have 1.1x power.",
+      "shortDesc": "Holder's physical attacks have 1.1x power.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/muscle-band.png"
+    },
+    {
+      "id": 243,
+      "name": "Mystic Water",
+      "desc": "Holder's Water-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Water-type attacks have 1.2x power.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/mystic-water.png"
+    },
+    {
+      "id": 166,
+      "name": "Nanab Berry",
+      "desc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "shortDesc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/nanab-berry.png"
+    },
+    {
+      "id": 8,
+      "name": "Nest Ball",
+      "desc": "A Poke Ball that works especially well on weaker Pokemon in the wild.",
+      "shortDesc": "A Poke Ball that works especially well on weaker Pokemon in the wild.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/nest-ball.png"
+    },
+    {
+      "id": 6,
+      "name": "Net Ball",
+      "desc": "A Poke Ball that works especially well on Water- and Bug-type Pokemon.",
+      "shortDesc": "A Poke Ball that works especially well on Water- and Bug-type Pokemon.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/net-ball.png"
+    },
+    {
+      "id": 246,
+      "name": "Never-Melt Ice",
+      "desc": "Holder's Ice-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Ice-type attacks have 1.2x power.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/never-melt-ice.png"
+    },
+    {
+      "id": 178,
+      "name": "Nomel Berry",
+      "desc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "shortDesc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/nomel-berry.png"
+    },
+    {
+      "id": 564,
+      "name": "Normal Gem",
+      "desc": "Holder's first successful Normal-type attack will have 1.3x power. Single use.",
+      "shortDesc": "Holder's first successful Normal-type attack will have 1.3x power. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/normal-gem.png"
+    },
+    {
+      "id": 776,
+      "name": "Normalium Z",
+      "desc": "If holder has a Normal move, this item allows it to use a Normal Z-Move.",
+      "shortDesc": "If holder has a Normal move, this item allows it to use a Normal Z-Move.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/normalium-z.png"
+    },
+    {
+      "id": 184,
+      "name": "Occa Berry",
+      "desc": "Halves damage taken from a supereffective Fire-type attack. Single use.",
+      "shortDesc": "Halves damage taken from a supereffective Fire-type attack. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/occa-berry.png"
+    },
+    {
+      "id": 314,
+      "name": "Odd Incense",
+      "desc": "Holder's Psychic-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Psychic-type attacks have 1.2x power.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/odd-incense.png"
+    },
+    {
+      "id": 103,
+      "name": "Old Amber",
+      "desc": "Can be revived into Aerodactyl.",
+      "shortDesc": "Can be revived into Aerodactyl.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/old-amber.png"
+    },
+    {
+      "id": 155,
+      "name": "Oran Berry",
+      "desc": "Restores 10 HP when at 1/2 max HP or less. Single use.",
+      "shortDesc": "Restores 10 HP when at 1/2 max HP or less. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/oran-berry.png"
+    },
+    {
+      "id": 110,
+      "name": "Oval Stone",
+      "desc": "Evolves Happiny into Chansey when held and leveled up during the day.",
+      "shortDesc": "Evolves Happiny into Chansey when held and leveled up during the day.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/oval-stone.png"
+    },
+    {
+      "id": 180,
+      "name": "Pamtre Berry",
+      "desc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "shortDesc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/pamtre-berry.png"
+    },
+    {
+      "id": 185,
+      "name": "Passho Berry",
+      "desc": "Halves damage taken from a supereffective Water-type attack. Single use.",
+      "shortDesc": "Halves damage taken from a supereffective Water-type attack. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/passho-berry.png"
+    },
+    {
+      "id": 193,
+      "name": "Payapa Berry",
+      "desc": "Halves damage taken from a supereffective Psychic-type attack. Single use.",
+      "shortDesc": "Halves damage taken from a supereffective Psychic-type attack. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/payapa-berry.png"
+    },
+    {
+      "id": 151,
+      "name": "Pecha Berry",
+      "desc": "Holder is cured if it is poisoned. Single use.",
+      "shortDesc": "Holder is cured if it is poisoned. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/pecha-berry.png"
+    },
+    {
+      "id": 156,
+      "name": "Persim Berry",
+      "desc": "Holder is cured if it is confused. Single use.",
+      "shortDesc": "Holder is cured if it is confused. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/persim-berry.png"
+    },
+    {
+      "id": 204,
+      "name": "Petaya Berry",
+      "desc": "Raises holder's Sp. Atk by 1 stage when at 1/4 max HP or less. Single use.",
+      "shortDesc": "Raises holder's Sp. Atk by 1 stage when at 1/4 max HP or less. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/petaya-berry.png"
+    },
+    {
+      "id": 762,
+      "name": "Pidgeotite",
+      "desc": "If held by a Pidgeot, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Pidgeot, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/pidgeotite.png"
+    },
+    {
+      "id": 794,
+      "name": "Pikanium Z",
+      "desc": "If held by a Pikachu with Volt Tackle, it can use Catastropika.",
+      "shortDesc": "If held by a Pikachu with Volt Tackle, it can use Catastropika.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/pikanium-z.png"
+    },
+    {
+      "id": 836,
+      "name": "Pikashunium Z",
+      "desc": "If held by cap Pikachu with Thunderbolt, it can use 10,000,000 Volt Thunderbolt.",
+      "shortDesc": "If held by cap Pikachu with Thunderbolt, it can use 10,000,000 Volt Thunderbolt.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/pikashunium-z.png"
+    },
+    {
+      "id": 168,
+      "name": "Pinap Berry",
+      "desc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "shortDesc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/pinap-berry.png"
+    },
+    {
+      "id": 671,
+      "name": "Pinsirite",
+      "desc": "If held by a Pinsir, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Pinsir, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/pinsirite.png"
+    },
+    {
+      "id": 644,
+      "name": "Pixie Plate",
+      "desc": "Holder's Fairy-type attacks have 1.2x power. Judgment is Fairy type.",
+      "shortDesc": "Holder's Fairy-type attacks have 1.2x power. Judgment is Fairy type.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/pixie-plate.png"
+    },
+    {
+      "id": 573,
+      "name": "Plume Fossil",
+      "desc": "Can be revived into Archen.",
+      "shortDesc": "Can be revived into Archen.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/plume-fossil.png"
+    },
+    {
+      "id": 245,
+      "name": "Poison Barb",
+      "desc": "Holder's Poison-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Poison-type attacks have 1.2x power.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/poison-barb.png"
+    },
+    {
+      "id": 554,
+      "name": "Poison Gem",
+      "desc": "Holder's first successful Poison-type attack will have 1.3x power. Single use.",
+      "shortDesc": "Holder's first successful Poison-type attack will have 1.3x power. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/poison-gem.png"
+    },
+    {
+      "id": 783,
+      "name": "Poisonium Z",
+      "desc": "If holder has a Poison move, this item allows it to use a Poison Z-Move.",
+      "shortDesc": "If holder has a Poison move, this item allows it to use a Poison Z-Move.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/poisonium-z.png"
+    },
+    {
+      "id": 906,
+      "name": "Poison Memory",
+      "desc": "Holder's Multi-Attack is Poison type.",
+      "shortDesc": "Holder's Multi-Attack is Poison type.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/poison-memory.png"
+    },
+    {
+      "id": 4,
+      "name": "Poke Ball",
+      "desc": "A device for catching wild Pokemon. It is designed as a capsule system.",
+      "shortDesc": "A device for catching wild Pokemon. It is designed as a capsule system.",
+      "generation": 1,
+      "spritePath": "/assets/items/icons/poke-ball.png"
+    },
+    {
+      "id": 169,
+      "name": "Pomeg Berry",
+      "desc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "shortDesc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/pomeg-berry.png"
+    },
+    {
+      "id": 293,
+      "name": "Power Anklet",
+      "desc": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
+      "shortDesc": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/power-anklet.png"
+    },
+    {
+      "id": 292,
+      "name": "Power Band",
+      "desc": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
+      "shortDesc": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/power-band.png"
+    },
+    {
+      "id": 290,
+      "name": "Power Belt",
+      "desc": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
+      "shortDesc": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/power-belt.png"
+    },
+    {
+      "id": 289,
+      "name": "Power Bracer",
+      "desc": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
+      "shortDesc": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/power-bracer.png"
+    },
+    {
+      "id": 271,
+      "name": "Power Herb",
+      "desc": "Holder's two-turn moves complete in one turn (except Sky Drop). Single use.",
+      "shortDesc": "Holder's two-turn moves complete in one turn (except Sky Drop). Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/power-herb.png"
+    },
+    {
+      "id": 291,
+      "name": "Power Lens",
+      "desc": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
+      "shortDesc": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/power-lens.png"
+    },
+    {
+      "id": 294,
+      "name": "Power Weight",
+      "desc": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
+      "shortDesc": "Holder's Speed is halved. The Klutz Ability does not ignore this effect.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/power-weight.png"
+    },
+    {
+      "id": 12,
+      "name": "Premier Ball",
+      "desc": "A rare Poke Ball that has been crafted to commemorate an event.",
+      "shortDesc": "A rare Poke Ball that has been crafted to commemorate an event.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/premier-ball.png"
+    },
+    {
+      "id": 571,
+      "name": "Pretty Feather",
+      "desc": "Though this feather is beautiful, it's just a regular feather and has no effect.",
+      "shortDesc": "Though this feather is beautiful, it's just a regular feather and has no effect.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/pretty-feather.png"
+    },
+    {
+      "id": 800,
+      "name": "Primarium Z",
+      "desc": "If held by a Primarina with Sparkling Aria, it can use Oceanic Operetta.",
+      "shortDesc": "If held by a Primarina with Sparkling Aria, it can use Oceanic Operetta.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/primarium-z.png"
+    },
+    {
+      "id": 537,
+      "name": "Prism Scale",
+      "desc": "Evolves Feebas into Milotic when traded.",
+      "shortDesc": "Evolves Feebas into Milotic when traded.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/prism-scale.png"
+    },
+    {
+      "id": 880,
+      "name": "Protective Pads",
+      "desc": "Holder's moves are protected from adverse contact effects, except Pickpocket.",
+      "shortDesc": "Holder's moves are protected from adverse contact effects, except Pickpocket.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/protective-pads.png"
+    },
+    {
+      "id": 321,
+      "name": "Protector",
+      "desc": "Evolves Rhydon into Rhyperior when traded.",
+      "shortDesc": "Evolves Rhydon into Rhyperior when traded.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/protector.png"
+    },
+    {
+      "id": 557,
+      "name": "Psychic Gem",
+      "desc": "Holder's first successful Psychic-type attack will have 1.3x power. Single use.",
+      "shortDesc": "Holder's first successful Psychic-type attack will have 1.3x power. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/psychic-gem.png"
+    },
+    {
+      "id": 916,
+      "name": "Psychic Memory",
+      "desc": "Holder's Multi-Attack is Psychic type.",
+      "shortDesc": "Holder's Multi-Attack is Psychic type.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/psychic-memory.png"
+    },
+    {
+      "id": 882,
+      "name": "Psychic Seed",
+      "desc": "If the terrain is Psychic Terrain, raises holder's Sp. Def by 1 stage. Single use.",
+      "shortDesc": "If the terrain is Psychic Terrain, raises holder's Sp. Def by 1 stage. Single use.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/psychic-seed.png"
+    },
+    {
+      "id": 786,
+      "name": "Psychium Z",
+      "desc": "If holder has a Psychic move, this item allows it to use a Psychic Z-Move.",
+      "shortDesc": "If holder has a Psychic move, this item allows it to use a Psychic Z-Move.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/psychium-z.png"
+    },
+    {
+      "id": 1884,
+      "name": "Punching Glove",
+      "desc": "Holder's punch-based attacks have 1.1x power and do not make contact.",
+      "shortDesc": "Holder's punch-based attacks have 1.1x power and do not make contact.",
+      "generation": 9,
+      "spritePath": "/assets/items/icons/punching-glove.png"
+    },
+    {
+      "id": 171,
+      "name": "Qualot Berry",
+      "desc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "shortDesc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/qualot-berry.png"
+    },
+    {
+      "id": 15,
+      "name": "Quick Ball",
+      "desc": "A Poke Ball that provides a better catch rate at the start of a wild encounter.",
+      "shortDesc": "A Poke Ball that provides a better catch rate at the start of a wild encounter.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/quick-ball.png"
+    },
+    {
+      "id": 217,
+      "name": "Quick Claw",
+      "desc": "Each turn, holder has a 20% chance to move first in its priority bracket.",
+      "shortDesc": "Each turn, holder has a 20% chance to move first in its priority bracket.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/quick-claw.png"
+    },
+    {
+      "id": 274,
+      "name": "Quick Powder",
+      "desc": "If held by a Ditto that hasn't Transformed, its Speed is doubled.",
+      "shortDesc": "If held by a Ditto that hasn't Transformed, its Speed is doubled.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/quick-powder.png"
+    },
+    {
+      "id": 177,
+      "name": "Rabuta Berry",
+      "desc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "shortDesc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/rabuta-berry.png"
+    },
+    {
+      "id": 106,
+      "name": "Rare Bone",
+      "desc": "No competitive use other than when used with Fling.",
+      "shortDesc": "No competitive use other than when used with Fling.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/rare-bone.png"
+    },
+    {
+      "id": 152,
+      "name": "Rawst Berry",
+      "desc": "Holder is cured if it is burned. Single use.",
+      "shortDesc": "Holder is cured if it is burned. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/rawst-berry.png"
+    },
+    {
+      "id": 326,
+      "name": "Razor Claw",
+      "desc": "Holder's critical hit ratio is raised by 1 stage. Evolves Sneasel into Weavile when held and leveled up during the night.",
+      "shortDesc": "Holder's critical hit ratio is raised by 1 stage.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/razor-claw.png"
+    },
+    {
+      "id": 327,
+      "name": "Razor Fang",
+      "desc": "Holder's attacks without a chance to make the target flinch gain a 10% chance to make the target flinch. Evolves Gligar into Gliscor when held and leveled up during the night.",
+      "shortDesc": "Holder's attacks without a chance to flinch gain a 10% chance to flinch.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/razor-fang.png"
+    },
+    {
+      "id": 164,
+      "name": "Razz Berry",
+      "desc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "shortDesc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/razz-berry.png"
+    },
+    {
+      "id": 325,
+      "name": "Reaper Cloth",
+      "desc": "Evolves Dusclops into Dusknoir when traded.",
+      "shortDesc": "Evolves Dusclops into Dusknoir when traded.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/reaper-cloth.png"
+    },
+    {
+      "id": 542,
+      "name": "Red Card",
+      "desc": "If holder survives a hit, attacker is forced to switch to a random ally. Single use.",
+      "shortDesc": "If holder survives a hit, attacker is forced to switch to a random ally. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/red-card.png"
+    },
+    {
+      "id": 534,
+      "name": "Red Orb",
+      "desc": "If held by a Groudon, this item triggers its Primal Reversion in battle.",
+      "shortDesc": "If held by a Groudon, this item triggers its Primal Reversion in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/red-orb.png"
+    },
+    {
+      "id": 9,
+      "name": "Repeat Ball",
+      "desc": "A Poke Ball that works well on Pokemon species that were previously caught.",
+      "shortDesc": "A Poke Ball that works well on Pokemon species that were previously caught.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/repeat-ball.png"
+    },
+    {
+      "id": 1115,
+      "name": "Ribbon Sweet",
+      "desc": "Evolves Milcery into Alcremie when held and spun around.",
+      "shortDesc": "Evolves Milcery into Alcremie when held and spun around.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/ribbon-sweet.png"
+    },
+    {
+      "id": 187,
+      "name": "Rindo Berry",
+      "desc": "Halves damage taken from a supereffective Grass-type attack. Single use.",
+      "shortDesc": "Halves damage taken from a supereffective Grass-type attack. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/rindo-berry.png"
+    },
+    {
+      "id": 543,
+      "name": "Ring Target",
+      "desc": "The holder's type immunities granted solely by its typing are negated.",
+      "shortDesc": "The holder's type immunities granted solely by its typing are negated.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/ring-target.png"
+    },
+    {
+      "id": 559,
+      "name": "Rock Gem",
+      "desc": "Holder's first successful Rock-type attack will have 1.3x power. Single use.",
+      "shortDesc": "Holder's first successful Rock-type attack will have 1.3x power. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/rock-gem.png"
+    },
+    {
+      "id": 315,
+      "name": "Rock Incense",
+      "desc": "Holder's Rock-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Rock-type attacks have 1.2x power.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/rock-incense.png"
+    },
+    {
+      "id": 788,
+      "name": "Rockium Z",
+      "desc": "If holder has a Rock move, this item allows it to use a Rock Z-Move.",
+      "shortDesc": "If holder has a Rock move, this item allows it to use a Rock Z-Move.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/rockium-z.png"
+    },
+    {
+      "id": 908,
+      "name": "Rock Memory",
+      "desc": "Holder's Multi-Attack is Rock type.",
+      "shortDesc": "Holder's Multi-Attack is Rock type.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/rock-memory.png"
+    },
+    {
+      "id": 540,
+      "name": "Rocky Helmet",
+      "desc": "If holder is hit by a contact move, the attacker loses 1/6 of its max HP.",
+      "shortDesc": "If holder is hit by a contact move, the attacker loses 1/6 of its max HP.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/rocky-helmet.png"
+    },
+    {
+      "id": 1122,
+      "name": "Room Service",
+      "desc": "If Trick Room is active, the holder's Speed is lowered by 1 stage. Single use.",
+      "shortDesc": "If Trick Room is active, the holder's Speed is lowered by 1 stage. Single use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/room-service.png"
+    },
+    {
+      "id": 99,
+      "name": "Root Fossil",
+      "desc": "Can be revived into Lileep.",
+      "shortDesc": "Can be revived into Lileep.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/root-fossil.png"
+    },
+    {
+      "id": 318,
+      "name": "Rose Incense",
+      "desc": "Holder's Grass-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Grass-type attacks have 1.2x power.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/rose-incense.png"
+    },
+    {
+      "id": 686,
+      "name": "Roseli Berry",
+      "desc": "Halves damage taken from a supereffective Fairy-type attack. Single use.",
+      "shortDesc": "Halves damage taken from a supereffective Fairy-type attack. Single use.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/roseli-berry.png"
+    },
+    {
+      "id": 212,
+      "name": "Rowap Berry",
+      "desc": "If holder is hit by a special move, attacker loses 1/8 of its max HP. Single use.",
+      "shortDesc": "If holder is hit by a special move, attacker loses 1/8 of its max HP. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/rowap-berry.png"
+    },
+    {
+      "id": 1104,
+      "name": "Rusted Shield",
+      "desc": "If held by a Zamazenta, this item changes its forme to Crowned Shield.",
+      "shortDesc": "If held by a Zamazenta, this item changes its forme to Crowned Shield.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/rusted-shield.png"
+    },
+    {
+      "id": 1103,
+      "name": "Rusted Sword",
+      "desc": "If held by a Zacian, this item changes its forme to Crowned Sword.",
+      "shortDesc": "If held by a Zacian, this item changes its forme to Crowned Sword.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/rusted-sword.png"
+    },
+    {
+      "id": 754,
+      "name": "Sablenite",
+      "desc": "If held by a Sableye, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Sableye, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/sablenite.png"
+    },
+    {
+      "id": 647,
+      "name": "Sachet",
+      "desc": "Evolves Spritzee into Aromatisse when traded.",
+      "shortDesc": "Evolves Spritzee into Aromatisse when traded.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/sachet.png"
+    },
+    {
+      "id": 5,
+      "name": "Safari Ball",
+      "desc": "A special Poke Ball that is used only in the Safari Zone and Great Marsh.",
+      "shortDesc": "A special Poke Ball that is used only in the Safari Zone and Great Marsh.",
+      "generation": 1,
+      "spritePath": "/assets/items/icons/safari-ball.png"
+    },
+    {
+      "id": 650,
+      "name": "Safety Goggles",
+      "desc": "Holder is immune to powder moves and damage from Sandstorm or Hail.",
+      "shortDesc": "Holder is immune to powder moves and damage from Sandstorm or Hail.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/safety-goggles.png"
+    },
+    {
+      "id": 711,
+      "name": "Sail Fossil",
+      "desc": "Can be revived into Amaura.",
+      "shortDesc": "Can be revived into Amaura.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/sail-fossil.png"
+    },
+    {
+      "id": 203,
+      "name": "Salac Berry",
+      "desc": "Raises holder's Speed by 1 stage when at 1/4 max HP or less. Single use.",
+      "shortDesc": "Raises holder's Speed by 1 stage when at 1/4 max HP or less. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/salac-berry.png"
+    },
+    {
+      "id": 769,
+      "name": "Salamencite",
+      "desc": "If held by a Salamence, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Salamence, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/salamencite.png"
+    },
+    {
+      "id": 753,
+      "name": "Sceptilite",
+      "desc": "If held by a Sceptile, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Sceptile, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/sceptilite.png"
+    },
+    {
+      "id": 670,
+      "name": "Scizorite",
+      "desc": "If held by a Scizor, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Scizor, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/scizorite.png"
+    },
+    {
+      "id": 232,
+      "name": "Scope Lens",
+      "desc": "Holder's critical hit ratio is raised by 1 stage.",
+      "shortDesc": "Holder's critical hit ratio is raised by 1 stage.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/scope-lens.png"
+    },
+    {
+      "id": 254,
+      "name": "Sea Incense",
+      "desc": "Holder's Water-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Water-type attacks have 1.2x power.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/sea-incense.png"
+    },
+    {
+      "id": 244,
+      "name": "Sharp Beak",
+      "desc": "Holder's Flying-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Flying-type attacks have 1.2x power.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/sharp-beak.png"
+    },
+    {
+      "id": 759,
+      "name": "Sharpedonite",
+      "desc": "If held by a Sharpedo, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Sharpedo, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/sharpedonite.png"
+    },
+    {
+      "id": 295,
+      "name": "Shed Shell",
+      "desc": "Holder cannot be prevented from choosing to switch out by any effect.",
+      "shortDesc": "Holder cannot be prevented from choosing to switch out by any effect.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/shed-shell.png"
+    },
+    {
+      "id": 253,
+      "name": "Shell Bell",
+      "desc": "After an attack, holder gains 1/8 of the damage in HP dealt to other Pokemon.",
+      "shortDesc": "After an attack, holder gains 1/8 of the damage in HP dealt to other Pokemon.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/shell-bell.png"
+    },
+    {
+      "id": 107,
+      "name": "Shiny Stone",
+      "desc": "Evolves Togetic into Togekiss, Roselia into Roserade, Minccino into Cinccino, and Floette into Florges when used.",
+      "shortDesc": "Evolves certain species of Pokemon when used.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/shiny-stone.png"
+    },
+    {
+      "id": 117,
+      "name": "Shock Drive",
+      "desc": "Holder's Techno Blast is Electric type.",
+      "shortDesc": "Holder's Techno Blast is Electric type.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/shock-drive.png"
+    },
+    {
+      "id": 191,
+      "name": "Shuca Berry",
+      "desc": "Halves damage taken from a supereffective Ground-type attack. Single use.",
+      "shortDesc": "Halves damage taken from a supereffective Ground-type attack. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/shuca-berry.png"
+    },
+    {
+      "id": 251,
+      "name": "Silk Scarf",
+      "desc": "Holder's Normal-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Normal-type attacks have 1.2x power.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/silk-scarf.png"
+    },
+    {
+      "id": 222,
+      "name": "Silver Powder",
+      "desc": "Holder's Bug-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Bug-type attacks have 1.2x power.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/silver-powder.png"
+    },
+    {
+      "id": 158,
+      "name": "Sitrus Berry",
+      "desc": "Restores 1/4 max HP when at 1/2 max HP or less. Single use.",
+      "shortDesc": "Restores 1/4 max HP when at 1/2 max HP or less. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/sitrus-berry.png"
+    },
+    {
+      "id": 105,
+      "name": "Skull Fossil",
+      "desc": "Can be revived into Cranidos.",
+      "shortDesc": "Can be revived into Cranidos.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/skull-fossil.png"
+    },
+    {
+      "id": 306,
+      "name": "Sky Plate",
+      "desc": "Holder's Flying-type attacks have 1.2x power. Judgment is Flying type.",
+      "shortDesc": "Holder's Flying-type attacks have 1.2x power. Judgment is Flying type.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/sky-plate.png"
+    },
+    {
+      "id": 760,
+      "name": "Slowbronite",
+      "desc": "If held by a Slowbro, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Slowbro, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/slowbronite.png"
+    },
+    {
+      "id": 283,
+      "name": "Smooth Rock",
+      "desc": "Holder's use of Sandstorm lasts 8 turns instead of 5.",
+      "shortDesc": "Holder's use of Sandstorm lasts 8 turns instead of 5.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/smooth-rock.png"
+    },
+    {
+      "id": 804,
+      "name": "Snorlium Z",
+      "desc": "If held by a Snorlax with Giga Impact, it can use Pulverizing Pancake.",
+      "shortDesc": "If held by a Snorlax with Giga Impact, it can use Pulverizing Pancake.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/snorlium-z.png"
+    },
+    {
+      "id": 649,
+      "name": "Snowball",
+      "desc": "Raises holder's Attack by 1 if hit by an Ice-type attack. Single use.",
+      "shortDesc": "Raises holder's Attack by 1 if hit by an Ice-type attack. Single use.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/snowball.png"
+    },
+    {
+      "id": 237,
+      "name": "Soft Sand",
+      "desc": "Holder's Ground-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Ground-type attacks have 1.2x power.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/soft-sand.png"
+    },
+    {
+      "id": 921,
+      "name": "Solganium Z",
+      "desc": "Solgaleo or Dusk Mane Necrozma with Sunsteel Strike can use a special Z-Move.",
+      "shortDesc": "Solgaleo or Dusk Mane Necrozma with Sunsteel Strike can use a special Z-Move.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/solganium-z.png"
+    },
+    {
+      "id": 225,
+      "name": "Soul Dew",
+      "desc": "If held by a Latias/Latios, its Dragon- and Psychic-type moves have 1.2x power.",
+      "shortDesc": "If held by a Latias/Latios, its Dragon- and Psychic-type moves have 1.2x power.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/soul-dew.png"
+    },
+    {
+      "id": 247,
+      "name": "Spell Tag",
+      "desc": "Holder's Ghost-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Ghost-type attacks have 1.2x power.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/spell-tag.png"
+    },
+    {
+      "id": 179,
+      "name": "Spelon Berry",
+      "desc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "shortDesc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/spelon-berry.png"
+    },
+    {
+      "id": 299,
+      "name": "Splash Plate",
+      "desc": "Holder's Water-type attacks have 1.2x power. Judgment is Water type.",
+      "shortDesc": "Holder's Water-type attacks have 1.2x power. Judgment is Water type.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/splash-plate.png"
+    },
+    {
+      "id": 310,
+      "name": "Spooky Plate",
+      "desc": "Holder's Ghost-type attacks have 1.2x power. Judgment is Ghost type.",
+      "shortDesc": "Holder's Ghost-type attacks have 1.2x power. Judgment is Ghost type.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/spooky-plate.png"
+    },
+    {
+      "id": 499,
+      "name": "Sport Ball",
+      "desc": "A special Poke Ball for the Bug-Catching Contest.",
+      "shortDesc": "A special Poke Ball for the Bug-Catching Contest.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/sport-ball.png"
+    },
+    {
+      "id": 207,
+      "name": "Starf Berry",
+      "desc": "Raises a random stat by 2 when at 1/4 max HP or less (not acc/eva). Single use.",
+      "shortDesc": "Raises a random stat by 2 when at 1/4 max HP or less (not acc/eva). Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/starf-berry.png"
+    },
+    {
+      "id": 1114,
+      "name": "Star Sweet",
+      "desc": "Evolves Milcery into Alcremie when held and spun around.",
+      "shortDesc": "Evolves Milcery into Alcremie when held and spun around.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/star-sweet.png"
+    },
+    {
+      "id": 563,
+      "name": "Steel Gem",
+      "desc": "Holder's first successful Steel-type attack will have 1.3x power. Single use.",
+      "shortDesc": "Holder's first successful Steel-type attack will have 1.3x power. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/steel-gem.png"
+    },
+    {
+      "id": 792,
+      "name": "Steelium Z",
+      "desc": "If holder has a Steel move, this item allows it to use a Steel Z-Move.",
+      "shortDesc": "If holder has a Steel move, this item allows it to use a Steel Z-Move.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/steelium-z.png"
+    },
+    {
+      "id": 761,
+      "name": "Steelixite",
+      "desc": "If held by a Steelix, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Steelix, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/steelixite.png"
+    },
+    {
+      "id": 911,
+      "name": "Steel Memory",
+      "desc": "Holder's Multi-Attack is Steel type.",
+      "shortDesc": "Holder's Multi-Attack is Steel type.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/steel-memory.png"
+    },
+    {
+      "id": 259,
+      "name": "Stick",
+      "desc": "If held by a Farfetch’d, its critical hit ratio is raised by 2 stages.",
+      "shortDesc": "If held by a Farfetch’d, its critical hit ratio is raised by 2 stages.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/stick.png"
+    },
+    {
+      "id": 288,
+      "name": "Sticky Barb",
+      "desc": "Each turn, holder loses 1/8 max HP. An attacker making contact can receive it.",
+      "shortDesc": "Each turn, holder loses 1/8 max HP. An attacker making contact can receive it.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/sticky-barb.png"
+    },
+    {
+      "id": 309,
+      "name": "Stone Plate",
+      "desc": "Holder's Rock-type attacks have 1.2x power. Judgment is Rock type.",
+      "shortDesc": "Holder's Rock-type attacks have 1.2x power. Judgment is Rock type.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/stone-plate.png"
+    },
+    {
+      "id": 1109,
+      "name": "Strawberry Sweet",
+      "desc": "Evolves Milcery into Alcremie when held and spun around.",
+      "shortDesc": "Evolves Milcery into Alcremie when held and spun around.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/strawberry-sweet.png"
+    },
+    {
+      "id": 80,
+      "name": "Sun Stone",
+      "desc": "Evolves Gloom into Bellossom, Sunkern into Sunflora, Cottonee into Whimsicott, Petilil into Lilligant, and Helioptile into Heliolisk when used.",
+      "shortDesc": "Evolves certain species of Pokemon when used.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/sun-stone.png"
+    },
+    {
+      "id": 752,
+      "name": "Swampertite",
+      "desc": "If held by a Swampert, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Swampert, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/swampertite.png"
+    },
+    {
+      "id": 1116,
+      "name": "Sweet Apple",
+      "desc": "Evolves Applin into Appletun when used.",
+      "shortDesc": "Evolves Applin into Appletun when used.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/sweet-apple.png"
+    },
+    {
+      "id": 2402,
+      "name": "Syrupy Apple",
+      "desc": "Evolves Applin into Dipplin when used.",
+      "shortDesc": "Evolves Applin into Dipplin when used.",
+      "generation": 9,
+      "spritePath": "/assets/items/icons/syrupy-apple.png"
+    },
+    {
+      "id": 174,
+      "name": "Tamato Berry",
+      "desc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "shortDesc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/tamato-berry.png"
+    },
+    {
+      "id": 194,
+      "name": "Tanga Berry",
+      "desc": "Halves damage taken from a supereffective Bug-type attack. Single use.",
+      "shortDesc": "Halves damage taken from a supereffective Bug-type attack. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/tanga-berry.png"
+    },
+    {
+      "id": 801,
+      "name": "Tapunium Z",
+      "desc": "If held by a Tapu with Nature's Madness, it can use Guardian of Alola.",
+      "shortDesc": "If held by a Tapu with Nature's Madness, it can use Guardian of Alola.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/tapunium-z.png"
+    },
+    {
+      "id": 1117,
+      "name": "Tart Apple",
+      "desc": "Evolves Applin into Flapple when used.",
+      "shortDesc": "Evolves Applin into Flapple when used.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tart-apple.png"
+    },
+    {
+      "id": 879,
+      "name": "Terrain Extender",
+      "desc": "Holder's use of Electric/Grassy/Misty/Psychic Terrain lasts 8 turns instead of 5.",
+      "shortDesc": "Holder's use of Electric/Grassy/Misty/Psychic Terrain lasts 8 turns instead of 5.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/terrain-extender.png"
+    },
+    {
+      "id": 258,
+      "name": "Thick Club",
+      "desc": "If held by a Cubone or a Marowak, its Attack is doubled.",
+      "shortDesc": "If held by a Cubone or a Marowak, its Attack is doubled.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/thick-club.png"
+    },
+    {
+      "id": 1118,
+      "name": "Throat Spray",
+      "desc": "Raises holder's Special Attack by 1 stage after it uses a sound move. Single use.",
+      "shortDesc": "Raises holder's Special Attack by 1 stage after it uses a sound move. Single use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/throat-spray.png"
+    },
+    {
+      "id": 83,
+      "name": "Thunder Stone",
+      "desc": "Evolves Pikachu into Raichu or Alolan Raichu, Eevee into Jolteon, Eelektrik into Eelektross, and Charjabug into Vikavolt when used.",
+      "shortDesc": "Evolves certain species of Pokemon when used.",
+      "generation": 1,
+      "spritePath": "/assets/items/icons/thunder-stone.png"
+    },
+    {
+      "id": 10,
+      "name": "Timer Ball",
+      "desc": "A Poke Ball that becomes better the more turns there are in a battle.",
+      "shortDesc": "A Poke Ball that becomes better the more turns there are in a battle.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/timer-ball.png"
+    },
+    {
+      "id": 272,
+      "name": "Toxic Orb",
+      "desc": "At the end of every turn, this item attempts to badly poison the holder.",
+      "shortDesc": "At the end of every turn, this item attempts to badly poison the holder.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/toxic-orb.png"
+    },
+    {
+      "id": 304,
+      "name": "Toxic Plate",
+      "desc": "Holder's Poison-type attacks have 1.2x power. Judgment is Poison type.",
+      "shortDesc": "Holder's Poison-type attacks have 1.2x power. Judgment is Poison type.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/toxic-plate.png"
+    },
+    {
+      "id": 1130,
+      "name": "TR00",
+      "desc": "Teaches certain Pokemon the move Swords Dance. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Swords Dance. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr00.png"
+    },
+    {
+      "id": 1131,
+      "name": "TR01",
+      "desc": "Teaches certain Pokemon the move Body Slam. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Body Slam. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr01.png"
+    },
+    {
+      "id": 1132,
+      "name": "TR02",
+      "desc": "Teaches certain Pokemon the move Flamethrower. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Flamethrower. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr02.png"
+    },
+    {
+      "id": 1133,
+      "name": "TR03",
+      "desc": "Teaches certain Pokemon the move Hydro Pump. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Hydro Pump. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr03.png"
+    },
+    {
+      "id": 1134,
+      "name": "TR04",
+      "desc": "Teaches certain Pokemon the move Surf. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Surf. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr04.png"
+    },
+    {
+      "id": 1135,
+      "name": "TR05",
+      "desc": "Teaches certain Pokemon the move Ice Beam. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Ice Beam. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr05.png"
+    },
+    {
+      "id": 1136,
+      "name": "TR06",
+      "desc": "Teaches certain Pokemon the move Blizzard. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Blizzard. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr06.png"
+    },
+    {
+      "id": 1137,
+      "name": "TR07",
+      "desc": "Teaches certain Pokemon the move Low Kick. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Low Kick. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr07.png"
+    },
+    {
+      "id": 1138,
+      "name": "TR08",
+      "desc": "Teaches certain Pokemon the move Thunderbolt. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Thunderbolt. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr08.png"
+    },
+    {
+      "id": 1139,
+      "name": "TR09",
+      "desc": "Teaches certain Pokemon the move Thunder. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Thunder. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr09.png"
+    },
+    {
+      "id": 1140,
+      "name": "TR10",
+      "desc": "Teaches certain Pokemon the move Earthquake. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Earthquake. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr10.png"
+    },
+    {
+      "id": 1141,
+      "name": "TR11",
+      "desc": "Teaches certain Pokemon the move Psychic. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Psychic. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr11.png"
+    },
+    {
+      "id": 1142,
+      "name": "TR12",
+      "desc": "Teaches certain Pokemon the move Agility. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Agility. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr12.png"
+    },
+    {
+      "id": 1143,
+      "name": "TR13",
+      "desc": "Teaches certain Pokemon the move Focus Energy. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Focus Energy. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr13.png"
+    },
+    {
+      "id": 1144,
+      "name": "TR14",
+      "desc": "Teaches certain Pokemon the move Metronome. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Metronome. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr14.png"
+    },
+    {
+      "id": 1145,
+      "name": "TR15",
+      "desc": "Teaches certain Pokemon the move Fire Blast. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Fire Blast. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr15.png"
+    },
+    {
+      "id": 1146,
+      "name": "TR16",
+      "desc": "Teaches certain Pokemon the move Waterfall. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Waterfall. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr16.png"
+    },
+    {
+      "id": 1147,
+      "name": "TR17",
+      "desc": "Teaches certain Pokemon the move Amnesia. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Amnesia. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr17.png"
+    },
+    {
+      "id": 1148,
+      "name": "TR18",
+      "desc": "Teaches certain Pokemon the move Leech Life. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Leech Life. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr18.png"
+    },
+    {
+      "id": 1149,
+      "name": "TR19",
+      "desc": "Teaches certain Pokemon the move Tri Attack. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Tri Attack. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr19.png"
+    },
+    {
+      "id": 1150,
+      "name": "TR20",
+      "desc": "Teaches certain Pokemon the move Substitute. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Substitute. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr20.png"
+    },
+    {
+      "id": 1151,
+      "name": "TR21",
+      "desc": "Teaches certain Pokemon the move Reversal. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Reversal. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr21.png"
+    },
+    {
+      "id": 1152,
+      "name": "TR22",
+      "desc": "Teaches certain Pokemon the move Sludge Bomb. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Sludge Bomb. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr22.png"
+    },
+    {
+      "id": 1153,
+      "name": "TR23",
+      "desc": "Teaches certain Pokemon the move Spikes. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Spikes. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr23.png"
+    },
+    {
+      "id": 1154,
+      "name": "TR24",
+      "desc": "Teaches certain Pokemon the move Outrage. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Outrage. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr24.png"
+    },
+    {
+      "id": 1155,
+      "name": "TR25",
+      "desc": "Teaches certain Pokemon the move Psyshock. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Psyshock. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr25.png"
+    },
+    {
+      "id": 1156,
+      "name": "TR26",
+      "desc": "Teaches certain Pokemon the move Endure. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Endure. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr26.png"
+    },
+    {
+      "id": 1157,
+      "name": "TR27",
+      "desc": "Teaches certain Pokemon the move Sleep Talk. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Sleep Talk. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr27.png"
+    },
+    {
+      "id": 1158,
+      "name": "TR28",
+      "desc": "Teaches certain Pokemon the move Megahorn. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Megahorn. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr28.png"
+    },
+    {
+      "id": 1159,
+      "name": "TR29",
+      "desc": "Teaches certain Pokemon the move Baton Pass. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Baton Pass. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr29.png"
+    },
+    {
+      "id": 1160,
+      "name": "TR30",
+      "desc": "Teaches certain Pokemon the move Encore. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Encore. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr30.png"
+    },
+    {
+      "id": 1161,
+      "name": "TR31",
+      "desc": "Teaches certain Pokemon the move Iron Tail. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Iron Tail. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr31.png"
+    },
+    {
+      "id": 1162,
+      "name": "TR32",
+      "desc": "Teaches certain Pokemon the move Crunch. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Crunch. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr32.png"
+    },
+    {
+      "id": 1163,
+      "name": "TR33",
+      "desc": "Teaches certain Pokemon the move Shadow Ball. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Shadow Ball. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr33.png"
+    },
+    {
+      "id": 1164,
+      "name": "TR34",
+      "desc": "Teaches certain Pokemon the move Future Sight. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Future Sight. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr34.png"
+    },
+    {
+      "id": 1165,
+      "name": "TR35",
+      "desc": "Teaches certain Pokemon the move Uproar. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Uproar. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr35.png"
+    },
+    {
+      "id": 1166,
+      "name": "TR36",
+      "desc": "Teaches certain Pokemon the move Heat Wave. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Heat Wave. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr36.png"
+    },
+    {
+      "id": 1167,
+      "name": "TR37",
+      "desc": "Teaches certain Pokemon the move Taunt. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Taunt. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr37.png"
+    },
+    {
+      "id": 1168,
+      "name": "TR38",
+      "desc": "Teaches certain Pokemon the move Trick. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Trick. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr38.png"
+    },
+    {
+      "id": 1169,
+      "name": "TR39",
+      "desc": "Teaches certain Pokemon the move Superpower. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Superpower. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr39.png"
+    },
+    {
+      "id": 1170,
+      "name": "TR40",
+      "desc": "Teaches certain Pokemon the move Skill Swap. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Skill Swap. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr40.png"
+    },
+    {
+      "id": 1171,
+      "name": "TR41",
+      "desc": "Teaches certain Pokemon the move Blaze Kick. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Blaze Kick. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr41.png"
+    },
+    {
+      "id": 1172,
+      "name": "TR42",
+      "desc": "Teaches certain Pokemon the move Hyper Voice. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Hyper Voice. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr42.png"
+    },
+    {
+      "id": 1173,
+      "name": "TR43",
+      "desc": "Teaches certain Pokemon the move Overheat. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Overheat. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr43.png"
+    },
+    {
+      "id": 1174,
+      "name": "TR44",
+      "desc": "Teaches certain Pokemon the move Cosmic Power. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Cosmic Power. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr44.png"
+    },
+    {
+      "id": 1175,
+      "name": "TR45",
+      "desc": "Teaches certain Pokemon the move Muddy Water. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Muddy Water. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr45.png"
+    },
+    {
+      "id": 1176,
+      "name": "TR46",
+      "desc": "Teaches certain Pokemon the move Iron Defense. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Iron Defense. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr46.png"
+    },
+    {
+      "id": 1177,
+      "name": "TR47",
+      "desc": "Teaches certain Pokemon the move Dragon Claw. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Dragon Claw. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr47.png"
+    },
+    {
+      "id": 1178,
+      "name": "TR48",
+      "desc": "Teaches certain Pokemon the move Bulk Up. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Bulk Up. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr48.png"
+    },
+    {
+      "id": 1179,
+      "name": "TR49",
+      "desc": "Teaches certain Pokemon the move Calm Mind. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Calm Mind. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr49.png"
+    },
+    {
+      "id": 1180,
+      "name": "TR50",
+      "desc": "Teaches certain Pokemon the move Leaf Blade. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Leaf Blade. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr50.png"
+    },
+    {
+      "id": 1181,
+      "name": "TR51",
+      "desc": "Teaches certain Pokemon the move Dragon Dance. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Dragon Dance. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr51.png"
+    },
+    {
+      "id": 1182,
+      "name": "TR52",
+      "desc": "Teaches certain Pokemon the move Gyro Ball. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Gyro Ball. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr52.png"
+    },
+    {
+      "id": 1183,
+      "name": "TR53",
+      "desc": "Teaches certain Pokemon the move Close Combat. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Close Combat. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr53.png"
+    },
+    {
+      "id": 1184,
+      "name": "TR54",
+      "desc": "Teaches certain Pokemon the move Toxic Spikes. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Toxic Spikes. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr54.png"
+    },
+    {
+      "id": 1185,
+      "name": "TR55",
+      "desc": "Teaches certain Pokemon the move Flare Blitz. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Flare Blitz. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr55.png"
+    },
+    {
+      "id": 1186,
+      "name": "TR56",
+      "desc": "Teaches certain Pokemon the move Aura Sphere. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Aura Sphere. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr56.png"
+    },
+    {
+      "id": 1187,
+      "name": "TR57",
+      "desc": "Teaches certain Pokemon the move Poison Jab. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Poison Jab. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr57.png"
+    },
+    {
+      "id": 1188,
+      "name": "TR58",
+      "desc": "Teaches certain Pokemon the move Dark Pulse. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Dark Pulse. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr58.png"
+    },
+    {
+      "id": 1189,
+      "name": "TR59",
+      "desc": "Teaches certain Pokemon the move Seed Bomb. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Seed Bomb. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr59.png"
+    },
+    {
+      "id": 1190,
+      "name": "TR60",
+      "desc": "Teaches certain Pokemon the move X-Scissor. One use.",
+      "shortDesc": "Teaches certain Pokemon the move X-Scissor. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr60.png"
+    },
+    {
+      "id": 1191,
+      "name": "TR61",
+      "desc": "Teaches certain Pokemon the move Bug Buzz. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Bug Buzz. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr61.png"
+    },
+    {
+      "id": 1192,
+      "name": "TR62",
+      "desc": "Teaches certain Pokemon the move Dragon Pulse. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Dragon Pulse. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr62.png"
+    },
+    {
+      "id": 1193,
+      "name": "TR63",
+      "desc": "Teaches certain Pokemon the move Power Gem. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Power Gem. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr63.png"
+    },
+    {
+      "id": 1194,
+      "name": "TR64",
+      "desc": "Teaches certain Pokemon the move Focus Blast. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Focus Blast. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr64.png"
+    },
+    {
+      "id": 1195,
+      "name": "TR65",
+      "desc": "Teaches certain Pokemon the move Energy Ball. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Energy Ball. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr65.png"
+    },
+    {
+      "id": 1196,
+      "name": "TR66",
+      "desc": "Teaches certain Pokemon the move Brave Bird. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Brave Bird. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr66.png"
+    },
+    {
+      "id": 1197,
+      "name": "TR67",
+      "desc": "Teaches certain Pokemon the move Earth Power. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Earth Power. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr67.png"
+    },
+    {
+      "id": 1198,
+      "name": "TR68",
+      "desc": "Teaches certain Pokemon the move Nasty Plot. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Nasty Plot. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr68.png"
+    },
+    {
+      "id": 1199,
+      "name": "TR69",
+      "desc": "Teaches certain Pokemon the move Zen Headbutt. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Zen Headbutt. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr69.png"
+    },
+    {
+      "id": 1200,
+      "name": "TR70",
+      "desc": "Teaches certain Pokemon the move Flash Cannon. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Flash Cannon. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr70.png"
+    },
+    {
+      "id": 1201,
+      "name": "TR71",
+      "desc": "Teaches certain Pokemon the move Leaf Storm. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Leaf Storm. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr71.png"
+    },
+    {
+      "id": 1202,
+      "name": "TR72",
+      "desc": "Teaches certain Pokemon the move Power Whip. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Power Whip. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr72.png"
+    },
+    {
+      "id": 1203,
+      "name": "TR73",
+      "desc": "Teaches certain Pokemon the move Gunk Shot. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Gunk Shot. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr73.png"
+    },
+    {
+      "id": 1204,
+      "name": "TR74",
+      "desc": "Teaches certain Pokemon the move Iron Head. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Iron Head. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr74.png"
+    },
+    {
+      "id": 1205,
+      "name": "TR75",
+      "desc": "Teaches certain Pokemon the move Stone Edge. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Stone Edge. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr75.png"
+    },
+    {
+      "id": 1206,
+      "name": "TR76",
+      "desc": "Teaches certain Pokemon the move Stealth Rock. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Stealth Rock. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr76.png"
+    },
+    {
+      "id": 1207,
+      "name": "TR77",
+      "desc": "Teaches certain Pokemon the move Grass Knot. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Grass Knot. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr77.png"
+    },
+    {
+      "id": 1208,
+      "name": "TR78",
+      "desc": "Teaches certain Pokemon the move Sludge Wave. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Sludge Wave. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr78.png"
+    },
+    {
+      "id": 1209,
+      "name": "TR79",
+      "desc": "Teaches certain Pokemon the move Heavy Slam. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Heavy Slam. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr79.png"
+    },
+    {
+      "id": 1210,
+      "name": "TR80",
+      "desc": "Teaches certain Pokemon the move Electro Ball. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Electro Ball. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr80.png"
+    },
+    {
+      "id": 1211,
+      "name": "TR81",
+      "desc": "Teaches certain Pokemon the move Foul Play. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Foul Play. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr81.png"
+    },
+    {
+      "id": 1212,
+      "name": "TR82",
+      "desc": "Teaches certain Pokemon the move Stored Power. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Stored Power. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr82.png"
+    },
+    {
+      "id": 1213,
+      "name": "TR83",
+      "desc": "Teaches certain Pokemon the move Ally Switch. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Ally Switch. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr83.png"
+    },
+    {
+      "id": 1214,
+      "name": "TR84",
+      "desc": "Teaches certain Pokemon the move Scald. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Scald. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr84.png"
+    },
+    {
+      "id": 1215,
+      "name": "TR85",
+      "desc": "Teaches certain Pokemon the move Work Up. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Work Up. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr85.png"
+    },
+    {
+      "id": 1216,
+      "name": "TR86",
+      "desc": "Teaches certain Pokemon the move Wild Charge. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Wild Charge. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr86.png"
+    },
+    {
+      "id": 1217,
+      "name": "TR87",
+      "desc": "Teaches certain Pokemon the move Drill Run. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Drill Run. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr87.png"
+    },
+    {
+      "id": 1218,
+      "name": "TR88",
+      "desc": "Teaches certain Pokemon the move Heat Crash. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Heat Crash. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr88.png"
+    },
+    {
+      "id": 1219,
+      "name": "TR89",
+      "desc": "Teaches certain Pokemon the move Hurricane. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Hurricane. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr89.png"
+    },
+    {
+      "id": 1220,
+      "name": "TR90",
+      "desc": "Teaches certain Pokemon the move Play Rough. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Play Rough. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr90.png"
+    },
+    {
+      "id": 1221,
+      "name": "TR91",
+      "desc": "Teaches certain Pokemon the move Venom Drench. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Venom Drench. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr91.png"
+    },
+    {
+      "id": 1222,
+      "name": "TR92",
+      "desc": "Teaches certain Pokemon the move Dazzling Gleam. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Dazzling Gleam. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr92.png"
+    },
+    {
+      "id": 1223,
+      "name": "TR93",
+      "desc": "Teaches certain Pokemon the move Darkest Lariat. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Darkest Lariat. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr93.png"
+    },
+    {
+      "id": 1224,
+      "name": "TR94",
+      "desc": "Teaches certain Pokemon the move High Horsepower. One use.",
+      "shortDesc": "Teaches certain Pokemon the move High Horsepower. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr94.png"
+    },
+    {
+      "id": 1225,
+      "name": "TR95",
+      "desc": "Teaches certain Pokemon the move Throat Chop. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Throat Chop. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr95.png"
+    },
+    {
+      "id": 1226,
+      "name": "TR96",
+      "desc": "Teaches certain Pokemon the move Pollen Puff. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Pollen Puff. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr96.png"
+    },
+    {
+      "id": 1227,
+      "name": "TR97",
+      "desc": "Teaches certain Pokemon the move Psychic Fangs. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Psychic Fangs. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr97.png"
+    },
+    {
+      "id": 1228,
+      "name": "TR98",
+      "desc": "Teaches certain Pokemon the move Liquidation. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Liquidation. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr98.png"
+    },
+    {
+      "id": 1229,
+      "name": "TR99",
+      "desc": "Teaches certain Pokemon the move Body Press. One use.",
+      "shortDesc": "Teaches certain Pokemon the move Body Press. One use.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/tr99.png"
+    },
+    {
+      "id": 248,
+      "name": "Twisted Spoon",
+      "desc": "Holder's Psychic-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Psychic-type attacks have 1.2x power.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/twisted-spoon.png"
+    },
+    {
+      "id": 669,
+      "name": "Tyranitarite",
+      "desc": "If held by a Tyranitar, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Tyranitar, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/tyranitarite.png"
+    },
+    {
+      "id": 2,
+      "name": "Ultra Ball",
+      "desc": "An ultra-performance Ball that provides a higher catch rate than a Great Ball.",
+      "shortDesc": "An ultra-performance Ball that provides a higher catch rate than a Great Ball.",
+      "generation": 1,
+      "spritePath": "/assets/items/icons/ultra-ball.png"
+    },
+    {
+      "id": 923,
+      "name": "Ultranecrozium Z",
+      "desc": "Dusk Mane/Dawn Wings Necrozma: Ultra Burst, then Z-Move w/ Photon Geyser.",
+      "shortDesc": "Dusk Mane/Dawn Wings Necrozma: Ultra Burst, then Z-Move w/ Photon Geyser.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/ultranecrozium-z.png"
+    },
+    {
+      "id": 2403,
+      "name": "Unremarkable Teacup",
+      "desc": "Evolves Poltchageist into Sinistcha when used.",
+      "shortDesc": "Evolves Poltchageist into Sinistcha when used.",
+      "generation": 9,
+      "spritePath": "/assets/items/icons/unremarkable-teacup.png"
+    },
+    {
+      "id": 252,
+      "name": "Up-Grade",
+      "desc": "Evolves Porygon into Porygon2 when traded.",
+      "shortDesc": "Evolves Porygon into Porygon2 when traded.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/up-grade.png"
+    },
+    {
+      "id": 1123,
+      "name": "Utility Umbrella",
+      "desc": "The holder ignores rain- and sun-based effects, including those of its Ability unless it is Orichalcum Pulse or Protosynthesis. Damage and accuracy calculations from attacks used by the holder are affected by rain and sun, but not attacks used against the holder.",
+      "shortDesc": "The holder ignores rain- and sun-based effects.",
+      "generation": 8,
+      "spritePath": "/assets/items/icons/utility-umbrella.png"
+    },
+    {
+      "id": 659,
+      "name": "Venusaurite",
+      "desc": "If held by a Venusaur, this item allows it to Mega Evolve in battle.",
+      "shortDesc": "If held by a Venusaur, this item allows it to Mega Evolve in battle.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/venusaurite.png"
+    },
+    {
+      "id": 186,
+      "name": "Wacan Berry",
+      "desc": "Halves damage taken from a supereffective Electric-type attack. Single use.",
+      "shortDesc": "Halves damage taken from a supereffective Electric-type attack. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/wacan-berry.png"
+    },
+    {
+      "id": 549,
+      "name": "Water Gem",
+      "desc": "Holder's first successful Water-type attack will have 1.3x power. Single use.",
+      "shortDesc": "Holder's first successful Water-type attack will have 1.3x power. Single use.",
+      "generation": 5,
+      "spritePath": "/assets/items/icons/water-gem.png"
+    },
+    {
+      "id": 778,
+      "name": "Waterium Z",
+      "desc": "If holder has a Water move, this item allows it to use a Water Z-Move.",
+      "shortDesc": "If holder has a Water move, this item allows it to use a Water Z-Move.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/waterium-z.png"
+    },
+    {
+      "id": 913,
+      "name": "Water Memory",
+      "desc": "Holder's Multi-Attack is Water type.",
+      "shortDesc": "Holder's Multi-Attack is Water type.",
+      "generation": 7,
+      "spritePath": "/assets/items/icons/water-memory.png"
+    },
+    {
+      "id": 84,
+      "name": "Water Stone",
+      "desc": "Evolves Poliwhirl into Poliwrath, Shellder into Cloyster, Staryu into Starmie, Eevee into Vaporeon, Lombre into Ludicolo, and Panpour into Simipour when used.",
+      "shortDesc": "Evolves certain species of Pokemon when used.",
+      "generation": 1,
+      "spritePath": "/assets/items/icons/water-stone.png"
+    },
+    {
+      "id": 181,
+      "name": "Watmel Berry",
+      "desc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "shortDesc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/watmel-berry.png"
+    },
+    {
+      "id": 317,
+      "name": "Wave Incense",
+      "desc": "Holder's Water-type attacks have 1.2x power.",
+      "shortDesc": "Holder's Water-type attacks have 1.2x power.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/wave-incense.png"
+    },
+    {
+      "id": 639,
+      "name": "Weakness Policy",
+      "desc": "If holder is hit super effectively, raises Attack, Sp. Atk by 2 stages. Single use.",
+      "shortDesc": "If holder is hit super effectively, raises Attack, Sp. Atk by 2 stages. Single use.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/weakness-policy.png"
+    },
+    {
+      "id": 2407,
+      "name": "Wellspring Mask",
+      "desc": "Ogerpon-Wellspring: 1.2x power attacks; Terastallize to gain Embody Aspect.",
+      "shortDesc": "Ogerpon-Wellspring: 1.2x power attacks; Terastallize to gain Embody Aspect.",
+      "generation": 9,
+      "spritePath": "/assets/items/icons/wellspring-mask.png"
+    },
+    {
+      "id": 167,
+      "name": "Wepear Berry",
+      "desc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "shortDesc": "Cannot be eaten by the holder. No effect when eaten with Bug Bite or Pluck.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/wepear-berry.png"
+    },
+    {
+      "id": 646,
+      "name": "Whipped Dream",
+      "desc": "Evolves Swirlix into Slurpuff when traded.",
+      "shortDesc": "Evolves Swirlix into Slurpuff when traded.",
+      "generation": 6,
+      "spritePath": "/assets/items/icons/whipped-dream.png"
+    },
+    {
+      "id": 214,
+      "name": "White Herb",
+      "desc": "Restores all lowered stat stages to 0 when one is less than 0. Single use.",
+      "shortDesc": "Restores all lowered stat stages to 0 when one is less than 0. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/white-herb.png"
+    },
+    {
+      "id": 265,
+      "name": "Wide Lens",
+      "desc": "The accuracy of attacks by the holder is 1.1x.",
+      "shortDesc": "The accuracy of attacks by the holder is 1.1x.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/wide-lens.png"
+    },
+    {
+      "id": 160,
+      "name": "Wiki Berry",
+      "desc": "Restores 1/3 max HP at 1/4 max HP or less; confuses if -SpA Nature. Single use.",
+      "shortDesc": "Restores 1/3 max HP at 1/4 max HP or less; confuses if -SpA Nature. Single use.",
+      "generation": 3,
+      "spritePath": "/assets/items/icons/wiki-berry.png"
+    },
+    {
+      "id": 267,
+      "name": "Wise Glasses",
+      "desc": "Holder's special attacks have 1.1x power.",
+      "shortDesc": "Holder's special attacks have 1.1x power.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/wise-glasses.png"
+    },
+    {
+      "id": 188,
+      "name": "Yache Berry",
+      "desc": "Halves damage taken from a supereffective Ice-type attack. Single use.",
+      "shortDesc": "Halves damage taken from a supereffective Ice-type attack. Single use.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/yache-berry.png"
+    },
+    {
+      "id": 300,
+      "name": "Zap Plate",
+      "desc": "Holder's Electric-type attacks have 1.2x power. Judgment is Electric type.",
+      "shortDesc": "Holder's Electric-type attacks have 1.2x power. Judgment is Electric type.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/zap-plate.png"
+    },
+    {
+      "id": 276,
+      "name": "Zoom Lens",
+      "desc": "The accuracy of attacks by the holder is 1.2x if it moves after its target.",
+      "shortDesc": "The accuracy of attacks by the holder is 1.2x if it moves after its target.",
+      "generation": 4,
+      "spritePath": "/assets/items/icons/zoom-lens.png"
+    },
+    {
+      "id": 155,
+      "name": "Berry",
+      "desc": "(Gen 2) Restores 10 HP when at 1/2 max HP or less. Single use.",
+      "shortDesc": "(Gen 2) Restores 10 HP when at 1/2 max HP or less. Single use.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/berry.png"
+    },
+    {
+      "id": 0,
+      "name": "Berserk Gene",
+      "desc": "(Gen 2) On switch-in, raises holder's Attack by 2 and confuses it. Single use.",
+      "shortDesc": "(Gen 2) On switch-in, raises holder's Attack by 2 and confuses it. Single use.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/berserk-gene.png"
+    },
+    {
+      "id": 156,
+      "name": "Bitter Berry",
+      "desc": "(Gen 2) Holder is cured if it is confused. Single use.",
+      "shortDesc": "(Gen 2) Holder is cured if it is confused. Single use.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/bitter-berry.png"
+    },
+    {
+      "id": 153,
+      "name": "Burnt Berry",
+      "desc": "(Gen 2) Holder is cured if it is frozen. Single use.",
+      "shortDesc": "(Gen 2) Holder is cured if it is frozen. Single use.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/burnt-berry.png"
+    },
+    {
+      "id": 158,
+      "name": "Gold Berry",
+      "desc": "(Gen 2) Restores 30 HP when at 1/2 max HP or less. Single use.",
+      "shortDesc": "(Gen 2) Restores 30 HP when at 1/2 max HP or less. Single use.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/gold-berry.png"
+    },
+    {
+      "id": 152,
+      "name": "Ice Berry",
+      "desc": "(Gen 2) Holder is cured if it is burned. Single use.",
+      "shortDesc": "(Gen 2) Holder is cured if it is burned. Single use.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/ice-berry.png"
+    },
+    {
+      "id": 150,
+      "name": "Mint Berry",
+      "desc": "(Gen 2) Holder wakes up if it is asleep. Single use.",
+      "shortDesc": "(Gen 2) Holder wakes up if it is asleep. Single use.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/mint-berry.png"
+    },
+    {
+      "id": 157,
+      "name": "Miracle Berry",
+      "desc": "(Gen 2) Holder cures itself if it is confused or has a status condition. Single use.",
+      "shortDesc": "(Gen 2) Holder cures itself if it is confused or has a status condition. Single use.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/miracle-berry.png"
+    },
+    {
+      "id": 154,
+      "name": "Mystery Berry",
+      "desc": "(Gen 2) Restores 5 PP to the first of the holder's moves to reach 0 PP. Single use.",
+      "shortDesc": "(Gen 2) Restores 5 PP to the first of the holder's moves to reach 0 PP. Single use.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/mystery-berry.png"
+    },
+    {
+      "id": 251,
+      "name": "Pink Bow",
+      "desc": "(Gen 2) Holder's Normal-type attacks have 1.1x power.",
+      "shortDesc": "(Gen 2) Holder's Normal-type attacks have 1.1x power.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/pink-bow.png"
+    },
+    {
+      "id": 251,
+      "name": "Polkadot Bow",
+      "desc": "(Gen 2) Holder's Normal-type attacks have 1.1x power.",
+      "shortDesc": "(Gen 2) Holder's Normal-type attacks have 1.1x power.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/polkadot-bow.png"
+    },
+    {
+      "id": 149,
+      "name": "PRZ Cure Berry",
+      "desc": "(Gen 2) Holder cures itself if it is paralyzed. Single use.",
+      "shortDesc": "(Gen 2) Holder cures itself if it is paralyzed. Single use.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/prz-cure-berry.png"
+    },
+    {
+      "id": 151,
+      "name": "PSN Cure Berry",
+      "desc": "(Gen 2) Holder is cured if it is poisoned. Single use.",
+      "shortDesc": "(Gen 2) Holder is cured if it is poisoned. Single use.",
+      "generation": 2,
+      "spritePath": "/assets/items/icons/psn-cure-berry.png"
+    }
+  ]
+}
