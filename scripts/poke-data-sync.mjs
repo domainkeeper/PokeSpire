@@ -25,7 +25,9 @@ const PROJECT_ROOT = join(__dirname, '..');
 const DATA_RAW = join(PROJECT_ROOT, 'data', 'raw');
 const DATA_NORMALIZED = join(PROJECT_ROOT, 'data', 'normalized');
 const PUBLIC_ASSETS = join(PROJECT_ROOT, 'public', 'assets');
+const SRC_DATA = join(PROJECT_ROOT, 'src', 'data', 'pokemon');
 const MANIFEST_PATH = join(DATA_NORMALIZED, 'manifest.json');
+const BATCH_SIZE = 50;
 
 // --- CLI args ---
 const args = process.argv.slice(2);
