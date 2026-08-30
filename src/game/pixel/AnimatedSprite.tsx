@@ -4,44 +4,95 @@ import * as THREE from 'three';
 
 /**
  * Animation metadata produced by poke-extract-frames.mjs.
- * Stored as animation.json alongside sprite-sheet.png.
+ *
+ * v2 packs frames into a GRID bounded at 2048px per axis. v1 packed a single
+ * horizontal strip, which pushed 447/993 atlases past the 4096px GL texture limit
+ * (max 57015px) so they could not be uploaded at all. v1 also stored durations that
+ * were 10x too long. Both are normalised on load, so stale metadata still plays.
  */
 export interface PokemonAnimData {
+  version?: number;
   id: number;
   frameWidth: number;
   frameHeight: number;
   totalFrames: number;
+  /** v2 grid layout. Absent in v1 (implies cols = totalFrames, rows = 1). */
+  cols?: number;
+  rows?: number;
+  sheetWidth?: number;
+  sheetHeight?: number;
   durations: number[]; // ms per frame
   totalDuration: number;
+  sourceFrames?: number;
   spriteSheet: string;
 }
 
+/** Grid layout + corrected timing, whichever schema version was loaded. */
+export interface NormalisedAnim {
+  frameWidth: number;
+  frameHeight: number;
+  totalFrames: number;
+  cols: number;
+  rows: number;
+  durations: number[];
+  totalDuration: number;
+  aspect: number;
+}
+
+export function normaliseAnimData(data: PokemonAnimData): NormalisedAnim {
+  const isV2 = (data.version ?? 1) >= 2 && Boolean(data.cols);
+  const cols = isV2 ? data.cols! : data.totalFrames;
+  const rows = isV2 ? (data.rows ?? 1) : 1;
+
+  // v1 double-multiplied gifuct's already-ms delay, producing a uniform 400ms.
+  const scale = isV2 ? 1 : 0.1;
+  const durations = data.durations.map((d) => Math.max(20, Math.round(d * scale)));
+
+  return {
+    frameWidth: data.frameWidth,
+    frameHeight: data.frameHeight,
+    totalFrames: Math.min(data.totalFrames, cols * rows),
+    cols,
+    rows,
+    durations,
+    totalDuration: durations.reduce((a, b) => a + b, 0),
+    aspect: data.frameWidth / data.frameHeight,
+  };
+}
+
 interface AnimatedSpriteProps {
-  /** Path to the sprite sheet PNG (e.g. /assets/pokemon/025/sprite-sheet.png) */
+  /** Path to the atlas PNG (e.g. /assets/pokemon/025/sprite-sheet.png) */
   sheetPath: string;
-  /** Animation metadata loaded from animation.json */
   animData: PokemonAnimData;
-  /** Display width in world units */
+  /** Display width in world units. */
   width: number;
-  /** Display height in world units (auto-calculated from aspect if omitted) */
+  /** Display height in world units (derived from aspect when omitted). */
   height?: number;
-  /** Speed multiplier. 1 = original GIF timing. */
+  /** Playback speed multiplier. 1 = original GIF timing. */
   speed?: number;
-  /** Whether to loop. */
+  /**
+   * Per-frame speed multiplier, read imperatively. Props cannot change mid-frame, so
+   * this is how a caller applies a shared timescale (battle hit-stop) without forcing a
+   * re-render every frame. Returning 0 freezes on the current frame.
+   */
+  getSpeed?: () => number;
   loop?: boolean;
-  /** Called when a non-looping animation finishes. */
+  /** Freeze on the current frame without resetting. */
+  paused?: boolean;
   onEnd?: () => void;
-  /** Material overrides. */
-  material?: THREE.Material;
-  /** Anchor Y: 0 = bottom, 1 = top. */
+  /** Multiplied over the sprite. Drives hit flash, status tint and KO desaturation. */
+  tint?: THREE.Color | string;
+  opacity?: number;
+  /** Mirror horizontally. Front-facing atlases are used for both sides. */
+  flipX?: boolean;
+  /** 0 = bottom aligned, 0.5 = centred, 1 = top aligned. */
   anchorY?: number;
+  castShadow?: boolean;
+  renderOrder?: number;
 }
 
 /**
- * AnimatedSprite — plays back a horizontal sprite sheet at the original GIF's frame timing.
- *
- * Usage:
- *   <AnimatedSprite sheetPath="/assets/pokemon/025/sprite-sheet.png" animData={data} width={0.8} />
+ * AnimatedSprite — plays a grid atlas at the original GIF's frame timing.
  */
 export function AnimatedSprite({
   sheetPath,
@@ -49,137 +100,142 @@ export function AnimatedSprite({
   width,
   height: heightProp,
   speed = 1,
+  getSpeed,
   loop = true,
+  paused = false,
   onEnd,
-  material: matProp,
+  tint,
+  opacity = 1,
+  flipX = false,
   anchorY = 0,
+  castShadow = false,
+  renderOrder = 0,
 }: AnimatedSpriteProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
-  const frameIndex = useRef(0);
+  const frameIndex = useRef(-1);
   const elapsed = useRef(0);
   const finished = useRef(false);
 
-  // Load sprite sheet texture
+  const anim = useMemo(() => normaliseAnimData(animData), [animData]);
+
   useEffect(() => {
     const loader = new THREE.TextureLoader();
     const tex = loader.load(sheetPath, (t) => {
       t.magFilter = THREE.NearestFilter;
       t.minFilter = THREE.NearestFilter;
+      t.generateMipmaps = false;
       t.colorSpace = THREE.SRGBColorSpace;
+      t.wrapS = THREE.ClampToEdgeWrapping;
+      t.wrapT = THREE.ClampToEdgeWrapping;
     });
+    tex.magFilter = THREE.NearestFilter;
+    tex.minFilter = THREE.NearestFilter;
+    tex.generateMipmaps = false;
+    // One cell of the grid.
+    tex.repeat.set(1 / anim.cols, 1 / anim.rows);
     setTexture(tex);
-    return () => { tex.dispose(); };
-  }, [sheetPath]);
+    frameIndex.current = -1;
+    elapsed.current = 0;
+    finished.current = false;
+    return () => {
+      tex.dispose();
+    };
+  }, [sheetPath, anim.cols, anim.rows]);
 
-  // Calculate display height from aspect ratio
-  const aspect = animData.frameWidth / animData.frameHeight;
-  const displayHeight = heightProp ?? width / aspect;
-
-  // Build UV scale/offset for the current frame
-  const totalColumns = animData.totalFrames;
-  const uvScaleX = 1 / totalColumns;
-  const uvScaleY = 1;
-
-  const mat = useMemo(() => {
-    if (matProp) return matProp;
+  const material = useMemo(() => {
     if (!texture) return null;
     return new THREE.MeshBasicMaterial({
       map: texture,
       transparent: true,
-      alphaTest: 0.1,
-      side: THREE.DoubleSide,
+      alphaTest: 0.04,
       depthWrite: false,
+      side: THREE.DoubleSide,
+      toneMapped: false,
     });
-  }, [texture, matProp]);
+  }, [texture]);
 
+  useEffect(() => () => material?.dispose(), [material]);
+
+  // Tint / opacity are applied every frame by the rig, so read them imperatively.
   useEffect(() => {
-    return () => { if (mat && !matProp) mat.dispose(); };
-  }, [mat, matProp]);
+    if (!material) return;
+    material.color.set(tint ?? 0xffffff);
+    material.opacity = opacity;
+  }, [material, tint, opacity]);
+
+  const displayHeight = heightProp ?? width / anim.aspect;
 
   useFrame((_, delta) => {
-    if (!mat || finished.current) return;
+    if (!material?.map) return;
 
-    elapsed.current += delta * 1000 * speed;
+    if (!paused && !finished.current) {
+      const rate = speed * (getSpeed ? getSpeed() : 1);
+      if (rate > 0) {
+        elapsed.current += delta * 1000 * rate;
 
-    // Find which frame we should be on
-    let accumulated = 0;
-    let newFrame = 0;
-    for (let i = 0; i < animData.totalFrames; i++) {
-      accumulated += animData.durations[i];
-      if (elapsed.current < accumulated) {
-        newFrame = i;
-        break;
-      }
-      if (i === animData.totalFrames - 1) {
-        // Reached end
-        if (loop) {
-          elapsed.current = elapsed.current % animData.totalDuration;
-          newFrame = 0;
-        } else {
-          newFrame = animData.totalFrames - 1;
-          finished.current = true;
-          onEnd?.();
+        if (elapsed.current >= anim.totalDuration) {
+          if (loop) {
+            elapsed.current %= anim.totalDuration || 1;
+          } else {
+            elapsed.current = anim.totalDuration;
+            finished.current = true;
+            onEnd?.();
+          }
         }
       }
     }
 
-    if (newFrame !== frameIndex.current) {
-      frameIndex.current = newFrame;
+    // Walk the duration table to find the active frame.
+    let acc = 0;
+    let frame = anim.totalFrames - 1;
+    for (let i = 0; i < anim.totalFrames; i++) {
+      acc += anim.durations[i] ?? 0;
+      if (elapsed.current < acc) {
+        frame = i;
+        break;
+      }
     }
 
-    // Apply UV offset for the current frame
-    const u = frameIndex.current * uvScaleX;
-    // Flip V if needed (Three.js texture V is bottom-up, sprite sheet is top-down)
-    const v = 0;
-
-    if (mat instanceof THREE.MeshBasicMaterial) {
-      mat.map!.offset.set(u, v);
-      mat.map!.repeat.set(uvScaleX, uvScaleY);
-      mat.map!.needsUpdate = true;
+    if (frame !== frameIndex.current) {
+      frameIndex.current = frame;
+      const col = frame % anim.cols;
+      const row = Math.floor(frame / anim.cols);
+      // Three's V axis runs bottom-up; atlas rows run top-down.
+      material.map.offset.set(col / anim.cols, 1 - (row + 1) / anim.rows);
     }
   });
 
-  if (!mat) return null;
+  if (!material) return null;
 
-  // Y anchor: 0 = bottom aligned, 0.5 = center, 1 = top aligned
-  const yOff = -displayHeight * anchorY + displayHeight * 0.5;
+  const yOff = displayHeight * (0.5 - anchorY);
 
   return (
-    <mesh ref={meshRef} position={[0, yOff, 0]} material={mat}>
+    <mesh
+      ref={meshRef}
+      position={[0, yOff, 0]}
+      scale={[flipX ? -1 : 1, 1, 1]}
+      material={material}
+      castShadow={castShadow}
+      renderOrder={renderOrder}
+    >
       <planeGeometry args={[width, displayHeight]} />
     </mesh>
   );
 }
 
-/**
- * Load animation metadata for a Pokemon by its dex ID.
- * Returns null if the metadata file doesn't exist.
- */
+/** Load atlas metadata for a Pokemon by dex id. */
 export async function loadPokemonAnimData(id: number): Promise<PokemonAnimData | null> {
   const paddedId = String(id).padStart(3, '0');
   try {
     const resp = await fetch(`/assets/pokemon/${paddedId}/animation.json`);
     if (!resp.ok) return null;
-    return await resp.json();
+    return (await resp.json()) as PokemonAnimData;
   } catch {
     return null;
   }
 }
 
-/**
- * Get the sprite sheet path for a Pokemon by its dex ID.
- */
 export function pokemonSpriteSheetPath(id: number): string {
-  const paddedId = String(id).padStart(3, '0');
-  return `/assets/pokemon/${paddedId}/sprite-sheet.png`;
-}
-
-/**
- * Check if a Pokemon has animation data on disk.
- */
-export function pokemonHasAnimation(_id: number): boolean {
-  // This is a synchronous check; prefer loadPokemonAnimData for full metadata.
-  // For build-time or static checks, just attempt the fetch.
-  return false; // Caller should use loadPokemonAnimData instead.
+  return `/assets/pokemon/${String(id).padStart(3, '0')}/sprite-sheet.png`;
 }

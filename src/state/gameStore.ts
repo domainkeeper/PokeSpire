@@ -37,6 +37,10 @@ interface GameStore extends SaveGame {
   save: () => void;
   load: () => boolean;
   resetGame: () => void;
+  // §9: Battle encounter state
+  pendingBattle: { enemySpecies: string } | null;
+  startBattle: (enemySpecies: string) => void;
+  endBattle: () => void;
 }
 
 const defaultSave: SaveGame = {
@@ -144,5 +148,18 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   resetGame: () => {
     set(defaultSave);
+  },
+
+  // §9: Battle encounter state
+  pendingBattle: null,
+
+  startBattle: (enemySpecies) => {
+    set({ pendingBattle: { enemySpecies } });
+    window.location.hash = '#battle';
+  },
+
+  endBattle: () => {
+    set({ pendingBattle: null });
+    window.location.hash = '';
   },
 }));

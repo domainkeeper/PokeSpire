@@ -76,6 +76,7 @@ export function OverworldScene() {
   const currentMapId = useGameStore((s) => s.player.mapId);
   const playerX = useGameStore((s) => s.player.x);
   const setPlayerPosition = useGameStore((s) => s.setPlayerPosition);
+  const startBattle = useGameStore((s) => s.startBattle);
   const [transitioning, setTransitioning] = useState(false);
 
   const mapData = getMap(currentMapId);
@@ -103,6 +104,20 @@ export function OverworldScene() {
     [mapData, currentMapId, setPlayerPosition, transitioning],
   );
 
+  // §9: Wild encounter trigger
+  const handleEncounter = useCallback(
+    (pokemon: { species: string; gx: number; gy: number }) => {
+      if (transitioning) return;
+      setTransitioning(true);
+      // §9: cameraTransition.playEncounterFlash() — simple fade via eventBus
+      eventBus.emit(GameEvents.MAP_TRANSITION, { from: currentMapId, to: 'battle' });
+      setTimeout(() => {
+        startBattle(pokemon.species);
+      }, 400);
+    },
+    [currentMapId, startBattle, transitioning],
+  );
+
   if (!mapData) return null;
 
   return (
@@ -127,7 +142,7 @@ export function OverworldScene() {
 
       <SkyDome theme={theme} />
       <MapRenderer mapData={mapData} theme={theme} />
-      <Player mapData={mapData} theme={theme} onExitCheck={handleExitCheck} />
+      <Player mapData={mapData} theme={theme} onExitCheck={handleExitCheck} onEncounter={handleEncounter} />
       <FollowCamera />
     </>
   );

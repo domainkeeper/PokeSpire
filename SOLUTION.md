@@ -1,374 +1,3007 @@
-# Battle System Solution — "Momentum Clash" Battle Engine
+Yes — here is the content converted into clean **Markdown (`.md`) format**, preserving the structure and technical detail from the uploaded file. 
 
-**Read this whole document before writing any code.** This file is written for an AI coding agent with no memory between sessions and no ability to infer intent. Every section gives exact file paths, exact interfaces, and exact order of operations. Do not reorganize, rename, or "improve" the structure below — implement it as written. If something is ambiguous, stop and re-read the relevant section instead of guessing.
+````md
+# BATTLE SYSTEM + ATTACK ANIMATION REDESIGN — TECHNICAL DESIGN SPECIFICATION
 
-**This is a standalone Pokémon-style game project** (not the Living Obsidian ARPG — different codebase, different genre, do not mix them up if both exist in the same workspace). The overworld is a rendered pseudo-3D pixel-art world with real-time lighting/shadows, lamp posts, foliage detail, and a rotating minimap HUD (top-right corner, showing a labeled area like "COASTAL CITY" with a player-position dot) — this is a considerably more visually ambitious overworld than a flat 2D tile-grid, so treat the battle screen's presentation bar as needing to match that fidelity, not undercut it with flat placeholder rectangles.
+## 1. CURRENT SYSTEM AUDIT
+
+### 1A. What Currently Exists
+
+**Entry point**
+
+Battle is reachable only via the `#battle` hash route (`src/App.tsx:19`) → `BattleDemo` (`src/battle/BattleDemo.tsx`), which hardcodes a Lv10 Pikachu vs Lv10 Charmander with `maxHp: 100` each.
+
+It is not wired to overworld encounters (`SOLUTION.md` Step 12 was never done).
+
+### Battle Module
+
+The battle module contains 9 files and approximately 670 lines total:
+
+| File | Lines | Role |
+|---|---:|---|
+| `types.ts` | 50 | `BattlePhase` enum (11 states), `Combatant`, `BattleState`, `BattleMoveExtension` |
+| `combatEngine.ts` | 100 | `tickGauge`, `calculateDamage`, `resolveAim`, `resolveBrace`, `aiDecideMove` |
+| `useSpeedGauge.ts` | 48 | rAF loop filling ATB gauges |
+| `BattleScreen.tsx` | 271 | R3F `<Canvas>`, state machine via `useEffect` chains, HUD |
+| `MoveSelectMenu.tsx` | 63 | Horizontal row of move buttons |
+| `AimReticle.tsx` | 59 | `<input type="range">` + `CONFIRM AIM` button |
+| `BraceMeter.tsx` | 55 | `<input type="range">` + `BRACE` button |
+| `moveExtensions.ts` | 26 | 11 hand-authored move entries |
+| `BattleDemo.tsx` | 81 | Hardcoded demo fixture |
+
+### Implemented Flow
+
+```text
+INTRO
+  ↓
+GAUGE_TICK
+  ↓
+Gauge reaches 100
+  ↓
+MOVE_SELECT (player)
+or
+AI_DECIDE (enemy)
+  ↓
+optional AIMING
+  ↓
+DEFENDER_BRACE
+  ↓
+RESOLVE
+  ↓
+IMPACT
+  ↓
+GAUGE_TICK
+or
+BATTLE_END
+````
+
+### Effects / Animation Infrastructure
+
+The genuinely valuable existing asset is the effect infrastructure.
+
+`MoveEffect` (`src/game/effects/MoveEffect.tsx`):
+
+* selects an `EffectFamily`
+
+* builds an `EffectTimeline` through `buildRecipe` (`presets/recipes.ts`)
+
+* plays it through `EffectTimelinePlayer` (`timeline/EffectTimelinePlayer.tsx`)
+
+* spawns typed layer primitives:
+
+  * `ParticleEffect`
+  * `RingEffect`
+  * `BeamEffect`
+  * `FlipbookEffect`
+  * `ProjectileEffect`
+  * `TrailEffect`
+  * `FlashEffect`
+
+* communicates camera feedback through:
+
+  ```text
+  cameraBus → CameraFeedback
+  ```
+
+`typePalettes.ts` supplies per-type colors/shapes.
+
+`TYPE_COLORS` covers all 18 types.
+
+`qualityStore` provides:
+
+```text
+LOW / MED / HIGH
+```
+
+particle scaling.
+
+### Data Layer
+
+`PokemonDatabase` (`src/data/pokemon/PokemonDatabase.ts`) exposes:
+
+* species
+* moves
+* abilities
+* items
+* types
+
+`getEffectiveness(atkType, defTypes)` works correctly.
+
+Encoding:
+
+```text
+0 = neutral
+1 = resist
+2 = weak
+3|4 = immune
+```
+
+### Assets Already on Disk
+
+`public/assets/pokemon/` contains:
+
+* 993 directories
+* each containing `sprite-sheet.png`
+* each containing `animation.json`
+
+`src/game/pixel/AnimatedSprite.tsx` exists and can play them at original GIF frame timing.
+
+`public/assets/vfx/` contains exactly two flipbook sheets:
+
+* `impact`
+* `slash`
+
+### Stack
+
+```text
+React 18
+Three.js 0.185
+@react-three/fiber
+drei
+postprocessing
+zustand
+TypeScript
+Vite
+@pkmn/dex
+@pkmn/data
+```
 
 ---
 
-## 0. Assumptions about the existing codebase — VERIFY BEFORE STEP 1
+## 1B. What Is Actually Wrong
 
-- Overworld renderer (`MapRenderer.tsx` or equivalent) is a WebGL/3D-capable renderer given the lighting, shadow-casting lamp posts, and camera angle visible in the reference screenshot — most likely **Three.js**, possibly with a custom shader/lighting pass. **Confirm this before writing any battle-screen 3D code** — run `grep -rn "THREE\|WebGLRenderer\|@react-three" src/` and check `package.json` for `three` / `@react-three/fiber`. If it turns out to be a 2D canvas with painted fake-shadows instead, adjust the VFX/camera sections (6 and 8) accordingly — the *combat engine logic* (Sections 4–5) is renderer-agnostic either way and does not change.
-- Data layer already includes (or is being built via) **`@pkmn/dex`** — the user has already implemented ability logic sourced from `@pkmn`. **Do not rebuild ability logic from scratch.** Locate it first (Step 0 below) and integrate the new battle engine against it — do not write a second, competing ability system.
-- Move/species/type data should be sourced from `@pkmn/dex`'s typed `Dex` object, not hand-rolled enums. See Section 3.
+These are verified defects, in severity order.
 
-### Step 0 — Locate the existing ability system before writing anything
+Each is a root cause, not merely a symptom.
 
-Before Step 1 of the file plan, run:
-```bash
-grep -rln "@pkmn" src/ | sort
-grep -rln "onModifyDamage\|onModifyAtk\|onFaint\|onSwitchIn\|abilityEffect\|AbilityHandler" src/
+### Blocking / Correctness
+
+#### B1 — Battle hard-softlocks on the first enemy turn
+
+`AI_DECIDE` sets:
+
+```text
+phase: 'DEFENDER_BRACE'
+activeCombatantId = enemy.id
 ```
-This should surface the file(s) where ability hook logic already lives (likely something like `src/battle/abilities.ts`, `src/data/abilities/*.ts`, or similar). **Write down the exact file path and exported function signatures you find** before proceeding — Section 5 below assumes an event-hook shape and tells you exactly where to call into it, but the *names* of the exported functions must come from what you actually find, not be invented fresh. If genuinely nothing exists yet despite the user's statement, stop and flag this back to the user instead of guessing — do not silently build a parallel ability system.
+
+(`BattleScreen.tsx:120-125`)
+
+However, `BraceMeter` renders only when:
+
+```text
+state.activeCombatantId === player.id
+```
+
+(`BattleScreen.tsx:266`)
+
+Therefore, when the enemy attacks:
+
+* no component mounts
+* nothing calls `handleBraceComplete`
+* the state machine stops forever
+
+Nothing else handles `DEFENDER_BRACE`.
+
+The game becomes unplayable once the enemy gauge first fills.
 
 ---
 
-## 1. Research summary — why this system, not a copy of an existing one
+#### B2 — Brace is inverted
 
-Five reference systems were evaluated. Each has a defining mechanic:
+The player braces against their own attack.
 
-| System | Core mechanic | Strength | Weakness for a Pokémon-like game |
-|---|---|---|---|
-| **Classic Pokémon / static turn-based** | Pick move → resolve → pick move | Deep strategy, zero reflex skill needed | Feels dated, no player agency during resolution, "modern" players bounce off it |
-| **Raid: Shadow Legends (ATB / speed bar)** | Each unit fills a speed meter; turn happens when full | Turn order emerges from stats, not a rigid rotation; makes Speed a real stat | Still 100% menu-driven, no spatial/skill component |
-| **Brawl Stars (twin-stick arena)** | Aim + fire in real time, dodge in real time | Extremely kinetic, high skill ceiling, satisfying VFX/camera | Fully real-time — incompatible with a stats/type RPG, no room for menu-based strategy |
-| **mo.co (Supercell action-RPG)** | Real-time movement + weapon abilities on cooldown, juicy hit-feedback (screen shake, hit-stop, numbers popping) | Best-in-class "game feel" reference for camera/VFX punch | Cooldown-based kit, not turn/stat based |
-| **MOBA (ability-based, League/Unite style)** | Skillshot targeting (aim a cone/line/circle), cooldowns, positioning matters | Skillshot aiming adds spatial decision-making to an ability | Full real-time positioning is too much for a 1v1 Pokémon battle |
+`activeCombatantId` represents the attacker.
 
-**None of these alone fits.** The gap in the market: every Pokémon-like (Temtem, Pokémon itself, Coromon, Nexomon) is pure static turn-based. Every real-time monster game (mo.co) drops the deep type/stat/ability strategy layer entirely. Since abilities (the single most build-defining system in real Pokémon — Intimidate, Levitate, Protean, weather setters, etc.) are already implemented in this project via `@pkmn`, the battle system below is built to be a **host for that existing ability event model**, not a replacement for it.
+Therefore:
 
-### The chosen direction: **ATB Speed-Bar + Skillshot Aiming + Reactive Dodge Window**
+```text
+activeCombatantId === player.id
+```
 
-This keeps the strategic core (types, stats, abilities, team building, move choice) but makes **both offense and defense require a real-time input**, without becoming a twitch shooter. Three borrowed mechanics, fused:
+shows the brace prompt while the player is attacking.
 
-1. **From Raid: Shadow Legends** → Turn order is not "player then enemy alternating." Every combatant has a **Speed Gauge** that fills based on their effective Speed stat (post-ability/status modifiers — see Section 5). Whoever fills first acts next. This replaces the rigid I-go-you-go turn order and makes Speed-affecting abilities (e.g. an Intimidate-style attack drop, a Speed-boost ability) visibly matter in real time, not just in a hidden stat comparison.
-2. **From MOBA skillshots (League/Unite)** → Damaging moves with the tag `aimed: true` require the player to aim a **targeting reticle** (line, cone, or circle depending on the move) at the moment of use. Landing the reticle precisely on the opponent's current position grants a **Precision Bonus** (+20% damage / guaranteed crit chance, move-dependent). Missing entirely (opponent dodges out of the shape) can cause the move to whiff. This is the single most "unique for a Pokémon game" piece — no existing Pokémon-like does skillshot aiming.
-3. **From Brawl Stars' dodge/movement tension** → When the enemy's speed gauge fills and they are about to act, the defending player gets a short reactive window (a "Brace" prompt) to nudge their combatant left/right within a confined arena strip. A well-timed Brace reduces incoming damage (grazes the hit); a perfect Brace on certain move types can fully evade. This gives the *defender* something to do besides watch.
-4. **From mo.co / Brawl Stars "juice"** → Every hit, crit, faint, ability trigger, and status proc drives `CameraFeedback` (shake/zoom-punch) and `MoveEffect.tsx` VFX. Numbers pop, hit-stop freezes 2-4 frames on big hits, ability activations get their own small callout banner (see Section 5.3). This is presentation, not new logic, but it's what makes the whole thing feel modern instead of like a spreadsheet — and it's what will make the existing ability work actually *visible* to the player instead of being invisible math.
+`braceResult` is then applied inside `calculateDamage` to reduce the attacker's output.
 
-Net result: it is still turn-based in the sense that only one combatant resolves an action at a time, so the existing `@pkmn`-sourced ability logic and type/move data are fully reusable — but *when* that turn happens (Speed Gauge), *how well it lands* (Skillshot aim), and *how much damage gets through* (Brace timing) are all real-time skill inputs layered on top.
+A "perfect brace" therefore makes the player's own move deal `0` damage.
 
 ---
 
-## 2. Battle flow — state machine (implement exactly this)
+#### B3 — Brace is a trivially dominant exploit
 
-```
-IDLE (overworld)
-  → ENCOUNTER_TRIGGER (player walks into wild Pokémon on Route 1)
-  → BATTLE_INTRO (camera transition, combatants slide/spawn in; on-switch-in abilities fire here — see 5.2)
-  → GAUGE_TICK (all combatants' Speed Gauges fill simultaneously in real time, using effective post-ability speed)
-      → when a gauge hits 100%: that combatant becomes ACTIVE
-  → ACTIVE_TURN
-      IF active combatant is player-controlled:
-        → MOVE_SELECT (radial menu appears)
-        → IF chosen move has aimed:true → AIMING (reticle phase)
-        → ELSE → skip straight to RESOLVE
-      IF active combatant is AI-controlled:
-        → AI_DECIDE (pick move + pick aim target, described in section 5)
-  → DEFENDER_BRACE (only if the move is not a guaranteed-hit status move)
-      → defending player gets a Brace window (~700ms) to nudge position
-  → RESOLVE (ability pre-hooks → damage/effect calculation → ability post-hooks, Section 5)
-  → IMPACT (VFX + CameraFeedback + HP bar animate + combat log line + ability callout if one triggered)
-  → CHECK_FAINT
-      IF a combatant's HP hits 0 → FAINT_SEQUENCE → (if team has more) SWITCH_PROMPT else BATTLE_END
-      ELSE → back to GAUGE_TICK (gauges resume filling, the combatant who just acted resets to 0%)
-  → BATTLE_END (victory/defeat screen, return to MapRenderer)
-```
-
-Implement this as an explicit finite state machine, not as ad-hoc booleans. Use a single `battlePhase` enum and a `switch` in the main battle loop. This is the single most important structural rule in this document — **a bad coding agent's #1 failure mode is turning this into tangled boolean flags.** Do not do that.
+The system calls:
 
 ```ts
-export type BattlePhase =
-  | "INTRO"
-  | "GAUGE_TICK"
-  | "MOVE_SELECT"
-  | "AIMING"
-  | "AI_DECIDE"
-  | "DEFENDER_BRACE"
-  | "RESOLVE"
-  | "IMPACT"
-  | "FAINT_SEQUENCE"
-  | "SWITCH_PROMPT"
-  | "BATTLE_END";
+resolveBrace(
+  s.braceInput ?? 50,
+  50,
+  30
+)
+```
+
+with a hardcoded centre of `50` and width `30`.
+
+Therefore:
+
+```text
+distance > 30
+→ perfect
+→ damage × 0
+```
+
+Dragging the slider to `0` or `100` guarantees zero damage.
+
+There is:
+
+* no timer
+* no meaningful pressure
+* no meaningful tradeoff
+
+The defender's `arenaPosition` (`30/70`) is never read.
+
+`braceInput` is never written back to it.
+
+---
+
+#### B4 — Timeline unit mismatch destroys every attack animation
+
+`EffectPhase.at` is authored in **seconds**:
+
+```ts
+at: duration * 0.2
+```
+
+Example:
+
+```text
+duration = 0.8
+at = 0.16
+```
+
+But `EffectTimelinePlayer` compares it against milliseconds:
+
+```text
+phase.at <= elapsedMs
+```
+
+After one frame:
+
+```text
+elapsedMs ≈ 16
+```
+
+Therefore:
+
+```text
+0
+0.16
+0.48
+```
+
+are all already considered elapsed.
+
+Every phase spawns simultaneously:
+
+* windup particles
+* projectile launch
+* impact flipbook
+* expanding ring
+* camera shake
+
+all on frame 1.
+
+This is why attacks have no:
+
+* windup
+* travel
+* anticipation
+* impact beat
+
+The projectile and its arrival explosion are effectively created on the same frame.
+
+---
+
+#### B5 — `onComplete` can never fire
+
+Completion requires:
+
+```text
+activeLayers.length === 0
+```
+
+But nothing removes entries from `activeLayers`.
+
+Once a phase spawns:
+
+```text
+activeLayers
+```
+
+remains non-empty forever.
+
+Therefore:
+
+```text
+MoveEffect.onComplete
+```
+
+never executes.
+
+`BattleScreen` currently works around this using:
+
+```text
+setTimeout(..., 1200)
+```
+
+This is a fragile workaround.
+
+---
+
+#### B6 — React state is mutated directly
+
+Examples:
+
+```ts
+c.gauge = newGauge
+```
+
+in `useSpeedGauge.ts:29`
+
+and:
+
+```ts
+defender.currentHp = ...
+```
+
+in `BattleScreen.tsx:182`
+
+and:
+
+```ts
+attacker.gauge = 0
+```
+
+in `BattleScreen.tsx:210`
+
+No `setState` accompanies these mutations.
+
+Therefore React does not reliably re-render.
+
+The gauge bar only appears to update when another state transition happens to trigger a render.
+
+---
+
+#### B7 — There is no HP bar
+
+The plate currently shows HP as text.
+
+The only bar is bound to:
+
+```text
+player.gauge
+```
+
+There is no visual representation of actual HP.
+
+---
+
+#### B8 — Aimed moves can never miss
+
+`resolveAim` returns:
+
+```text
+{
+  hit,
+  precisionBonus
+}
+```
+
+but `BattleScreen.tsx:170` only reads:
+
+```text
+precisionBonus
+```
+
+and discards:
+
+```text
+hit
+```
+
+For non-aimed moves:
+
+```text
+move.accuracy
+```
+
+is never consulted.
+
+---
+
+#### B9 — Damage is applied before the animation
+
+HP is decremented at:
+
+```text
+BattleScreen.tsx:182
+```
+
+Then:
+
+```text
+setActiveEffect
+```
+
+starts the animation.
+
+Therefore the HP value changes before the hit visually connects.
+
+This is currently masked by B6/B7.
+
+---
+
+#### B10 — Blind fixed timeouts cause desynchronization
+
+The system uses fixed:
+
+```text
+1200ms
+```
+
+timeouts for:
+
+* INTRO
+* IMPACT
+
+These durations are unrelated to actual timeline length.
+
+Changing an effect's duration therefore silently desynchronizes gameplay from visuals.
+
+---
+
+### Presentation
+
+#### B11 — Combatants are untextured boxes
+
+`BattleScreen.tsx:35-43` renders:
+
+```text
+boxGeometry
+```
+
+meshes.
+
+The project already has:
+
+* 993 animated sprite sheets
+* a working `AnimatedSprite` player
+
+but they are referenced by nothing.
+
+---
+
+#### B12 — Zero sprite motion
+
+There is currently no:
+
+* lunge
+* recoil
+* flinch
+* shake
+* squash
+* tint
+* scale response
+
+The "animation" is essentially:
+
+```text
+particle puff
++
+two static boxes
+```
+
+Combined with B4, attacks feel weightless.
+
+---
+
+#### B13 — Every special move looks identical
+
+`MOVE_OVERRIDES` maps 47 moves to families such as:
+
+```text
+beam
+cloud
+pulse
+burst
+impact
+frost
+swarm
+```
+
+But `buildRecipe` only actually implements:
+
+```text
+projectile
+slash
+```
+
+Everything else falls back to a generic particle burst.
+
+Therefore moves such as:
+
+```text
+Flamethrower
+Thunderbolt
+Ice Beam
+Earthquake
+Surf
+Hyper Beam
+```
+
+are effectively the same effect with different colors.
+
+---
+
+#### B14 — Hit-stop and flash are configured but not implemented
+
+Recipes configure:
+
+```text
+hitStop: 40–70
+flash
+flashOpacity
+```
+
+but `CameraFeedback` only implements:
+
+* shake
+* punch
+
+There is no hit-stop.
+
+No recipe emits a flash layer.
+
+`FlashEffect` is a:
+
+```text
+50×50 world-space plane
+```
+
+at:
+
+```text
+z = -5
+```
+
+while the camera is around:
+
+```text
+z ≈ 7
+```
+
+Therefore it is behind the combatants and cannot function as a hit flash.
+
+---
+
+#### B15 — OrbitControls conflicts with camera feedback
+
+`BattleScreen.tsx:251` mounts:
+
+```text
+OrbitControls
+```
+
+which writes camera transforms every frame.
+
+`CameraFeedback` caches an initial position and also writes absolute positions.
+
+The two systems therefore fight each other.
+
+Free player orbiting also makes directed combat camera work impossible.
+
+---
+
+#### B16 — Only one effect can exist at a time
+
+`activeEffect` is a single nullable object.
+
+A second effect overwrites the first.
+
+Therefore:
+
+* multi-hit moves
+* overlapping effects
+* chained effects
+
+cannot be properly presented.
+
+---
+
+#### B17 — Dead parallel effect system
+
+`presets.ts`:
+
+```text
+586 lines
+```
+
+plus:
+
+```text
+effectRegistry.resolveEffect
+duplicated MOVE_OVERRIDES
+```
+
+are exported from:
+
+```text
+effects/index.ts
+```
+
+but imported nowhere.
+
+There are currently two competing effect architectures.
+
+This is a maintenance trap.
+
+---
+
+#### B18 — `StatusOverlay` is unused in battle
+
+`StatusOverlay` is only a single additive sphere.
+
+It is used by:
+
+```text
+EffectDemo
+```
+
+but never by battle.
+
+---
+
+### Strategic Depth
+
+#### B19 — Only one real decision exists
+
+The player chooses a move.
+
+Aim and brace are:
+
+* unpressured
+* exploitable
+* dominated by obvious answers
+
+There is currently:
+
+* no switching
+* no status application
+* no stat stages
+* no PP
+* no items
+* no crits
+
+---
+
+#### B20 — `FAINT_SEQUENCE` and `SWITCH_PROMPT` are unreachable
+
+`RESOLVE` jumps directly to:
+
+```text
+BATTLE_END
+```
+
+`playerTeam` and `enemyTeam` exist as arrays but the battle screen is constructed from single combatants and always uses:
+
+```text
+[0]
+```
+
+Switching does not exist.
+
+This removes one of the deepest sources of Pokémon-style strategy.
+
+---
+
+#### B21 — Status systems are declared but unused
+
+These fields exist:
+
+```text
+statusConditions
+volatileFlags
+```
+
+but are never:
+
+* read
+* written
+* resolved
+
+No status effects actually exist.
+
+---
+
+#### B22 — Damage uses raw base stats
+
+`calculateDamage` reads:
+
+```text
+attacker.species.baseStats.atk
+```
+
+directly.
+
+There is no:
+
+* level stat calculation
+* IV system
+* EV system
+* nature system
+
+Therefore:
+
+```text
+Lv100 Charmander
+```
+
+and:
+
+```text
+Lv10 Charmander
+```
+
+have almost identical Attack contribution.
+
+`maxHp` is hardcoded to `100`.
+
+Level and team building are therefore strategically inert.
+
+---
+
+#### B23 — Continuous ATB prevents prediction
+
+Real-time ATB means turns happen because the timer reaches a threshold.
+
+This prevents meaningful prediction.
+
+The player cannot reasonably think:
+
+> If I do X, they will answer Y, so I should prepare Z.
+
+The current system is:
+
+* too real-time to become a proper strategy system
+* too menu-driven to become a skill-based action system
+
+This is the core design flaw.
+
+---
+
+#### B24 — AI is deterministic and exploitable
+
+`aiDecideMove` scores:
+
+```text
+effectiveness × basePower
+```
+
+and randomly selects from the top two.
+
+It ignores:
+
+* its HP
+* status
+* player's typing
+* switching
+* Guard
+
+There is therefore no meaningful opponent to read.
+
+---
+
+#### B25 — Ability effects are absent
+
+`DamageModifiers` is hardcoded to:
+
+```text
+all 1
+```
+
+at the only call site.
+
+Therefore:
+
+* STAB
+* type effectiveness
+
+are essentially the only damage modifiers.
+
+---
+
+## 1C. What Should Be Preserved, Refactored, Replaced, or Untouched
+
+| Verdict            | Items                                                                                                                                                                                                                              | Reason                                                            |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| **PRESERVE AS-IS** | `ParticleEffect`, `RingEffect`, `BeamEffect`, `FlipbookEffect`, `ProjectileEffect`, `TrailEffect`, `typePalettes.ts`, `TYPE_COLORS`, `qualityStore`, `AnimatedSprite`, `PokemonDatabase`, `getEffectiveness`, all of `src/data/**` | Sound reusable primitives and valuable existing assets            |
+| **REFACTOR**       | `EffectTimelinePlayer`, `CameraFeedback`, `recipes.ts`, `combatEngine.calculateDamage`                                                                                                                                             | Architecture is correct but implementation is incomplete or buggy |
+| **REPLACE**        | `BattleScreen.tsx`, `useSpeedGauge`, `AimReticle`, `BraceMeter`, `MoveSelectMenu`, `resolveAim`, `resolveBrace`, `FlashEffect`, `BattleDemo`                                                                                       | These encode the flawed real-time-slider direction                |
+| **DELETE**         | `presets.ts`, duplicate `MOVE_OVERRIDES`, `resolveEffect`, `resolveEffectByType`, `EffectPreset`, `ActiveEffect`, `buildSimpleTimeline`                                                                                            | Dead/duplicated architecture                                      |
+| **DO NOT TOUCH**   | `MapRenderer`, `OverworldScene`, `Player`, `SpriteActor`, `terrain`, `SkyDome`, `Minimap`, `ExpandedMap`, `VirtualJoystick`, `gameStore`, persistence, world/map data, `scripts/**`, theme system                                  | Out of scope                                                      |
+
+### Type System Decision
+
+`SOLUTION.md §3` mandates:
+
+```ts
+BattleMove = DexMove & BattleMoveExtension
+Combatant.species = Species
+```
+
+However, the actual implementation obtains data from `PokemonDatabase` and uses:
+
+```ts
+as unknown as Species
+```
+
+This is an unsound bridge.
+
+### Decision
+
+Standardize the battle engine on:
+
+```text
+PokemonDatabase's PokemonSpeciesData
+PokemonDatabase's MoveData
+```
+
+Delete:
+
+```text
+@pkmn/dex
+```
+
+type imports from:
+
+```text
+src/battle/types.ts
+```
+
+Reason:
+
+`PokemonDatabase` is the project's real populated/generated data layer.
+
+This removes an entire class of runtime shape errors.
+
+---
+
+# 2. CORE DESIGN GOALS
+
+| #   | Goal                                  | Measurable Meaning                                                     |
+| --- | ------------------------------------- | ---------------------------------------------------------------------- |
+| G1  | Logic decides, visuals report         | Engine is pure and produces events                                     |
+| G2  | Every attack reads as physical action | Anticipation → windup → release → travel → contact → reaction → settle |
+| G3  | Impact through contrast, not volume   | Strong hits get feedback; resisted hits stay light                     |
+| G4  | Player understands what happened      | Event banner + log + action feedback                                   |
+| G5  | Discrete predictable turns            | Simultaneous commit + deterministic ordering                           |
+| G6  | Type chart used twice                 | Damage + Imprint/Detonate                                              |
+| G7  | One distinctive mechanic              | Imprint/Detonate integrates deeply                                     |
+| G8  | Reusable animation configuration      | ~10 categories + overrides                                             |
+| G9  | Browser realistic                     | ≤400 live particles at MED                                             |
+| G10 | No desync                             | One authoritative phase enum + guarded timeouts                        |
+| G11 | Respect player time                   | Full turn ≤4.5s; 3× fast-forward available                             |
+
+---
+
+# 3. NEW BATTLE EXPERIENCE
+
+## Encounter
+
+**0.0–1.9s**
+
+* Screen wipes from overworld.
+* Arena fades up.
+* Lit ground ellipse appears.
+* Soft directional shadows appear under combatants.
+* Enemy sprite drops from above-right.
+* Small dust ring.
+* Player sprite slides from lower-left.
+* HP plates fly in.
+* Camera holds wide framing.
+* Banner:
+
+```text
+A wild CHARMANDER appeared!
+```
+
+* Action bar rises.
+
+---
+
+## Decision
+
+**Untimed**
+
+Three actions:
+
+```text
+FIGHT
+GUARD
+SWITCH
+```
+
+FIGHT opens a:
+
+```text
+2×2 move grid
+```
+
+Hovering a move shows:
+
+* type color
+* power
+* accuracy
+* PP
+* category
+* consequence hint
+
+Examples:
+
+```text
+SUPER EFFECTIVE ×2
+```
+
+or:
+
+```text
+DETONATE
+```
+
+Enemy plate shows:
+
+* current Imprint
+* remaining turns
+
+Player plate shows:
+
+```text
+FIRST / SECOND
+```
+
+No timer.
+
+---
+
+## Commit and Telegraph
+
+**0.5s**
+
+After confirmation:
+
+* move grid collapses
+* both sides lock
+* opponent's action category is revealed
+
+Possible categories:
+
+```text
+PHYSICAL
+SPECIAL
+STATUS
+GUARD
+SWITCH
+```
+
+The exact move remains hidden.
+
+This creates the mind game.
+
+---
+
+## Resolution
+
+Approximately:
+
+```text
+1.1s per action
+```
+
+Faster combatant acts first.
+
+Sequence:
+
+```text
+anticipation
+→ windup
+→ lunge/fire
+→ contact
+→ hit-stop
+→ reaction
+```
+
+At contact:
+
+* world freezes for 70ms
+* defender flashes white
+* defender knocked back
+* damage number appears
+* HP leading edge snaps
+* ghost bar drains behind it
+
+Super-effective:
+
+```text
+SUPER EFFECTIVE
+```
+
+Detonate:
+
+```text
+DETONATE!
+SHATTERED
+```
+
+Resisted hits receive minimal feedback.
+
+---
+
+## End of Turn
+
+**0.4s**
+
+* Burn ticks.
+* Poison ticks.
+* Imprint counters decrement.
+* Status chips update.
+* Action bar returns.
+
+---
+
+## Knockout
+
+**2.2s**
+
+* Final hit gets longer hit-stop.
+* Defender collapses.
+* Sprite desaturates.
+* Sprite sinks.
+* Sprite dissolves.
+* Plate leaves screen.
+* Switch tray appears or victory begins.
+
+---
+
+## Throughout
+
+The camera:
+
+* never orbits
+* never moves without purpose
+* pushes in slightly during contact
+* otherwise remains stable
+
+Combat log:
+
+* collapsed
+* two lines
+* expandable
+
+---
+
+# 4. ATTACK ANIMATION SYSTEM
+
+## 4.1 Seven Stages
+
+All timings are milliseconds.
+
+| Stage        |  Default | Purpose                |
+| ------------ | -------: | ---------------------- |
+| `ANTICIPATE` |    120ms | Announces action       |
+| `WINDUP`     |    180ms | Builds force           |
+| `RELEASE`    | 60–140ms | Commitment             |
+| `TRAVEL`     |  0–320ms | Shows spatial movement |
+| `CONTACT`    | 60–140ms | Impact/hit-stop        |
+| `REACT`      |    200ms | Communicates result    |
+| `SETTLE`     |    180ms | Returns to neutral     |
+
+### 1. ANTICIPATE
+
+Attacker:
+
+```text
+scale 1.06 × 0.96
+drop 0.04u
+```
+
+No VFX.
+
+Attacker plate pulses once.
+
+Damage:
+
+```text
+none
 ```
 
 ---
 
-## 3. Data integration — use `@pkmn/dex`, do not reinvent
+### 2. WINDUP
 
-Per `POKE_DB.md`, `@pkmn/dex` is already the intended data source for species/moves/abilities/items/types/type-effectiveness. The battle engine's types must be built **on top of** it, not parallel to it.
+Attacker:
 
-`src/battle/types.ts`
-```ts
-import type { Species, Move as DexMove, Ability } from "@pkmn/dex";
+* moves 0.18u away from target
+* scale `0.94 × 1.08`
 
-// Custom fields this battle system adds on top of the real @pkmn move data.
-// Do not duplicate fields @pkmn/dex already provides (basePower, accuracy,
-// category, priority, type, flags, etc.) — extend, don't replace.
-export interface BattleMoveExtension {
-  aimed: boolean;          // true = requires AIMING phase
-  shape: "single" | "line" | "cone" | "circle"; // only relevant if aimed
-  shapeSize: number;       // width of line/cone/circle in arena units, 0-100 scale
-  precisionBonusMultiplier: number; // e.g. 1.2 for +20% damage
-}
+Particles:
 
-// A move as used in battle = the real @pkmn dex move + our extension fields.
-export type BattleMove = DexMove & BattleMoveExtension;
-
-export interface Combatant {
-  id: string;
-  species: Species;        // from @pkmn/dex — do not re-derive stats/types by hand
-  level: number;
-  currentHp: number;
-  maxHp: number;
-  ability: Ability;        // from @pkmn/dex — resolved via the existing ability system (Section 0/5)
-  moves: BattleMove[];
-  gauge: number;            // 0-100
-  arenaPosition: number;    // 0-100, horizontal position within the brace strip
-  statusConditions: string[]; // use @pkmn's status id strings (e.g. "brn", "par"), not custom enums
-  volatileFlags: Record<string, boolean>; // per-battle ability/move state, e.g. Intimidate-applied, Protean-changed-type
-  isPlayerControlled: boolean;
-}
-
-export interface BattleState {
-  phase: BattlePhase;
-  playerTeam: Combatant[];
-  enemyTeam: Combatant[];
-  activeCombatantId: string | null;
-  pendingMove: BattleMove | null;
-  aimPosition: number | null;
-  braceInput: number | null;
-  combatLog: string[];
-  turnCount: number;
-}
+```text
+8–14
 ```
 
-**Move extension data (`aimed`, `shape`, `shapeSize`, `precisionBonusMultiplier`) is not something `@pkmn/dex` provides** — you have to author it per-move. Do not attempt to auto-derive it. Start with a small hand-authored override table for the Route 1 wild species' actual movesets only (not all ~900 moves in the dex):
-```ts
-// src/battle/moveExtensions.ts
-export const MOVE_EXTENSIONS: Record<string, BattleMoveExtension> = {
-  tackle: { aimed: false, shape: "single", shapeSize: 0, precisionBonusMultiplier: 1 },
-  ember:  { aimed: true, shape: "cone", shapeSize: 30, precisionBonusMultiplier: 1.2 },
-  // add entries only for moves actually reachable by Route 1 encounters + starter movesets
-};
-const DEFAULT_EXTENSION: BattleMoveExtension = { aimed: false, shape: "single", shapeSize: 0, precisionBonusMultiplier: 1 };
-export function getMoveExtension(moveId: string): BattleMoveExtension {
-  return MOVE_EXTENSIONS[moveId] ?? DEFAULT_EXTENSION;
-}
-```
-Any move without an explicit entry defaults to a plain non-aimed hit — this means the aiming/skillshot layer can be rolled out move-by-move without blocking the rest of the system, and nothing crashes on an unmapped move.
-
-**Type effectiveness:** call `@pkmn/dex`'s own type-chart lookup (`Dex.types.get(...)` / the `Dex` object's effectiveness calculation) — do not hand-write a type chart. If the existing ability-system code (Section 0) already wraps this in a helper, reuse that helper rather than calling `@pkmn/dex` a second, differently-shaped way.
+Move name fades in.
 
 ---
 
-## 4. Combat engine — exact algorithms
+### 3. RELEASE
 
-`src/battle/combatEngine.ts` — pure TypeScript, **no JSX, no React imports**. Takes a `BattleState`, returns a new `BattleState`. This separation is mandatory: it lets the logic be tested without rendering anything.
+Attacker snaps forward.
 
-### 4.1 Speed Gauge fill rate
-```ts
-function tickGauge(combatant: Combatant, effectiveSpeed: number, deltaMs: number): number {
-  const FILL_CONSTANT = 2600; // tune this — higher = slower overall pace
-  const fillPerMs = effectiveSpeed / FILL_CONSTANT;
-  return Math.min(100, combatant.gauge + fillPerMs * deltaMs);
-}
+Defender begins a slight flinch anticipation.
+
+Heavy attacks may receive:
+
+```text
+2% camera dolly
 ```
-`effectiveSpeed` must come from the existing ability/status system's modified-stat calculation (Section 5.1), **not** `combatant.species.baseStats.spe` directly — abilities and status conditions (paralysis, a Speed-boosting ability, etc.) need to visibly change gauge fill rate for this system to make sense at all. Run this for every combatant on every animation frame during `GAUGE_TICK`. First to hit 100 becomes `activeCombatantId`. Tie (same frame): higher effective Speed acts first, deterministic. When a combatant acts, reset **only their** gauge to 0.
 
-### 4.2 Damage formula
-```ts
-function calculateDamage(
-  attacker: Combatant,
-  defender: Combatant,
-  move: BattleMove,
-  precisionBonus: boolean,
-  braceResult: "none" | "graze" | "perfect",
-  modifiers: DamageModifiers // from ability hooks, Section 5.1 — power/atk/def multipliers, type overrides, etc.
-): number {
-  if (move.category === "status") return 0;
-
-  const atkStat = move.category === "physical" ? attacker.species.baseStats.atk : attacker.species.baseStats.spa;
-  const defStat = move.category === "physical" ? defender.species.baseStats.def : defender.species.baseStats.spd;
-
-  const base =
-    ((2 * attacker.level / 5 + 2) * (move.basePower * modifiers.powerMultiplier) * ((atkStat * modifiers.atkMultiplier) / (defStat * modifiers.defMultiplier))) / 50 + 2;
-
-  const typeMultiplier = modifiers.typeEffectivenessOverride ?? getTypeEffectiveness(move.type, defender.species.types); // from @pkmn/dex, Section 3
-  const stab = attacker.species.types.includes(move.type) ? 1.5 : 1;
-  const randomFactor = 0.85 + Math.random() * 0.15;
-
-  let total = base * typeMultiplier * stab * randomFactor * modifiers.finalDamageMultiplier;
-
-  if (precisionBonus) total *= move.precisionBonusMultiplier;
-  if (braceResult === "perfect") total *= 0;
-  if (braceResult === "graze") total *= 0.5;
-
-  return Math.max(1, Math.round(total));
-}
-
-interface DamageModifiers {
-  powerMultiplier: number;       // e.g. an ability that boosts a move's power
-  atkMultiplier: number;         // e.g. Intimidate lowering attacker's atk
-  defMultiplier: number;
-  typeEffectivenessOverride: number | null; // e.g. an ability that grants immunity to a type
-  finalDamageMultiplier: number; // catch-all late multiplier, e.g. a "resist super-effective" ability
-}
-```
-`modifiers` must be produced by calling into the existing ability-hook system located in Step 0 — this function should never call ability logic itself, it just accepts the already-resolved multiplier bundle as a parameter. Keep this function pure and ability-agnostic; Section 5 is where ability logic actually plugs in.
-
-### 4.3 Aiming resolution (skillshot)
-```ts
-function resolveAim(aimPosition: number, defenderPosition: number, move: BattleMove): {
-  hit: boolean;
-  precisionBonus: boolean;
-} {
-  const distance = Math.abs(aimPosition - defenderPosition);
-  const shapeRadius = move.shapeSize / 2;
-
-  if (distance > shapeRadius) {
-    const missRoll = Math.random() * 100;
-    return { hit: missRoll < move.accuracy * 0.5, precisionBonus: false };
-  }
-
-  const precisionThreshold = shapeRadius * 0.25;
-  return { hit: true, precisionBonus: distance <= precisionThreshold };
-}
-```
-Fixed 1800ms aiming window (shrinking timer ring). No input → default to defender's last known position (never impossible to use).
-
-### 4.4 Brace resolution (defender's reactive dodge)
-```ts
-function resolveBrace(defenderFinalPosition: number, impactZoneCenter: number, impactZoneWidth: number): "none" | "graze" | "perfect" {
-  const distance = Math.abs(defenderFinalPosition - impactZoneCenter);
-  if (distance > impactZoneWidth) return "perfect";
-  if (distance > impactZoneWidth * 0.4) return "graze";
-  return "none";
-}
-```
-~700ms window; impact zone telegraphs 400ms in, giving ~300ms genuine reaction time. Status moves and any move flagged `target: "self"` or otherwise unavoidable (per `@pkmn/dex` move data — check the real `target` field, don't invent a new flag) skip `DEFENDER_BRACE` entirely.
+Projectile/beam spawns.
 
 ---
 
-## 5. Ability system integration — this is the critical section, read carefully
+### 4. TRAVEL
 
-**Do not write new ability logic here.** This section only describes *where in the new battle flow* to call into the ability system you located in Step 0. If the function names below don't match what you actually found, use the real names — treat these as placeholders for the *shape* of the integration, not literal required names.
+Melee:
 
-### 5.1 Stat-modification hooks (affects gauge speed and damage)
-Before computing `effectiveSpeed` (4.1) or `DamageModifiers` (4.2), call the existing ability system's stat-modifier resolution for each relevant stat, in this order:
-1. Attacker's ability (e.g. an ability that boosts own Atk/Spe)
-2. Defender's ability (e.g. Intimidate-style, or a defensive stat boost)
-3. Active status conditions (paralysis speed drop, burn atk drop, etc. — likely already handled by the existing `@pkmn`-based logic)
-4. Field/weather effects, if implemented — if not implemented yet, skip; do not stub fake weather logic just to fill this slot
+```text
+0ms
+```
 
-Collect the result into the `DamageModifiers` / `effectiveSpeed` shapes used in Section 4. This is a read-only query into the existing system — the new battle engine should not mutate ability state directly.
+Projectile:
 
-### 5.2 Trigger-point hooks (abilities that fire on events, not stats)
-Wire these exact call sites into the state machine from Section 2:
+```text
+0–320ms
+```
 
-| Battle phase | Ability trigger to check | Example real Pokémon ability this covers |
-|---|---|---|
-| `BATTLE_INTRO`, `SWITCH_PROMPT` resolution | on-switch-in triggers | Intimidate, weather/terrain setters, Trace |
-| `RESOLVE`, before damage calc | on-move-used / on-move-about-to-hit triggers | Protean (type change), a damage-prevention ability |
-| `RESOLVE`, after damage calc | on-hit / on-damaging-hit triggers | Rough Skin, Static, a contact-punish ability |
-| `CHECK_FAINT` | on-faint triggers (self or the one that fainted the opponent) | Uncommon in-battle abilities that trigger on a KO |
-| end of `GAUGE_TICK` each frame (or once per `RESOLVE`, whichever the existing system expects) | end-of-turn triggers | Poison/burn residual damage if ability-adjacent, weather damage |
+Projectile travels with trail.
 
-If the existing ability system was built assuming a classic "turn resolves, then all end-of-turn effects fire" model, that assumption still holds here — a "turn" in this system is just one `ACTIVE_TURN → RESOLVE → IMPACT → CHECK_FAINT` cycle for a single combatant, not a synchronized pair of moves. Map the existing hook timing onto *that* granularity.
-
-### 5.3 Making ability triggers visible (ties into Section 6)
-When any ability hook actually fires (not just gets checked and does nothing), push a short callout to `combatLog` and trigger a small non-intrusive UI banner (e.g. "Intimidate!" with the ability's icon) during the `IMPACT` phase, alongside the move's own VFX. This matters specifically because the existing ability work is invisible math right now — this battle system is also the first place it becomes something the player actually sees happen.
+Beam extends from origin to target.
 
 ---
 
-## 6. AI decision logic (enemy combatants)
+### 5. CONTACT
+
+Impact feedback occurs here.
+
+At:
+
+```text
+T + 0
+```
+
+commit damage.
+
+Effects:
+
+* hit-stop
+* defender flash
+* knockback
+* impact flipbook
+* ring
+* debris
+* damage number
+* HP snap
+* effectiveness banner
+
+---
+
+### 6. REACT
+
+Defender performs result-specific reaction.
+
+Ghost HP bar drains.
+
+Status chips update.
+
+---
+
+### 7. SETTLE
+
+Both combatants return to rest.
+
+All one-shot layers must be disposed.
+
+Next action cannot begin until:
+
+```text
+all layers complete
+OR
+hard timeout fires
+```
+
+---
+
+## Total Duration
+
+Fast melee:
+
+```text
+~800ms
+```
+
+Heavy beam:
+
+```text
+~1400ms
+```
+
+Hard cap:
+
+```text
+1600ms
+```
+
+If a profile exceeds the cap:
+
+```text
+clamp
++
+log warning
+```
+
+---
+
+## 4.2 Non-Negotiable Timing Rules
+
+### Rule 1 — Damage commits at contact
+
+Never:
+
+```text
+RELEASE
+resolution start
+setTimeout
+```
+
+Only:
+
+```text
+CONTACT T+0
+```
+
+---
+
+### Rule 2 — Hit-stop is timescale, not a pause
+
+During hit-stop:
+
+```text
+combatant animation = frozen
+particles = frozen
+camera shake = continues
+```
+
+---
+
+### Rule 3 — One shake per event
+
+Never stack shakes.
+
+A larger shake replaces a smaller active shake.
+
+---
+
+### Rule 4 — Every stage has a timeout
+
+```text
+stageTimeout = plannedDuration + 400ms
+```
+
+If timeout fires:
+
+* force-complete
+* dispose layers
+* advance
+
+---
+
+### Rule 5 — Arrival is idempotent
+
+Both:
+
+```text
+ProjectileEffect.onArrive
+```
+
+and:
+
+```text
+TRAVEL timeout
+```
+
+must route through:
+
+```text
+advanceStage()
+```
+
+protected by:
+
+```text
+hasAdvanced
+```
+
+---
+
+# 4.3 Fixing the Timeline Engine
+
+Before creating new animations:
+
+### Fix B4
+
+Rename:
+
+```text
+EffectPhase.at
+```
+
+to:
+
+```text
+atMs
+```
+
+Rename:
+
+```text
+EffectTimeline.totalDuration
+```
+
+to:
+
+```text
+totalDurationMs
+```
+
+All recipes must use integer milliseconds.
+
+---
+
+### Fix B5
+
+Every active layer receives:
+
+```text
+durationMs
+```
+
+Each frame:
+
+```text
+spawnTime + durationMs < elapsed
+```
+
+causes removal.
+
+Completion:
+
+```text
+elapsed >= totalDurationMs
+AND
+activeLayers.length === 0
+```
+
+Safety net:
+
+```text
+totalDurationMs + 400ms
+```
+
+must force completion.
+
+---
+
+### Fix B14
+
+Implement:
+
+```text
+hitStop
+flash
+```
+
+through the camera feedback system.
+
+Hit-stop uses shared:
+
+```text
+timeScale
+```
+
+Flash becomes:
+
+```html
+DOM overlay
+```
+
+instead of a world-space plane.
+
+Delete the old world-space `FlashEffect`.
+
+---
+
+# 5. ATTACK CATEGORIES
+
+Ten categories should be implemented as reusable `AnimationProfile` records.
+
+| Category         | Windup |  Travel | Contact | Main Identity     |
+| ---------------- | -----: | ------: | ------: | ----------------- |
+| `CONTACT_STRIKE` |    160 |       0 |      80 | Lunge             |
+| `SLASH`          |    140 |       0 |      70 | Dash + slash      |
+| `PROJECTILE`     |    200 | 220–320 |      80 | Projectile        |
+| `BEAM`           |    280 | 120–260 |     100 | Charge + beam     |
+| `AREA_GROUND`    |    240 |       0 |     110 | Slam              |
+| `MULTI_HIT`      |    150 |       0 |  45/hit | Repeated contacts |
+| `STATUS_APPLY`   |    220 |     180 |       0 | Cloud/status      |
+| `SELF_BUFF`      |    180 |       0 |       0 | Rising ring       |
+| `GUARD`          |    120 |       0 |       0 | Shield            |
+| `HEAL`           |    200 |       0 |       0 | Rising sparkles   |
+
+---
+
+## Composable Modifiers
+
+### `recoil`
+
+After reaction:
+
+* attacker self-damage flinch
+* self-damage number
+
+---
+
+### `heavy`
+
+For:
+
+```text
+basePower >= 100
+```
+
+Effects:
+
+```text
+windup × 1.35
+hit-stop × 1.4
+2% release dolly
+```
+
+---
+
+### `quick`
+
+For:
+
+```text
+priority > 0
+```
+
+Effects:
+
+```text
+windup × 0.7
+hit-stop × 0.85
+```
+
+---
+
+# 5.1 Inheritance Model
+
+Create:
 
 ```ts
-function aiDecideMove(active: Combatant, target: Combatant): { move: BattleMove; aimPosition: number } {
-  const damagingMoves = active.moves.filter(m => m.category !== "status");
-  const usableMoves = damagingMoves.length > 0 ? damagingMoves : active.moves;
-
-  const scored = usableMoves.map(move => ({
-    move,
-    score: getTypeEffectiveness(move.type, target.species.types) * move.basePower,
-  }));
-
-  scored.sort((a, b) => b.score - a.score);
-  const topChoices = scored.slice(0, Math.min(2, scored.length));
-  const chosen = topChoices[Math.floor(Math.random() * topChoices.length)].move;
-
-  return { move: chosen, aimPosition: target.arenaPosition };
-}
+type AnimCategory =
+  | 'CONTACT_STRIKE'
+  | 'SLASH'
+  | 'PROJECTILE'
+  | 'BEAM'
+  | 'AREA_GROUND'
+  | 'MULTI_HIT'
+  | 'STATUS_APPLY'
+  | 'SELF_BUFF'
+  | 'GUARD'
+  | 'HEAL';
 ```
-Intentionally basic for v1 — no ability-awareness in the AI's move scoring yet (e.g. it won't specifically avoid a move type the defender's ability resists). Do not add that until the base loop is proven; note it as a clearly-labeled `// TODO: ability-aware AI scoring` comment instead of half-implementing it now.
 
----
+And:
 
-## 7. File plan — create exactly these files, in this order
-
-### Step 0 (see above) — locate existing ability system, confirm renderer tech
-### Step 1 — `src/battle/types.ts` (Section 3)
-### Step 2 — `src/battle/moveExtensions.ts` (Section 3)
-### Step 3 — `src/battle/combatEngine.ts` (Section 4) — pure logic, no React, manually test with 3-4 console-logged calls before moving on, then delete the test calls
-### Step 4 — Confirm the integration points from Section 5 compile against the real ability-system exports found in Step 0
-### Step 5 — `src/battle/useSpeedGauge.ts` — ticks gauges every frame during `GAUGE_TICK`, log values to console for 5 seconds, confirm a faster effective-Speed combatant reaches 100 first
-### Step 6 — `src/battle/BattleScreen.tsx` — static layout with hardcoded dummy data first, no interactivity. Match the overworld's visual fidelity (Section 8) — do not ship flat placeholder rectangles as the "final" look
-### Step 7 — `src/battle/MoveSelectMenu.tsx`
-### Step 8 — `src/battle/AimReticle.tsx`
-### Step 9 — `src/battle/BraceMeter.tsx`
-### Step 10 — Wire the full state machine in `BattleScreen.tsx` against `combatEngine.ts`, only after Steps 1-9 each individually render/compile correctly
-### Step 11 — VFX & camera hookup into `MoveEffect.tsx` / `CameraFeedback`, plus the ability-callout banner from Section 5.3
-### Step 12 — Encounter trigger wiring from `MapRenderer.tsx` (Section 9)
-
-**Do not attempt Steps 6-12 in one pass.** Build and manually verify each step. This system has a lot of interacting timing logic (gauge fill, aim window, brace window, ability hook timing) — building it all at once is exactly how a weak coding agent produces something that "looks done" but is subtly broken.
-
----
-
-## 8. UI layout direction (modern, not the old 4-menu-box style)
-
-- **No static "4 boxes on the bottom" Gen 1-3 layout.** Combatants are positioned dynamically on a horizontal arena strip (doubles as the Brace strip), not fixed portrait boxes.
-- Given the overworld's real-time lighting/shadow presentation (per the reference screenshot), the battle arena should carry the same visual register — a lit ground plane with a soft directional shadow under each combatant, not a flat 2D backdrop. If the overworld is confirmed Three.js (Step 0), reuse its lighting/shadow setup for the battle arena rather than building a second lighting system from scratch.
-- **Speed Gauge bars** for both combatants sit at the top of the screen, filling continuously in real time.
-- **HP bars** float directly above each combatant (not in a separate corner box).
-- **Move select** is a radial/arc menu (4-6 moves arranged in an arc near the active combatant), not a rigid 2x2 grid.
-- **Aim reticle**: a semi-transparent shape (line/cone/circle per move) following player input, with a shrinking ring timer.
-- **Brace prompt**: the arena strip highlights an incoming "impact zone" that telegraphs briefly before impact.
-- **Ability callout**: a small banner (icon + ability name) in a corner when an ability actually triggers, per Section 5.3 — must not block the combat log or HP bars.
-- **Combat log**: small, collapsible text feed in a corner — supplementary, not the focus.
-- Camera does a slow push-in during `AIMING` and a snap zoom-punch during `IMPACT`.
-
----
-
-## 9. Encounter trigger (Step 12)
-
-In `MapRenderer.tsx`, wherever Route 1 wild-encounter collision is currently detected:
 ```ts
-function onWildEncounterTriggered(wildPokemon: Combatant) {
-  cameraTransition.playEncounterFlash(); // reuse existing transition if present, else a simple fade
-  setActiveScreen("battle");
-  initializeBattleState({
-    playerTeam: getPlayerParty(),
-    enemyTeam: [wildPokemon],
-  });
+interface AttackProfile {
+  category: AnimCategory;
+  modifiers?: ('recoil' | 'heavy' | 'quick')[];
+  overrides?: Partial<StageTimings & VisualKnobs>;
 }
 ```
-`initializeBattleState` sets `phase: "INTRO"`, all `gauge: 0`, starting `arenaPosition: 30` (player) / `70` (enemy). After `BATTLE_END`, return to `MapRenderer` at the exact tile/position the player was standing on before the encounter — do not reset player position.
+
+Resolution order:
+
+1. `MOVE_PROFILES[moveId]`
+2. Derived default from move data
+3. `PROJECTILE` fallback
+
+Identity comes from:
+
+* type palette
+* timing overrides
+* particle texture
+
+Available particle textures:
+
+```text
+circle
+shard
+leaf
+drop
+star
+smoke
+spark
+wave
+ring
+diamond
+square
+```
+
+No per-move animation code.
 
 ---
 
-## 10. Explicit build checklist (work through top to bottom, do not reorder)
+# 6. DEFENDER REACTIONS
 
-- [ ] Step 0: existing ability-system file(s) located and function signatures written down; renderer tech confirmed (Three.js or otherwise)
-- [ ] Step 1-2: `types.ts` + `moveExtensions.ts` compile, no errors
-- [ ] Step 3: `combatEngine.ts` — manual test calls confirm sane damage numbers, then delete the test calls
-- [ ] Step 4: ability-hook call sites compile against real exports, not placeholder names
-- [ ] Step 5: gauge values climb correctly in console, faster effective-Speed combatant reaches 100 first
-- [ ] Step 6: `BattleScreen.tsx` renders hardcoded dummy combatants with lighting/shadow consistent with the overworld, no interactivity yet
-- [ ] Step 7: move select menu appears, clicking a move logs the correct move id
-- [ ] Step 8: aim reticle appears only for `aimed: true` moves, dragging moves it, releasing logs aim position
-- [ ] Step 9: brace meter appears during `DEFENDER_BRACE`, input moves the combatant sprite
-- [ ] Step 10: full state machine wired — play a full turn end-to-end with console logs at each phase transition, confirm the sequence matches Section 2 exactly
-- [ ] Step 11: VFX/camera fire on impact, HP bar animates instead of snapping, ability callout banner appears when an ability actually triggers
-- [ ] Step 12: walking into Route 1 grass triggers `BATTLE_INTRO`, battle end returns to the correct overworld position
+Every result needs a visually distinct silhouette.
 
-Do not mark a step complete until it is visually/console-verified. Do not move to the next numbered step with a previous one half-working "because it'll probably be fine."
+| Result          | Reaction                                  |
+| --------------- | ----------------------------------------- |
+| Normal          | 0.18u knockback + white flash             |
+| Critical        | 0.30u knockback + rotation + double flash |
+| Super-effective | 0.26u knockback + tremor + type glow      |
+| Resisted        | 0.06u recoil, no shake                    |
+| Immune          | No movement; ward ring                    |
+| Miss            | Lateral sidestep + afterimage             |
+| Status          | Slow shudder + status tint                |
+| Stat change     | Rise/sink + chevrons                      |
+| Healing         | Gentle rise + green tint                  |
+| Heavy           | 0.42u knockback + rotation + dust         |
+| Multi-hit       | Escalating jitter                         |
+| Detonate        | Knockback + upward pop + Imprint burst    |
+| Knockout        | Dedicated KO sequence                     |
+
+---
+
+## Idle Baseline
+
+Always-running idle animation:
+
+```text
+0.02u vertical sine bob
+0.5Hz
+```
+
+Combatants are phase-offset.
+
+Below:
+
+```text
+25% HP
+```
+
+change to:
+
+```text
+0.35Hz
++
+8% red tint
+```
+
+This creates a passive danger read.
+
+---
+
+# 7. DAMAGE + EFFECTIVENESS FEEDBACK
+
+## 7.1 Impact Tier Table
+
+Tier is determined from:
+
+```text
+damageDealt / defender.maxHp
+```
+
+then modified by result flags.
+
+| Tier | Condition         | Hit-stop | Shake | Punch |     Flash | Number |
+| ---- | ----------------- | -------: | ----: | ----: | --------: | -----: |
+| T0   | `<6%` or resisted |        0 |     0 |     0 |      none |  0.85× |
+| T1   | `6–18%`           |       55 |  0.05 |  0.03 |      none |     1× |
+| T2   | `18–30%`          |       75 |  0.07 | 0.045 |      none |  1.15× |
+| T3   | `≥30%`            |      100 |  0.10 | 0.065 |  6% white |   1.5× |
+| T4   | lethal            |      130 |  0.11 |  0.07 | 10% white |   1.6× |
+
+### Critical Modifier
+
+```text
+hit-stop ×1.25
+shake +0.02
+punch +0.015
+number ×1.2
+```
+
+Banner:
+
+```text
+CRITICAL!
+```
+
+### Detonate Modifier
+
+```text
+hit-stop ×1.2
+shake +0.015
+flash 8% Imprint colour
+number ×1.15
+```
+
+Banner:
+
+```text
+DETONATE!
+```
+
+---
+
+# 7.2 Explicit Prohibitions
+
+Screen shake must NOT occur on:
+
+* resisted hits
+* immune hits
+* misses
+* status application
+* stat changes
+* healing
+* Guard
+* switching
+* end-of-turn ticks
+* T0 damage
+
+Screen flash only occurs on:
+
+```text
+T3
+T4
+Detonate
+```
+
+Hit-stop only occurs during:
+
+```text
+damaging CONTACT
+```
+
+If shakes overlap:
+
+```text
+larger replaces smaller
+```
+
+Maximum:
+
+```text
+one banner
+```
+
+Banner dwell:
+
+```text
+900ms
+```
+
+Cross-fade:
+
+```text
+120ms
+```
+
+If more than 3 banners queue:
+
+```text
+collapse remainder into combat log
+```
+
+---
+
+# 7.3 HP Bar Behaviour
+
+Use two stacked fills.
+
+### Leading Fill
+
+At contact:
+
+```text
+snap immediately
+```
+
+### Ghost Fill
+
+```text
+350ms
+ease-out
+```
+
+The gap visually communicates damage magnitude.
+
+### Thresholds
+
+```text
+>50%   green #48bb78
+20–50% amber #ecc94b
+<20%   red #f56565
+```
+
+Color transition:
+
+```text
+200ms crossfade
+```
+
+Below 20%:
+
+```text
+opacity 1.0 ↔ 0.75
+1.2Hz
+```
+
+Multi-hit:
+
+* leading fill snaps per hit
+* ghost bar drains once from pre-move to post-move
+
+---
+
+# 7.4 Damage Numbers
+
+Spawn at defender body centre.
+
+Horizontal offset:
+
+```text
+±0.15u
+```
+
+Animation:
+
+```text
+rise 0.5u
+700ms
+ease-out
+12% horizontal drift
+```
+
+Opacity:
+
+```text
+400ms at 1.0
++
+300ms fade
+```
+
+Colors:
+
+```text
+normal = white
+critical = gold
+detonate = amber
+resisted = grey
+heal = green
+```
+
+Maximum:
+
+```text
+6 concurrent numbers
+```
+
+Oldest is removed when exceeded.
+
+Numbers are DOM overlays positioned using projected world coordinates.
+
+---
+
+# 8. KNOCKOUT + BATTLE TRANSITIONS
+
+## 8.1 Knockout Sequence
+
+Total:
+
+```text
+2200ms
+```
+
+| Time | Event                                         |
+| ---: | --------------------------------------------- |
+|    0 | Final contact + 130ms hit-stop                |
+|  130 | Hit-stop releases; knockback; HP reaches zero |
+|  300 | Damage number peaks; faint banner             |
+|  450 | Desaturation begins                           |
+|  700 | 300ms deliberate hold                         |
+| 1000 | Sprite sinks and fades                        |
+| 1450 | Sprite unmounts; HP plate leaves              |
+| 1700 | Camera widens                                 |
+| 2000 | Branch to switch/victory/defeat               |
+| 2200 | Next sequence                                 |
+
+No additional camera shake after the initial lethal impact.
+
+---
+
+## 8.2 Switch-In
+
+Total:
+
+```text
+900ms
+```
+
+Sequence:
+
+```text
+0      outgoing compression/fade
+200    incoming sprite drops
+380    landing
+420    HP plate enters
+600    Go! <NAME>!
+900    complete
+```
+
+Incoming Pokémon always has:
+
+```text
+no Imprint
+```
+
+Switching therefore clears Imprint.
+
+---
+
+## 8.3 Battle Intro
+
+Total:
+
+```text
+1900ms
+```
+
+Sequence:
+
+```text
+0       overworld wipe completes
+0–300   arena fades
+250     enemy enters
+500     player enters
+700     HP plates enter
+1000    "A wild <NAME> appeared!"
+1500    action bar enters
+1900    SELECTING_ACTION
+```
+
+Camera:
+
+```text
+8% slow push
+```
+
+then stops.
+
+No orbiting.
+
+---
+
+## 8.4 Victory / Defeat
+
+### Victory
+
+```text
+1600ms
+```
+
+* player celebration hop ×2
+* enemy plate exits
+* victory banner
+* transition
+
+### Defeat
+
+```text
+1600ms
+```
+
+* scene desaturates
+* defeat banner
+* fade to black
+
+Both invoke:
+
+```ts
+onBattleEnd(victory: boolean)
+```
+
+exactly once.
+
+Use a guard flag.
+
+---
+
+# 9. BATTLE UI REDESIGN
+
+All battle UI is DOM overlay above the single Canvas.
+
+Target:
+
+```text
+16:9
+```
+
+with mobile-portrait fallback.
+
+| Component         | Purpose                  |
+| ----------------- | ------------------------ |
+| Combatant Plate   | Full combatant state     |
+| HP Bar            | Health                   |
+| Name/Level/Types  | Identity + matchup       |
+| Status Chips      | Active conditions        |
+| Imprint Glyph     | Unique mechanic          |
+| Turn Order Pip    | Predict action order     |
+| Action Bar        | FIGHT / GUARD / SWITCH   |
+| Move Grid         | Move selection           |
+| Move Cell         | Move details             |
+| Consequence Tags  | Effectiveness / Detonate |
+| Move Detail Rail  | Expanded move info       |
+| Intent Telegraph  | Opponent category        |
+| Event Banner      | Immediate result         |
+| Damage Numbers    | Magnitude                |
+| Combat Log        | History                  |
+| Switch Tray       | Team selection           |
+| Fast-Forward Hint | Speed control            |
+
+---
+
+## Anti-Clutter Rules
+
+At most:
+
+```text
+one transient overlay
+```
+
+visible at a time.
+
+Move grid and switch tray are mutually exclusive.
+
+Combat log never auto-expands.
+
+No UI overlaps:
+
+* combatant plates
+* sprites
+
+During resolution:
+
+```text
+all interactive UI = disabled
+opacity = 60%
+```
+
+The player cannot interact with the battle while actions are resolving.
+
+---
+
+# 10. STRATEGIC BATTLE DESIGN
+
+## 10.1 Why Current Decisions Are Shallow
+
+Current system has:
+
+```text
+one meaningful input
+=
+move choice
+```
+
+There is:
+
+* no switching
+* no status
+* no stat stages
+* no PP
+* no crits
+* no meaningful abilities
+
+Continuous ATB eliminates prediction.
+
+---
+
+# 10.2 Five Strategic Pillars
+
+### 1. Discrete Simultaneous Commit
+
+Both sides choose actions.
+
+Then:
+
+```text
+priority
+→ effective Speed
+→ seeded tiebreak
+```
+
+determines resolution.
+
+---
+
+### 2. Switching
+
+At least:
+
+```text
+2 reserves
+```
+
+Switching costs the entire turn.
+
+Switching:
+
+* risks taking a hit
+* resets matchup
+* clears Imprint
+
+---
+
+### 3. Guard
+
+Guard:
+
+```text
+50% damage reduction
+priority +4
+clears own Imprint
+grants SHATTERED immunity this turn
+```
+
+Cannot be used consecutively.
+
+Use:
+
+```text
+guardLocked
+```
+
+---
+
+### 4. Status + Stat Stages
+
+Add:
+
+* burn
+* poison
+* paralysis equivalent
+* stat stages
+* setup
+* debuff
+
+These create reasons not to attack every turn.
+
+---
+
+### 5. Imprint / Detonate
+
+The unique mechanic.
+
+It turns:
+
+```text
+type coverage
+```
+
+into:
+
+```text
+two-move planning
+```
+
+---
+
+# 10.3 Decision Space
+
+Every turn the player evaluates:
+
+* attack for immediate tempo
+* create an Imprint
+* Detonate existing Imprint
+* Guard
+* switch
+* apply status
+* buff
+* debuff
+
+Because the opponent's category is telegraphed but exact move remains hidden, the choices interact.
+
+---
+
+# 10.4 Supporting Mechanics
+
+| Mechanic            | Rule                         | Fixes   | Purpose                 |
+| ------------------- | ---------------------------- | ------- | ----------------------- |
+| Computed stats      | Standard stat formulas       | B22     | Makes levels meaningful |
+| Accuracy            | Roll before damage           | B8      | Creates risk/reward     |
+| Critical hits       | 1/16 base, ×1.5 damage       | —       | Controlled variance     |
+| Stat stages         | Multipliers                  | B21/B25 | Setup and counterplay   |
+| PP                  | Per-move resource            | B19     | Prevents spam           |
+| Switching           | Costs turn, clears Imprint   | B20     | Counterplay             |
+| Guard               | 50% reduction, +4 priority   | B3/B20  | Defensive option        |
+| Status              | Persistent conditions        | B21     | Long-term strategy      |
+| Abilities           | Real modifiers               | B25     | Team identity           |
+| Simultaneous commit | Both actions selected        | B23     | Prediction              |
+| Imprint/Detonate    | Type-based two-step mechanic | G6/G7   | Unique identity         |
+
+---
+
+# 11. TYPE STRATEGY
+
+Types remain a core strategic pillar.
+
+They should affect:
+
+* damage
+* switching
+* move choice
+* prediction
+* Imprint
+* Detonate
+* team composition
+* status/control
+
+The desired thought process is:
+
+> "If I use this move now, the opponent will probably respond with X, so I should prepare Y."
+
+---
+
+# 12. UNIQUE MECHANIC CANDIDATES
+
+At least three candidates should be evaluated.
+
+The strongest proposed system is:
+
+# Imprint / Detonate
+
+The type chart is used twice:
+
+```text
+damage calculation
++
+Detonate eligibility
+```
+
+This turns coverage into a sequence.
+
+---
+
+# 13. SELECTED UNIQUE MECHANIC — IMPRINT / DETONATE
+
+The mechanic revolves around placing a temporary elemental imprint on the opponent.
+
+## Core Concept
+
+Certain attacks apply an:
+
+```text
+Imprint
+```
+
+of their move type.
+
+Example:
+
+```text
+Use FIRE move
+↓
+Enemy becomes FIRE-Imprinted
+↓
+Use a move whose type is super-effective against FIRE
+↓
+DETONATE
+```
+
+The second move:
+
+* deals its normal damage
+* triggers the Imprint
+* creates a stronger secondary event
+* applies `SHATTERED`
+
+---
+
+## Imprint Rules
+
+An Imprint lasts:
+
+```text
+3 turns
+```
+
+Only one Imprint can exist on a combatant.
+
+Switching:
+
+```text
+clears Imprint
+```
+
+Guard:
+
+```text
+clears own Imprint
+```
+
+New Imprint:
+
+```text
+replaces old Imprint
+```
+
+---
+
+## Detonate
+
+A move detonates the Imprint when its type is super-effective against the Imprinted type.
+
+Example:
+
+```text
+FIRE Imprint
++
+WATER attack
+=
+DETONATE
+```
+
+The UI displays:
+
+```text
+DETONATE
+```
+
+before committing.
+
+---
+
+## Detonate Result
+
+Detonate produces:
+
+* enhanced damage feedback
+* Imprint glyph shatter
+* special camera impact
+* `SHATTERED` debuff
+* unique banner
+
+The Imprint is then removed.
+
+---
+
+# 14. COMPLETE TURN FLOW
+
+```text
+SELECTING_ACTION
+      ↓
+PLAYER_COMMIT
+      ↓
+OPPONENT_COMMIT
+      ↓
+SHOW_INTENT_TELEGRAPH
+      ↓
+DETERMINE_ORDER
+      ↓
+ACTION 1
+      ↓
+ANTICIPATE
+      ↓
+WINDUP
+      ↓
+RELEASE
+      ↓
+TRAVEL
+      ↓
+CONTACT
+      ↓
+DAMAGE COMMIT
+      ↓
+REACTION
+      ↓
+SETTLE
+      ↓
+ACTION 2
+      ↓
+END-OF-TURN STATUS
+      ↓
+IMPRINT TIMER
+      ↓
+BATTLE CHECK
+      ↓
+NEXT TURN
+```
+
+If a Pokémon faints:
+
+```text
+KO
+↓
+SWITCH
+or
+VICTORY/DEFEAT
+```
+
+---
+
+# 15. STRATEGIC BATTLE EXAMPLES
+
+## Scenario 1 — Type Setup
+
+Player:
+
+```text
+FIRE Pokémon
+```
+
+Opponent:
+
+```text
+GRASS Pokémon
+```
+
+Player can immediately use a super-effective FIRE attack.
+
+But if that attack also creates an Imprint, the player may instead consider a lower-damage move that sets up a future Detonate.
+
+---
+
+## Scenario 2 — Predicting a Switch
+
+Opponent is likely to switch into a WATER Pokémon.
+
+Player can:
+
+```text
+attack
+```
+
+or:
+
+```text
+prepare an Imprint
+```
+
+or:
+
+```text
+use Guard
+```
+
+The player is therefore predicting rather than simply selecting the highest-power move.
+
+---
+
+## Scenario 3 — Guard Prediction
+
+Opponent telegraphs:
+
+```text
+PHYSICAL
+```
+
+Player may:
+
+```text
+GUARD
+```
+
+But Guard cannot be used twice consecutively.
+
+Therefore the opponent can predict the Guard and choose a setup/status move.
+
+---
+
+## Scenario 4 — Detonate Risk
+
+Player has:
+
+```text
+FIRE Imprint
+```
+
+Opponent can:
+
+```text
+switch
+```
+
+to clear it.
+
+Therefore the player must decide:
+
+```text
+Detonate now
+```
+
+or:
+
+```text
+try to preserve the setup
+```
+
+---
+
+## Scenario 5 — Low HP
+
+Player's Pokémon is below:
+
+```text
+20% HP
+```
+
+Options:
+
+```text
+attack
+Guard
+switch
+Detonate
+status
+```
+
+The correct answer depends on:
+
+* opponent category
+* Speed
+* typing
+* current Imprint
+* remaining team
+* status
+* future matchup
+
+---
+
+# 16. BATTLE STATE MACHINE
+
+The new system should use an explicit reducer/state machine rather than chained `useEffect` transitions.
+
+Possible states:
+
+```text
+INTRO
+SELECTING_ACTION
+COMMITTING
+TELEGRAPH
+RESOLVING_ORDER
+ANTICIPATE
+WINDUP
+RELEASE
+TRAVEL
+CONTACT
+REACT
+SETTLE
+END_TURN
+SWITCHING
+FORCED_SWITCH
+VICTORY
+DEFEAT
+```
+
+Every state must define:
+
+* entry condition
+* permitted actions
+* blocked actions
+* transitions
+* animation relationship
+* exit condition
+
+The key principle:
+
+```text
+battle state
+=
+authoritative
+```
+
+UI and animation are presentations of that state.
+
+---
+
+# 17. GAMEPLAY ↔ ANIMATION ARCHITECTURE
+
+## Game Logic Owns
+
+The engine determines:
+
+* selected move
+* target
+* hit/miss
+* damage
+* effectiveness
+* critical
+* status
+* stat changes
+* Imprint
+* Detonate
+* KO
+
+---
+
+## Animation Owns
+
+The animation system determines:
+
+* sprite motion
+* particles
+* camera movement
+* screen flash
+* hit-stop presentation
+* damage number animation
+* UI transitions
+
+Animation must never calculate gameplay outcomes.
+
+---
+
+## Communication
+
+Prefer:
+
+```text
+Battle Engine
+      ↓
+Battle Events
+      ↓
+Animation Director
+      ↓
+Visual Timeline
+```
+
+Example event:
+
+```ts
+{
+  type: 'DAMAGE_CONTACT',
+  attackerId,
+  defenderId,
+  damage,
+  effectiveness,
+  critical,
+  detonate
+}
+```
+
+The animation system consumes this event.
+
+It does not decide whether damage occurred.
+
+---
+
+# 18. IMPLEMENTATION BLUEPRINT
+
+## Feature: Battle State Machine
+
+### Purpose
+
+Replace fragile `useEffect` chains.
+
+### Inputs
+
+```text
+player action
+enemy action
+battle state
+```
+
+### State Changes
+
+Reducer transitions through explicit phases.
+
+### Output
+
+Presentation snapshot.
+
+### Timing
+
+Only animation director controls visual duration.
+
+### Failure Cases
+
+A stuck animation must never block gameplay.
+
+### Implementation
+
+Use:
+
+```text
+reducer
++
+battle director
++
+event queue
+```
+
+---
+
+## Feature: Attack Profiles
+
+### Purpose
+
+Make animations reusable.
+
+### Inputs
+
+```text
+move data
+type
+power
+category
+flags
+```
+
+### Output
+
+```text
+AnimationProfile
+```
+
+### Implementation
+
+No per-move animation functions.
+
+---
+
+## Feature: HP Animation
+
+### Purpose
+
+Make damage readable.
+
+### Inputs
+
+```text
+old HP
+new HP
+```
+
+### Output
+
+```text
+leading fill
+ghost fill
+```
+
+### Timing
+
+```text
+leading = immediate
+ghost = 350ms
+```
+
+---
+
+## Feature: Imprint
+
+### Purpose
+
+Unique strategic mechanic.
+
+### Inputs
+
+```text
+move type
+target
+existing Imprint
+```
+
+### Output
+
+```text
+apply Imprint
+replace Imprint
+Detonate
+```
+
+---
+
+# 19. IMPLEMENTATION ORDER
+
+## Phase 1 — Stabilize Engine
+
+1. Replace continuous ATB.
+2. Introduce explicit reducer.
+3. Fix direct state mutation.
+4. Fix damage resolution.
+5. Add computed stats.
+6. Add accuracy.
+7. Add crits.
+8. Add status.
+9. Add PP.
+10. Add switching.
+
+---
+
+## Phase 2 — Fix Timeline Infrastructure
+
+1. Rename timing fields to milliseconds.
+2. Add layer cleanup.
+3. Add hard completion timeout.
+4. Implement hit-stop.
+5. Implement DOM flash.
+6. Remove OrbitControls.
+7. Add animation director.
+
+---
+
+## Phase 3 — Build Animation Profiles
+
+Implement:
+
+```text
+CONTACT_STRIKE
+SLASH
+PROJECTILE
+BEAM
+AREA_GROUND
+MULTI_HIT
+STATUS_APPLY
+SELF_BUFF
+GUARD
+HEAL
+```
+
+---
+
+## Phase 4 — Combatant Presentation
+
+Replace boxes with:
+
+```text
+AnimatedSprite
+```
+
+Add:
+
+* idle bob
+* lunge
+* recoil
+* flinch
+* KO
+* switch-in
+
+---
+
+## Phase 5 — Battle UI
+
+Implement:
+
+* combatant plates
+* HP bars
+* status chips
+* move grid
+* effectiveness tags
+* event banner
+* switch tray
+* combat log
+* turn-order indicator
+
+---
+
+## Phase 6 — Imprint / Detonate
+
+Implement:
+
+* Imprint state
+* 3-turn duration
+* glyph
+* Detonate condition
+* SHATTERED
+* Detonate animation
+* Detonate UI tag
+
+---
+
+## Phase 7 — AI
+
+AI should consider:
+
+* type matchup
+* HP
+* status
+* switching
+* Guard
+* Imprint
+* Detonate
+* setup
+* predicted player category
+
+AI should not simply:
+
+```text
+choose highest effectiveness × power
+```
+
+---
+
+## Phase 8 — Overworld Integration
+
+Only after battle is stable:
+
+```text
+overworld encounter
+↓
+battle
+↓
+result
+↓
+return to overworld
+```
+
+---
+
+# 20. DO NOT DO
+
+Do NOT:
+
+* add random particles everywhere
+* add screen shake to every attack
+* make every attack use the same animation
+* create bespoke code for every move
+* use fixed 1200ms timeouts for effects
+* apply damage before contact
+* let animation calculate damage
+* use continuous ATB
+* bring back Aim/Brace sliders
+* allow free defensive exploits
+* make the player wait through unskippable animations
+* add dozens of unrelated mechanics
+* create another effect architecture
+* duplicate move override tables
+* use world-space UI unnecessarily
+* allow OrbitControls during battle
+* rewrite unrelated overworld systems
+* add new dependencies without necessity
+* replace the existing effect primitives unnecessarily
+* add complexity merely to appear innovative
+
+---
+
+# 21. ACCEPTANCE CRITERIA
+
+The redesign is successful only when all of the following are true.
+
+## Battle Logic
+
+* [ ] No battle soft-locks.
+* [ ] No direct React state mutation.
+* [ ] No continuous ATB.
+* [ ] Actions resolve deterministically.
+* [ ] Switching works.
+* [ ] Guard works.
+* [ ] Status works.
+* [ ] Accuracy works.
+* [ ] Critical hits work.
+* [ ] Computed stats work.
+* [ ] PP works.
+* [ ] AI makes contextual decisions.
+
+## Animation
+
+* [ ] Every attack has anticipation.
+* [ ] Every attack has a visible windup.
+* [ ] Projectile attacks visibly travel.
+* [ ] Damage occurs at contact.
+* [ ] Defender reacts to damage.
+* [ ] HP leading fill snaps on contact.
+* [ ] Ghost HP bar drains afterward.
+* [ ] Hit-stop works.
+* [ ] Camera shake is tier-based.
+* [ ] Flash works.
+* [ ] KO has a dedicated sequence.
+* [ ] Multi-hit attacks can show multiple contacts.
+* [ ] Animations cannot soft-lock battle progression.
+* [ ] All effect layers are cleaned up.
+
+## Presentation
+
+* [ ] Real Pokémon sprites are used.
+* [ ] Combatants have idle motion.
+* [ ] Combatants lunge/recoil.
+* [ ] Different attack categories visibly differ.
+* [ ] UI is readable.
+* [ ] No UI overlaps sprites.
+* [ ] Camera cannot be freely orbited.
+* [ ] Battle feedback is understandable without relying entirely on text.
+
+## Strategy
+
+* [ ] Type effectiveness matters.
+* [ ] Switching matters.
+* [ ] Guard matters.
+* [ ] Status matters.
+* [ ] Speed matters.
+* [ ] Prediction matters.
+* [ ] Opponent actions can be partially inferred.
+* [ ] Imprint creates meaningful two-step planning.
+* [ ] Detonate creates meaningful risk/reward.
+* [ ] The unique mechanic cannot simply be ignored.
+
+## Performance
+
+* [ ] One Canvas.
+* [ ] No unnecessary dependencies.
+* [ ] Particle quality respects `qualityStore`.
+* [ ] MED quality stays within approximately 400 live particles.
+* [ ] Animation systems remain reusable.
+* [ ] No duplicate effect architecture remains.
+
+## Final Experience Test
+
+A player should be able to understand:
+
+```text
+WHAT HAPPENED?
+WHY DID IT HAPPEN?
+WHAT SHOULD I DO NEXT?
+```
+
+And the battle should feel like:
+
+```text
+Pokémon-style strategy
++
+prediction
++
+type interaction
++
+meaningful switching
++
+unique Imprint/Detonate gameplay
++
+high-impact readable animation
+```
+
+rather than:
+
+```text
+menu
++
+timer
++
+slider
++
+particle explosion
+```
+
+```
+```

@@ -33,6 +33,7 @@ interface PlayerProps {
   mapData: GameMap;
   theme: Theme;
   onExitCheck?: (gx: number, gy: number) => void;
+  onEncounter?: (pokemon: { species: string; gx: number; gy: number }) => void;
 }
 
 /** Movement vector -> one of 8 compass facings (PLAN.md 5). */
@@ -70,7 +71,7 @@ const MOVE_KEYS = new Set([
   'arrowright',
 ]);
 
-export function Player({ mapData, theme, onExitCheck }: PlayerProps) {
+export function Player({ mapData, theme, onExitCheck, onEncounter }: PlayerProps) {
   const groupRef = useRef<THREE.Group>(null);
   const velocity = useRef(new THREE.Vector3());
   const keysDown = useRef(new Set<string>());
@@ -84,6 +85,7 @@ export function Player({ mapData, theme, onExitCheck }: PlayerProps) {
   const publishedCell = useRef({ gx: -1, gy: -1, facing: '' });
   // Fire an exit exactly once per entry, instead of scheduling a timer per frame.
   const exitLatched = useRef(false);
+  const encounterLatched = useRef(false);
   const placedForMap = useRef<string | null>(null);
 
   const setPlayerPosition = useGameStore((s) => s.setPlayerPosition);
@@ -268,6 +270,15 @@ export function Player({ mapData, theme, onExitCheck }: PlayerProps) {
         onExitCheck?.(gx, gy);
       } else if (!inExit) {
         exitLatched.current = false;
+      }
+
+      // §9: Wild encounter trigger — check if player stepped on a Pokémon tile
+      const encounter = mapData.pokemon?.find((p) => p.gx === gx && p.gy === gy);
+      if (encounter && !encounterLatched.current) {
+        encounterLatched.current = true;
+        onEncounter?.({ species: encounter.species, gx, gy });
+      } else if (!encounter) {
+        encounterLatched.current = false;
       }
     }
   });

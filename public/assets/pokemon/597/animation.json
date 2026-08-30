@@ -1,11 +1,17 @@
 {
+  "version": 2,
   "id": 597,
   "frameWidth": 51,
   "frameHeight": 64,
   "totalFrames": 1,
+  "cols": 1,
+  "rows": 1,
+  "sheetWidth": 51,
+  "sheetHeight": 64,
   "durations": [
-    1000
+    100
   ],
-  "totalDuration": 1000,
+  "totalDuration": 100,
+  "sourceFrames": 1,
   "spriteSheet": "sprite-sheet.png"
 }

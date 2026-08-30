@@ -1,24 +1,22 @@
 import type { PokemonType } from '../../data/pokemon/schemas/index';
 
-export type EffectFamily =
-  | 'burst'
-  | 'projectile'
-  | 'beam'
-  | 'cloud'
-  | 'pulse'
-  | 'ring'
-  | 'impact'
-  | 'slash'
-  | 'sparkle'
-  | 'swarm'
-  | 'wind'
-  | 'frost'
-  | 'status';
+/**
+ * Layer primitive configs. These are the reusable building blocks the battle
+ * animation director composes; they are deliberately dumb data.
+ *
+ * The former `EffectPreset`, `ActiveEffect`, `EffectPhase`, `EffectTimeline`,
+ * `EffectRecipe` and `EffectFamily` types were removed with the parallel preset
+ * architecture (presets.ts / effectRegistry.ts / recipes.ts) that nothing consumed.
+ * Timing now lives in src/battle/presentation/fx as integer milliseconds only.
+ */
 
-export type AnchorPoint = 'attacker' | 'target' | 'midpoint' | 'travel';
+export type ParticleTexture =
+  | 'circle' | 'square' | 'diamond' | 'star' | 'leaf' | 'drop'
+  | 'shard' | 'ring' | 'smoke' | 'spark' | 'wave';
 
 export interface ParticleConfig {
   count: number;
+  /** Seconds. */
   lifetime: number;
   speed: number;
   speedVariance: number;
@@ -34,6 +32,10 @@ export interface ParticleConfig {
   colorEnd?: string;
   texture: ParticleTexture;
   additive?: boolean;
+  /** Bias all velocities along the attack direction (0 = radial, 1 = fully directional). */
+  directionBias?: number;
+  /** Pull particles inward to the origin instead of pushing out (charge-up). */
+  converge?: boolean;
 }
 
 export interface RingConfig {
@@ -44,6 +46,8 @@ export interface RingConfig {
   thickness: number;
   color: string;
   opacity: number;
+  /** Lay flat on the ground plane instead of facing the camera. */
+  flat?: boolean;
 }
 
 export interface BeamConfig {
@@ -53,11 +57,13 @@ export interface BeamConfig {
   glowColor: string;
   opacity: number;
   segments: number;
+  /** Fraction of lifetime spent extending to full length. */
+  extendRatio?: number;
+  /** Sine wobble amplitude, for electric/dragon beams. */
+  wobble?: number;
 }
 
 export interface FlipbookConfig {
-  frameWidth: number;
-  frameHeight: number;
   frames: number;
   fps: number;
   loop: boolean;
@@ -76,68 +82,57 @@ export interface TrailConfig {
 }
 
 export interface ProjectileConfig {
-  speed: number;
+  /** Explicit flight time in seconds. The director derives this from the TRAVEL stage
+   *  so arrival and IMPACT coincide by construction rather than by callback race. */
+  durationSec: number;
   arcHeight: number;
   coreScale: number;
   trailLength: number;
   trailWidth: number;
   coreColor: string;
   trailColor: string;
-  onArrive: number;
+  /** Spin the core, for shards/bolts. */
+  spin?: number;
 }
 
-export interface FlashConfig {
+export interface DecalConfig {
+  /** Flipbook sheet laid flat on the ground. */
+  sheet: 'crack' | 'shockring' | 'burst';
+  frames: number;
+  fps: number;
+  radius: number;
   color: string;
-  duration: number;
-  intensity?: number;
+  opacity: number;
 }
 
-export interface CameraFeedbackConfig {
-  shake?: number;
-  punch?: number;
-  hitStop?: number;
-  flash?: string;
-  flashOpacity?: number;
+export interface ShockwaveConfig {
+  lifetime: number;
+  radius: number;
+  color: string;
+  opacity: number;
+  /** Vertical stretch: 0 = flat disc, 1 = hemisphere. */
+  dome: number;
 }
 
-export interface EffectPhase {
-  at: number;
-  anchor: AnchorPoint;
-  layer: LayerSpec;
+export interface ShieldConfig {
+  lifetime: number;
+  radius: number;
+  color: string;
+  opacity: number;
+  /** Sustain at full strength before fading, seconds. */
+  holdSec: number;
 }
 
-export type LayerSpec =
-  | { kind: 'particles'; config: ParticleConfig }
-  | { kind: 'flipbook'; sheet: string; config: FlipbookConfig }
-  | { kind: 'trail'; config: TrailConfig }
-  | { kind: 'projectile'; config: ProjectileConfig }
-  | { kind: 'beam'; config: BeamConfig }
-  | { kind: 'ring'; config: RingConfig }
-  | { kind: 'flash'; config: FlashConfig }
-  | { kind: 'camera'; config: CameraFeedbackConfig };
-
-export interface EffectTimeline {
-  totalDuration: number;
-  phases: EffectPhase[];
+export interface WaveConfig {
+  lifetime: number;
+  width: number;
+  height: number;
+  color: string;
+  glowColor: string;
+  opacity: number;
 }
 
-export interface EffectRecipe {
-  family: EffectFamily;
-  type: PokemonType;
-  build: (palette: any, context: EffectContext) => EffectTimeline;
-}
-
-export interface EffectPreset {
-  family: EffectFamily;
-  type: PokemonType;
-  duration: number;
-  particles: ParticleConfig[];
-  rings?: RingConfig[];
-  beam?: BeamConfig;
-  screenShake?: number;
-  flash?: string;
-}
-
+/** Positions the director resolves before handing a layer its context. */
 export interface EffectContext {
   origin: [number, number, number];
   target: [number, number, number];
@@ -146,15 +141,18 @@ export interface EffectContext {
   intensity: number;
 }
 
-export interface ActiveEffect {
-  id: string;
-  preset: EffectPreset;
-  context: EffectContext;
-  elapsed: number;
-  done: boolean;
+export function createEffectContext(
+  origin: [number, number, number],
+  target: [number, number, number],
+  scale = 1,
+  intensity = 1,
+): EffectContext {
+  const dx = target[0] - origin[0];
+  const dy = target[1] - origin[1];
+  const dz = target[2] - origin[2];
+  const len = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
+  return { origin, target, direction: [dx / len, dy / len, dz / len], scale, intensity };
 }
-
-export type ParticleTexture = 'circle' | 'square' | 'diamond' | 'star' | 'leaf' | 'drop' | 'shard' | 'ring' | 'smoke' | 'spark' | 'wave';
 
 export const TYPE_COLORS: Record<PokemonType, { primary: string; secondary: string; glow: string }> = {
   normal:   { primary: '#a8a878', secondary: '#c6c6a7', glow: '#e0e0c0' },
