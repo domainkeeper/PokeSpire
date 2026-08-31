@@ -4,18 +4,17 @@ import { TILE_SIZE } from '../../utils/constants';
 import type { GameMap } from '../../data/mapTypes';
 import { resolvePropId } from '../../data/props/propAliases';
 import { PROP_REGISTRY, type PropId } from '../../data/props/propRegistry';
-import { getPokemonSprite, pokemonAssetId } from '../../data/pokemon/pokemonSprites';
-import type { PokemonSpeciesKey } from '../../data/pokemon/pokemonSprites';
 import type { Theme } from '../../theme/types';
 
 import { InstancedProps, type PropInstance } from '../entities/InstancedProps';
 import { getPropParts } from '../entities/propFactory';
 import { SpriteActor } from '../entities/SpriteActor';
+import { PokemonActor } from '../entities/PokemonActor';
 import { WaterPlane } from '../entities/WaterPlane';
 import { buildTerrain } from '../terrain/heightfield';
 import { makeGroundTexture, hasWater, groundPixelSize } from '../terrain/groundTexture';
 import { createTerrainMaterial } from '../terrain/terrainMaterial';
-import { getSingleSprite, getIdleTexture, PLAYER_MANIFEST } from '../pixel/sprites/characterSprites';
+import { getIdleTexture, PLAYER_MANIFEST } from '../pixel/sprites/characterSprites';
 
 /**
  * Deterministic per-placement hash. Same tile always yields the same variant,
@@ -166,46 +165,37 @@ function Npc({
   );
 }
 
-/* -------------------------------------------------------------- pokemon --- */
-
-function Pokemon({
-  species,
-  position,
-  theme,
-  phase,
-}: {
-  species: PokemonSpeciesKey;
-  position: [number, number, number];
-  theme: Theme;
-  phase: number;
-}) {
-  const sprite = getPokemonSprite(species);
-  const tex = useMemo(() => getSingleSprite(pokemonAssetId(species)), [species]);
-
-  return (
-    <group position={position}>
-      <SpriteActor
-        texture={tex}
-        width={sprite.size}
-        height={sprite.size}
-        layers={3}
-        layerGap={0.018}
-        contactShadow={sprite.size * 0.42}
-        contactShadowOpacity={theme.lighting.contactShadowOpacity}
-        bob={0.02}
-        bobSpeed={1.9}
-        phase={phase}
-      />
-    </group>
-  );
-}
-
 /* ------------------------------------------------------------ renderer --- */
 
-export function MapRenderer({ mapData, theme }: { mapData: GameMap; theme: Theme }) {
+export interface MapRendererProps {
+  mapData: GameMap;
+  theme: Theme;
+  /** Player grid position for Pokemon proximity detection. */
+  playerGx: number;
+  playerGy: number;
+  /** Called when the player interacts with a wild Pokemon. */
+  onInteractPokemon?: (pokemon: { species: string; gx: number; gy: number }) => void;
+}
+
+export function MapRenderer({ mapData, theme, playerGx, playerGy, onInteractPokemon }: MapRendererProps) {
   const terrain = useMemo(() => buildTerrain(mapData), [mapData]);
   const groups = useMemo(() => groupProps(mapData, terrain.heightAt), [mapData, terrain]);
   const mapHasWater = useMemo(() => hasWater(mapData), [mapData]);
+
+  // Pre-compute grid distances to find the nearest Pokemon in range.
+  const pokemonList = mapData.pokemon ?? [];
+  const NEAREST_RANGE = 3;
+  let nearestIdx = -1;
+  let nearestDist = Infinity;
+  for (let i = 0; i < pokemonList.length; i++) {
+    const dx = pokemonList[i].gx - playerGx;
+    const dy = pokemonList[i].gy - playerGy;
+    const d = Math.hypot(dx, dy);
+    if (d < NEAREST_RANGE && d < nearestDist) {
+      nearestDist = d;
+      nearestIdx = i;
+    }
+  }
 
   return (
     <group>
@@ -234,15 +224,17 @@ export function MapRenderer({ mapData, theme }: { mapData: GameMap; theme: Theme
         );
       })}
 
-      {mapData.pokemon?.map((p, i) => {
+      {pokemonList.map((p, i) => {
         const [wx, , wz] = gridToWorld(p.gx, p.gy);
         return (
-          <Pokemon
+          <PokemonActor
             key={`mon-${i}`}
             species={p.species}
             position={[wx, terrain.heightAt(p.gx, p.gy), wz]}
             theme={theme}
             phase={i * 1.3}
+            isNearest={i === nearestIdx}
+            onInteract={() => onInteractPokemon?.({ species: p.species, gx: p.gx, gy: p.gy })}
           />
         );
       })}

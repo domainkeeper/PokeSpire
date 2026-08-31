@@ -58,6 +58,12 @@ function build(): GameMap {
     { x: 360, y: 200, name: 'Ranger', dialogue: 'Be careful in the tall grass on Route 1!' },
   ];
 
+  const pokemon = [
+    { species: 'pikachu' as const, gx: 252, gy: 250 },
+    { species: 'eevee' as const, gx: 350, gy: 180 },
+    { species: 'pidgey' as const, gx: 80, gy: 160 },
+  ];
+
   return {
     name: ID, width: W, height: H, pixelsPerTile: PPT,
     themeId: 'coastal-day',
@@ -66,7 +72,7 @@ function build(): GameMap {
     ground, elevation, objects,
     spawn: { x: 252, y: 260, facing: 'up' },
     exits: [],
-    npcPositions,
+    npcPositions, pokemon,
   };
 }
 

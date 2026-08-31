@@ -75,6 +75,7 @@ function SunLight({ theme }: { theme: Theme }) {
 export function OverworldScene() {
   const currentMapId = useGameStore((s) => s.player.mapId);
   const playerX = useGameStore((s) => s.player.x);
+  const playerY = useGameStore((s) => s.player.y);
   const setPlayerPosition = useGameStore((s) => s.setPlayerPosition);
   const startBattle = useGameStore((s) => s.startBattle);
   const [transitioning, setTransitioning] = useState(false);
@@ -104,12 +105,11 @@ export function OverworldScene() {
     [mapData, currentMapId, setPlayerPosition, transitioning],
   );
 
-  // §9: Wild encounter trigger
-  const handleEncounter = useCallback(
+  // Wild Pokemon interaction — triggers battle with a fade transition
+  const handleInteractPokemon = useCallback(
     (pokemon: { species: string; gx: number; gy: number }) => {
       if (transitioning) return;
       setTransitioning(true);
-      // §9: cameraTransition.playEncounterFlash() — simple fade via eventBus
       eventBus.emit(GameEvents.MAP_TRANSITION, { from: currentMapId, to: 'battle' });
       setTimeout(() => {
         startBattle(pokemon.species);
@@ -141,8 +141,14 @@ export function OverworldScene() {
       <SunLight theme={theme} />
 
       <SkyDome theme={theme} />
-      <MapRenderer mapData={mapData} theme={theme} />
-      <Player mapData={mapData} theme={theme} onExitCheck={handleExitCheck} onEncounter={handleEncounter} />
+      <MapRenderer
+        mapData={mapData}
+        theme={theme}
+        playerGx={playerX}
+        playerGy={playerY}
+        onInteractPokemon={handleInteractPokemon}
+      />
+      <Player mapData={mapData} theme={theme} onExitCheck={handleExitCheck} />
       <FollowCamera />
     </>
   );
