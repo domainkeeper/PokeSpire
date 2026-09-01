@@ -22,19 +22,25 @@ function build(): GameMap {
   flattenRect(elevation, { x: 370, y: 340, w: 30, h: 30 }, 0);
   const objects: MapObject[] = [
     place('sign' as any, 380, 10),
-    ...scatter({ table: [{ id: 'boulder' as any, weight: 1 }], area: { x: 100, y: 100, w: 200, h: 200 }, pitch: 10, density: 0.12, seed: 10 }),
-    ...scatter({ table: [{ id: 'rock_large' as any, weight: 1 }], area: { x: 500, y: 400, w: 200, h: 200 }, pitch: 12, density: 0.1, seed: 11 }),
-    ...scatter({ table: [{ id: 'tree_pine' as any, weight: 1 }], area: { x: 50, y: 500, w: 150, h: 150 }, pitch: 10, density: 0.08, seed: 12 }),
+    ...scatter({ table: [{ id: 'boulder' as any, weight: 2 }, { id: 'rock_large' as any, weight: 3 }], area: { x: 100, y: 100, w: 220, h: 220 }, pitch: 8, density: 0.25, seed: 10 }),
+    ...scatter({ table: [{ id: 'rock_large' as any, weight: 2 }, { id: 'boulder' as any, weight: 2 }, { id: 'rock_small' as any, weight: 1 }], area: { x: 480, y: 380, w: 240, h: 240 }, pitch: 9, density: 0.22, seed: 11 }),
+    ...scatter({ table: [{ id: 'tree_pine' as any, weight: 2 }, { id: 'bush' as any, weight: 1 }], area: { x: 50, y: 480, w: 180, h: 200 }, pitch: 10, density: 0.2, seed: 12 }),
+    ...scatter({ table: [{ id: 'flower' as any, weight: 1 }, { id: 'grass_tuft' as any, weight: 2 }], area: { x: 380, y: 50, w: 20, h: 600 }, pitch: 8, density: 0.3, seed: 13 }),
   ];
   const npcPositions = [
     { x: 386, y: 200, name: 'Hiker', dialogue: 'The highlands offer stunning views, but watch your step.' },
     { x: 386, y: 500, name: 'Ranger', dialogue: 'Cave entrances are scattered throughout these hills.' },
   ];
+  const pokemon = [
+    { species: 'charmander' as const, gx: 140, gy: 140 },
+    { species: 'rattata' as const, gx: 550, gy: 450 },
+    { species: 'pidgey' as const, gx: 380, gy: 300 },
+  ];
   return {
     name: ID, width: W, height: H, pixelsPerTile: PPT, themeId: 'coastal-day',
     themeOverride: { palette: { grass: { base: '#3a5840' } } },
     regionId: 'heartland-wilds', layout: { worldX: 0, worldY: 1420 },
-    ground, elevation, objects, spawn: { x: 386, y: 20, facing: 'down' }, exits: [],     npcPositions,
+    ground, elevation, objects, spawn: { x: 386, y: 20, facing: 'down' }, exits: [],     npcPositions, pokemon,
     encounterZones: [
       { id: 'highlands-cave', biome: 'cave', rects: [{ x: 90, y: 90, w: 220, h: 220 }], table: CAVE, rarity: 'uncommon' },
     ],

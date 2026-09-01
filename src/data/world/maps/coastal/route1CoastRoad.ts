@@ -42,8 +42,9 @@ function build(): GameMap {
   const objects: MapObject[] = [
     ...westTrees,
     ...tallGrass,
-    ...scatter({ table: [{ id: 'rock_small' as any, weight: 1 }], area: { x: 140, y: 300, w: 60, h: 60 }, pitch: 8, density: 0.2, seed: 15 }),
-    ...scatter({ table: [{ id: 'bush' as any, weight: 1 }], area: { x: 80, y: 500, w: 80, h: 80 }, pitch: 6, density: 0.15, seed: 16 }),
+    ...scatter({ table: [{ id: 'rock_small' as any, weight: 2 }, { id: 'rock_large' as any, weight: 1 }], area: { x: 140, y: 300, w: 60, h: 60 }, pitch: 8, density: 0.25, seed: 15 }),
+    ...scatter({ table: [{ id: 'bush' as any, weight: 2 }, { id: 'flower' as any, weight: 3 }], area: { x: 80, y: 400, w: 120, h: 180 }, pitch: 6, density: 0.3, seed: 16 }),
+    ...scatter({ table: [{ id: 'tree_palm' as any, weight: 1 }], area: { x: 420, y: 100, w: 60, h: 500 }, pitch: 16, density: 0.15, seed: 17 }),
     place('sign' as any, 250, 10),
   ];
 
@@ -56,7 +57,7 @@ function build(): GameMap {
   const pokemon = [
     { species: 'pidgey' as const, gx: 120, gy: 150 },
     { species: 'rattata' as const, gx: 160, gy: 250 },
-    { species: 'caterpie' as const, gx: 100, gy: 400 },
+    { species: 'pikachu' as const, gx: 230, gy: 300 },
   ];
 
   return {

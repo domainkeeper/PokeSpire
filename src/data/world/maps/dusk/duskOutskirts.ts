@@ -35,7 +35,8 @@ function build(): GameMap {
     ...lampRow({ from: [100, 294], to: [600, 294], spacing: 14 }),
     place('sign' as any, 10, 282),
     place('well' as any, 350, 200),
-    ...scatter({ table: [{ id: 'grass_tuft' as any, weight: 1 }], area: { x: 500, y: 380, w: 120, h: 80 }, pitch: 5, density: 0.3, seed: 20 }),
+    ...scatter({ table: [{ id: 'grass_tuft' as any, weight: 2 }, { id: 'flower' as any, weight: 1 }, { id: 'rock_small' as any, weight: 1 }], area: { x: 500, y: 380, w: 140, h: 100 }, pitch: 5, density: 0.35, seed: 20 }),
+    ...scatter({ table: [{ id: 'tree_oak' as any, weight: 1 }, { id: 'bush' as any, weight: 2 }], area: { x: 50, y: 480, w: 160, h: 80 }, pitch: 10, density: 0.25, seed: 21 }),
   ];
 
   const npcPositions = [
@@ -45,6 +46,7 @@ function build(): GameMap {
   ];
 
   const pokemon = [
+    { species: 'eevee' as const, gx: 540, gy: 420 },
     { species: 'rattata' as const, gx: 80, gy: 400 },
     { species: 'pidgey' as const, gx: 520, gy: 80 },
   ];

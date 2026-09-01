@@ -39,15 +39,17 @@ function build(): GameMap {
 
   const objects: MapObject[] = [
     ...forestWalls,
-    ...forestCluster({ x: 0, y: 0, w: 140, h: 760, density: 0.35, seed: 10 }),
-    ...forestCluster({ x: 700, y: 0, w: 140, h: 760, density: 0.35, seed: 11 }),
-    ...forestCluster({ x: 0, y: 0, w: 840, h: 140, density: 0.3, seed: 12 }),
-    ...forestCluster({ x: 0, y: 600, w: 840, h: 160, density: 0.3, seed: 13 }),
-    // Clearing decorations
+    ...forestCluster({ x: 0, y: 0, w: 140, h: 760, density: 0.4, seed: 10 }),
+    ...forestCluster({ x: 700, y: 0, w: 140, h: 760, density: 0.4, seed: 11 }),
+    ...forestCluster({ x: 0, y: 0, w: 840, h: 140, density: 0.35, seed: 12 }),
+    ...forestCluster({ x: 0, y: 600, w: 840, h: 160, density: 0.35, seed: 13 }),
+    // Clearing decorations & visual depth hierarchy
     place('bench' as any, 180, 80),
     place('well' as any, 500, 90),
     place('sign' as any, 416, 195),
-    ...scatter({ table: [{ id: 'mushroom' as any, weight: 1 }], area: { x: 300, y: 280, w: 120, h: 80 }, pitch: 6, density: 0.2, seed: 20 }),
+    ...scatter({ table: [{ id: 'mushroom' as any, weight: 2 }, { id: 'flower' as any, weight: 2 }, { id: 'rock_small' as any, weight: 1 }], area: { x: 150, y: 50, w: 120, h: 100 }, pitch: 5, density: 0.4, seed: 19 }),
+    ...scatter({ table: [{ id: 'mushroom' as any, weight: 3 }, { id: 'grass_tuft' as any, weight: 2 }], area: { x: 300, y: 280, w: 120, h: 80 }, pitch: 5, density: 0.35, seed: 20 }),
+    ...scatter({ table: [{ id: 'tree_pine' as any, weight: 1 }, { id: 'bush_berry' as any, weight: 1 }], area: { x: 450, y: 50, w: 100, h: 100 }, pitch: 8, density: 0.25, seed: 21 }),
   ];
 
   const npcPositions = [
@@ -60,6 +62,7 @@ function build(): GameMap {
     { species: 'bulbasaur' as const, gx: 170, gy: 70 },
     { species: 'caterpie' as const, gx: 470, gy: 60 },
     { species: 'pidgey' as const, gx: 350, gy: 300 },
+    { species: 'eevee' as const, gx: 220, gy: 320 },
   ];
 
   return {

@@ -44,6 +44,8 @@ function build(): GameMap {
     ...lampRow({ from: [210, 178], to: [294, 178], spacing: 10 }),
     ...lampRow({ from: [210, 242], to: [294, 242], spacing: 10 }),
     ...scatter({ table: [{ id: 'bench' as any, weight: 1 }], area: { x: 340, y: 200, w: 60, h: 40 }, pitch: 12, density: 0.2, seed: 30 }),
+    ...scatter({ table: [{ id: 'flower' as any, weight: 2 }, { id: 'grass_tuft' as any, weight: 1 }, { id: 'rock_small' as any, weight: 1 }], area: { x: 340, y: 160, w: 80, h: 80 }, pitch: 6, density: 0.35, seed: 31 }),
+    ...scatter({ table: [{ id: 'tree_palm' as any, weight: 1 }, { id: 'tree_small' as any, weight: 1 }], area: { x: 30, y: 330, w: 220, h: 80 }, pitch: 12, density: 0.3, seed: 32 }),
     place('well' as any, 252, 210),
     place('sign' as any, 252, 170),
   ];
@@ -60,7 +62,7 @@ function build(): GameMap {
 
   const pokemon = [
     { species: 'pikachu' as const, gx: 252, gy: 250 },
-    { species: 'eevee' as const, gx: 350, gy: 180 },
+    { species: 'squirtle' as const, gx: 360, gy: 220 },
     { species: 'pidgey' as const, gx: 80, gy: 160 },
   ];
 
